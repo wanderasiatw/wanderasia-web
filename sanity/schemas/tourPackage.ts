@@ -1,44 +1,54 @@
-import { defineType, defineField } from 'sanity'
-
-export const tourPackage = defineType({
+export const tourPackage = {
   name: 'tourPackage',
   title: 'Tour Package',
   type: 'document',
   fields: [
-    defineField({
+    {
       name: 'title',
-      title: 'Tour Title',
+      title: 'Title',
       type: 'string',
-      validation: (Rule) => Rule.required(),
-    }),
-    defineField({
+    },
+    {
       name: 'slug',
-      title: 'Slug (URL)',
+      title: 'Slug',
       type: 'slug',
-      options: { source: 'title', maxLength: 96 },
-      validation: (Rule) => Rule.required(),
-    }),
-    defineField({
+      options: {
+        source: 'title',
+        maxLength: 96,
+      },
+    },
+    {
       name: 'price',
-      title: 'Price (TWD/USD)',
+      title: 'Price',
       type: 'number',
-      validation: (Rule) => Rule.required(),
-    }),
-    defineField({
+    },
+    {
       name: 'duration',
-      title: 'Duration (e.g. 5D4N)',
+      title: 'Duration',
       type: 'string',
-    }),
-    defineField({
-      name: 'featuredImage',
-      title: 'Featured Image',
+    },
+    {
+      name: 'location',
+      title: 'Location',
+      type: 'string',
+    },
+    {
+      name: 'mainImage',
+      title: 'Main Image',
       type: 'image',
-      options: { hotspot: true },
-    }),
-    defineField({
-      name: 'overview',
-      title: 'Overview / Description',
+      options: {
+        hotspot: true,
+      },
+    },
+    {
+      name: 'featured',
+      title: 'Featured',
+      type: 'boolean',
+    },
+    {
+      name: 'description',
+      title: 'Description',
       type: 'text',
-    }),
+    },
   ],
-})
+}
