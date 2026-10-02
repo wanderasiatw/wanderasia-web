@@ -1,20 +1,24 @@
-import Navbar from '@/components/Navbar'
 import Hero from '@/components/Hero'
+import TrustBar from '@/components/TrustBar'
 import FeaturedTours from '@/components/FeaturedTours'
 import Destinations from '@/components/Destinations'
-import Footer from '@/components/Footer'
+import WhyChoose from '@/components/WhyChoose'
+import Testimonials from '@/components/Testimonials'
 import { getFeaturedTours } from '@/lib/sanity'
+
+export const revalidate = 60
 
 export default async function HomePage() {
   const tours = await getFeaturedTours()
 
   return (
-    <main className="min-h-screen bg-slate-50">
-      <Navbar />
+    <main>
       <Hero />
-      <Destinations />
+      <TrustBar />
       <FeaturedTours tours={tours} />
-      <Footer />
+      <Destinations />
+      <WhyChoose />
+      <Testimonials />
     </main>
   )
 }

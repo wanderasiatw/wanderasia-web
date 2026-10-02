@@ -1,31 +1,42 @@
+'use client'
+
+import { scrollToTours, useSite } from './SiteProvider'
+
 const DESTINATIONS = [
-  { name: 'Japan', count: '12 Tours', image: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=600' },
-  { name: 'Taiwan', count: '18 Tours', image: 'https://images.unsplash.com/photo-1508248467877-aed323d07626?q=80&w=600' },
-  { name: 'South Korea', count: '8 Tours', image: 'https://images.unsplash.com/photo-1538485399081-7191377e8241?q=80&w=600' },
-  { name: 'Thailand', count: '10 Tours', image: 'https://images.unsplash.com/photo-1508009603885-50cf7c579365?q=80&w=600' },
+  { key: 'Japan', name: 'Japan', places: 'Tokyo, Mt. Fuji, Kyoto', image: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=600&auto=format&fit=crop' },
+  { key: 'Taiwan', name: 'Taiwan', places: 'Taipei, Jiufen, Sun Moon Lake', image: 'https://images.unsplash.com/photo-1470004914212-05527e49370b?q=80&w=600&auto=format&fit=crop' },
+  { key: 'Korea', name: 'South Korea', places: 'Seoul, Nami Island, Busan', image: 'https://images.unsplash.com/photo-1538485399081-7191377e8241?q=80&w=600&auto=format&fit=crop' },
+  { key: 'Thailand', name: 'Thailand', places: 'Bangkok, Chiang Mai, Phuket', image: 'https://images.unsplash.com/photo-1528181304800-259b08848526?q=80&w=600&auto=format&fit=crop' },
 ]
 
 export default function Destinations() {
-  return (
-    <section className="bg-slate-100 py-16 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
-        <h2 className="text-3xl font-bold text-gray-900 text-center mb-2">Popular Destinations</h2>
-        <p className="text-gray-600 text-center mb-10">Explore Asia&apos;s most breathtaking places</p>
+  const { t, setFilter } = useSite()
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {DESTINATIONS.map((dest) => (
+  return (
+    <section id="destinations" className="section" style={{ background: 'var(--white)', borderTop: '1px solid var(--slate-200)' }}>
+      <div className="wa-container">
+        <div className="section-header">
+          <div>
+            <span className="section-sub">{t('destSub')}</span>
+            <h2 className="section-title">{t('destTitle')}</h2>
+          </div>
+        </div>
+
+        <div className="dest-grid">
+          {DESTINATIONS.map((d) => (
             <div
-              key={dest.name}
-              className="group relative h-64 rounded-2xl overflow-hidden cursor-pointer shadow-md"
+              key={d.key}
+              className="dest-card"
+              onClick={() => {
+                setFilter({ dest: d.key, type: 'ALL' })
+                scrollToTours()
+              }}
             >
-              <div
-                className="absolute inset-0 bg-cover bg-center group-hover:scale-110 transition-transform duration-500"
-                style={{ backgroundImage: `url(${dest.image})` }}
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-              <div className="absolute bottom-4 left-4 text-white">
-                <h3 className="text-xl font-bold">{dest.name}</h3>
-                <p className="text-xs text-gray-300">{dest.count}</p>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={d.image} alt={d.name} />
+              <div className="dest-overlay">
+                <h3>{d.name}</h3>
+                <p>{d.places}</p>
               </div>
             </div>
           ))}

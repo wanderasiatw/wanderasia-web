@@ -1,39 +1,67 @@
+'use client'
+
+import { useState, type FormEvent } from 'react'
+import { scrollToTours, useSite } from './SiteProvider'
+import { SearchIcon, ShieldIcon } from './Icons'
+
 export default function Hero() {
+  const { t, setFilter } = useSite()
+  const [dest, setDest] = useState('ALL')
+  const [type, setType] = useState('ALL')
+  const [date, setDate] = useState('')
+
+  function handleSearch(e: FormEvent) {
+    e.preventDefault()
+    setFilter({ dest, type })
+    scrollToTours()
+  }
+
   return (
-    <section className="relative bg-gradient-to-r from-emerald-900 to-teal-800 text-white py-24 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-5xl mx-auto text-center space-y-6">
-        <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight">
-          Explore Asia's Wonders with Local Experts
-        </h1>
-        <p className="text-lg sm:text-xl text-emerald-100 max-w-2xl mx-auto">
-          Tailor-made itineraries, premium group tours, and unforgettable experiences across Taiwan, Japan, and Asia.
-        </p>
+    <section className="hero">
+      <div className="hero-bg" />
+      <div className="wa-container hero-content">
+        <div className="badge-hero">
+          <ShieldIcon size={14} color="#99f6e4" />
+          <span>{t('heroTag')}</span>
+        </div>
+        <h1>{t('heroTitle')}</h1>
+        <p>{t('heroSub')}</p>
 
-        {/* Quick Search Widget */}
-        <div className="bg-white text-gray-800 p-4 rounded-2xl shadow-xl max-w-3xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-3 text-left">
-          <div>
-            <label className="block text-xs font-semibold text-gray-500 mb-1">DESTINATION</label>
-            <select className="w-full bg-gray-50 border border-gray-200 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
-              <option value="">Select Country</option>
-              <option value="taiwan">Taiwan</option>
-              <option value="japan">Japan</option>
-              <option value="korea">South Korea</option>
-            </select>
-          </div>
+        <div className="search-card">
+          <form onSubmit={handleSearch} className="search-grid">
+            <div className="form-group">
+              <label htmlFor="search-dest">{t('lblDest')}</label>
+              <select id="search-dest" className="form-control" value={dest} onChange={(e) => setDest(e.target.value)}>
+                <option value="ALL">{t('allDest')}</option>
+                <option value="Japan">Japan (日本)</option>
+                <option value="Taiwan">Taiwan (台灣)</option>
+                <option value="Korea">South Korea (韓國)</option>
+                <option value="Thailand">Thailand (泰國)</option>
+              </select>
+            </div>
 
-          <div>
-            <label className="block text-xs font-semibold text-gray-500 mb-1">TRAVEL MONTH</label>
-            <input
-              type="month"
-              className="w-full bg-gray-50 border border-gray-200 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
-            />
-          </div>
+            <div className="form-group">
+              <label htmlFor="search-date">{t('lblDate')}</label>
+              <input id="search-date" type="date" className="form-control" value={date} onChange={(e) => setDate(e.target.value)} />
+            </div>
 
-          <div className="flex items-end">
-            <button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium p-2.5 rounded-lg text-sm transition shadow">
-              Search Tours
-            </button>
-          </div>
+            <div className="form-group">
+              <label htmlFor="search-type">{t('lblType')}</label>
+              <select id="search-type" className="form-control" value={type} onChange={(e) => setType(e.target.value)}>
+                <option value="ALL">{t('allTypes')}</option>
+                <option value="Sakura">Sakura &amp; Nature</option>
+                <option value="Culture">Cultural &amp; Food</option>
+                <option value="Winter">Winter &amp; Snow</option>
+              </select>
+            </div>
+
+            <div className="form-group">
+              <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: 11 }}>
+                <SearchIcon />
+                <span>{t('search')}</span>
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </section>

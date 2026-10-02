@@ -1,83 +1,75 @@
-import Navbar from '@/components/Navbar'
-import Footer from '@/components/Footer'
-import Image from 'next/image'
+import Link from 'next/link'
+import { notFound } from 'next/navigation'
+import { getTourBySlug } from '@/lib/sanity'
+import { CURRENCY, formatPrice } from '@/lib/tours'
+
+export const revalidate = 60
 
 export default async function TourDetailPage({ params }: { params: { slug: string } }) {
-  // နမူနာ Static Data (Sanity fetch ဖြင့် နောက်ပိုင်း အစားထိုးနိုင်ပါသည်)
-  const tour = {
-    title: '5D4N Scenic Taiwan: Taipei & Sun Moon Lake',
-    price: 1250,
-    duration: '5 Days 4 Nights',
-    overview: 'Experience the best of Taiwan from vibrant Taipei night markets to the serene beauty of Sun Moon Lake.',
-    itinerary: [
-      { day: 'Day 1', title: 'Arrival in Taipei & Shilin Night Market' },
-      { day: 'Day 2', title: 'Taipei 101, National Palace Museum & Jiufen Old Street' },
-      { day: 'Day 3', title: 'Transfer to Sun Moon Lake & Boat Tour' },
-      { day: 'Day 4', title: 'Taichung Rainbow Village & Cultural Walk' },
-      { day: 'Day 5', title: 'Souvenir Shopping & Departure' },
-    ]
-  }
+  const tour = await getTourBySlug(params.slug)
+  if (!tour) notFound()
 
   return (
-    <main className="min-h-screen bg-slate-50">
-      <Navbar />
-      
-      <div className="max-w-7xl mx-auto px-4 py-10 grid grid-cols-1 lg:grid-cols-3 gap-10">
-        {/* Left Content */}
-        <div className="lg:col-span-2 space-y-8">
-          <div>
-            <span className="text-xs font-bold text-emerald-600 bg-emerald-100 px-3 py-1 rounded-full">{tour.duration}</span>
-            <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mt-3">{tour.title}</h1>
-          </div>
-
-          <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-            <h2 className="text-xl font-bold mb-3">Overview</h2>
-            <p className="text-gray-600 leading-relaxed">{tour.overview}</p>
-          </div>
-
-          <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-            <h2 className="text-xl font-bold mb-6">Day-by-Day Itinerary</h2>
-            <div className="space-y-4">
-              {tour.itinerary.map((item, idx) => (
-                <div key={idx} className="flex gap-4 items-start border-l-2 border-emerald-500 pl-4 py-1">
-                  <span className="font-bold text-emerald-600 text-sm whitespace-nowrap">{item.day}</span>
-                  <p className="text-gray-800 text-sm font-medium">{item.title}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Right Inquiry Box */}
-        <div>
-          <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 sticky top-24">
-            <div className="mb-6">
-              <span className="text-xs text-gray-400">Price per person</span>
-              <div className="text-3xl font-black text-emerald-600">${tour.price} <span className="text-sm font-normal text-gray-500">TWD</span></div>
-            </div>
-
-            <form className="space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-gray-600 mb-1">Your Name</label>
-                <input type="text" className="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="John Doe" />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-gray-600 mb-1">Email or LINE ID</label>
-                <input type="text" className="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="line_id / email" />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-gray-600 mb-1">Travel Date</label>
-                <input type="date" className="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none" />
-              </div>
-              <button type="submit" className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl transition">
-                Inquire Now
-              </button>
-            </form>
-          </div>
+    <main>
+      <div className="hero" style={{ padding: '60px 0' }}>
+        <div className="hero-bg" style={{ backgroundImage: `url(${tour.image})`, opacity: 0.35 }} />
+        <div className="wa-container hero-content">
+          <div className="badge-hero">{tour.destination}{tour.duration ? ` • ${tour.duration}` : ''}</div>
+          <h1>{tour.title}</h1>
+          <p style={{ marginBottom: 0 }}>★ {tour.rating} rating</p>
         </div>
       </div>
 
-      <Footer />
+      <section className="section">
+        <div className="wa-container detail-grid">
+          <div className="flex flex-col gap-6">
+            <div className="panel">
+              <h2 className="section-title" style={{ fontSize: 20, marginBottom: 8 }}>Overview</h2>
+              <p style={{ color: 'var(--slate-600)', fontSize: 14 }}>{tour.desc}</p>
+            </div>
+
+            {tour.highlights.length > 0 && (
+              <div className="panel">
+                <h2 className="section-title" style={{ fontSize: 20, marginBottom: 12 }}>Highlights</h2>
+                <div className="flex flex-col gap-3">
+                  {tour.highlights.map((h, i) => (
+                    <div key={h} style={{ borderLeft: '3px solid var(--primary)', paddingLeft: 12, fontSize: 14 }}>
+                      <span style={{ fontWeight: 800, color: 'var(--primary)', marginRight: 8 }}>{String(i + 1).padStart(2, '0')}</span>
+                      {h}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <Link href="/tours" style={{ fontSize: 13, fontWeight: 700, color: 'var(--primary)' }}>← Back to all tours</Link>
+          </div>
+
+          <div>
+            <div className="panel" style={{ position: 'sticky', top: 90, boxShadow: 'var(--shadow-lg)' }}>
+              <span style={{ fontSize: 11, color: 'var(--slate-400)' }}>Price per person</span>
+              <div style={{ fontSize: 28, fontWeight: 900, color: 'var(--primary)', marginBottom: 16 }}>
+                {formatPrice(tour.price)} <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--slate-600)' }}>{CURRENCY}</span>
+              </div>
+              <form className="flex flex-col gap-3">
+                <div className="form-group">
+                  <label>Your Name</label>
+                  <input type="text" className="form-control" placeholder="John Doe" required />
+                </div>
+                <div className="form-group">
+                  <label>Email or LINE ID</label>
+                  <input type="text" className="form-control" placeholder="line_id / email" required />
+                </div>
+                <div className="form-group">
+                  <label>Travel Date</label>
+                  <input type="date" className="form-control" />
+                </div>
+                <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: 12 }}>Inquire Now</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
     </main>
   )
 }

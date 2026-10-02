@@ -1,27 +1,22 @@
-import Navbar from '@/components/Navbar'
-import Footer from '@/components/Footer'
 import FeaturedTours from '@/components/FeaturedTours'
-import { getFeaturedTours } from '@/lib/sanity'
+import { getAllTours } from '@/lib/sanity'
+
+export const revalidate = 60
+
+export const metadata = { title: 'All Tour Packages | Wander Asia' }
 
 export default async function AllToursPage() {
-  const tours = await getFeaturedTours()
+  const tours = await getAllTours()
 
   return (
-    <main className="min-h-screen bg-slate-50">
-      <Navbar />
-      
-      {/* Page Header */}
-      <div className="bg-gradient-to-r from-emerald-900 to-teal-800 text-white py-12 px-4 text-center">
-        <h1 className="text-3xl sm:text-4xl font-extrabold">All Tour Packages</h1>
-        <p className="text-emerald-100 mt-2 text-sm sm:text-base">
-          Explore our complete collection of curated itineraries across Taiwan and Asia
-        </p>
+    <main>
+      <div className="page-banner">
+        <div className="wa-container">
+          <h1>All Tour Packages</h1>
+          <p>Explore our complete collection of curated itineraries across Taiwan and Asia</p>
+        </div>
       </div>
-
-      {/* Tour Cards List */}
-      <FeaturedTours tours={tours} />
-
-      <Footer />
+      <FeaturedTours tours={tours} title="ALL TOUR PACKAGES" />
     </main>
   )
 }
