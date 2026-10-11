@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useSite } from './SiteProvider'
+import { CONTACT } from '@/lib/contact'
 
 export default function Footer() {
   const { toggleQr } = useSite()
@@ -26,17 +27,18 @@ export default function Footer() {
           </div>
 
           <div className="footer-col">
-            <h4>Taipei Office</h4>
-            <p>No. 100, Sec. 1, Zhongxiao E. Rd., Zhongzheng Dist., Taipei City, Taiwan</p>
-            <p style={{ marginTop: 6 }}>Phone: +886 2 2345 6789</p>
-            <p style={{ marginTop: 6 }}>Email: info@wanderasia.tw</p>
+            <h4>New Taipei Office</h4>
+            <p lang="zh-Hant">{CONTACT.addressZh}</p>
+            <p>{CONTACT.addressEn}</p>
+            <p style={{ marginTop: 6 }}>Phone: <a href={CONTACT.phoneHref}>{CONTACT.phone}</a></p>
+            <p style={{ marginTop: 6 }}>Email: <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a></p>
           </div>
 
           <div className="footer-col">
-            <h4>LINE Support</h4>
-            <p>LINE ID: @wanderasia</p>
-            <button onClick={toggleQr} className="btn btn-line" style={{ marginTop: 10, width: '100%' }}>
-              Open LINE QR Code
+            <h4>WhatsApp Support</h4>
+            <p>WhatsApp: <a href={CONTACT.whatsappUrl} target="_blank" rel="noreferrer">{CONTACT.whatsapp}</a></p>
+            <button onClick={toggleQr} className="btn btn-whatsapp" style={{ marginTop: 10, width: '100%' }}>
+              Open WhatsApp QR Code
             </button>
           </div>
         </div>

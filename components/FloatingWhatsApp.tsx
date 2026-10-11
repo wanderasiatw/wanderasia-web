@@ -1,11 +1,12 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { LineIcon } from './Icons'
+import { WhatsAppIcon } from './Icons'
+import { whatsappLink } from '@/lib/contact'
 
 type Msg = { from: 'bot' | 'user'; text: string }
 
-export default function FloatingLine() {
+export default function FloatingWhatsApp() {
   const [open, setOpen] = useState(false)
   const [input, setInput] = useState('')
   const [msgs, setMsgs] = useState<Msg[]>([
@@ -22,25 +23,27 @@ export default function FloatingLine() {
     if (!text) return
     setMsgs((m) => [...m, { from: 'user', text }])
     setInput('')
+    // Hand the message over to WhatsApp so it actually reaches our team
+    window.open(whatsappLink(text), '_blank', 'noopener,noreferrer')
     setTimeout(() => {
-      setMsgs((m) => [...m, { from: 'bot', text: 'Thanks for your message! Our travel specialist will reply shortly on LINE.' }])
+      setMsgs((m) => [...m, { from: 'bot', text: 'Thanks! Press send in WhatsApp and our travel specialist will reply shortly.' }])
     }, 800)
   }
 
   return (
-    <div className="floating-line-wrap">
+    <div className="floating-whatsapp-wrap">
       {open && (
-        <div className="line-chat-box">
-          <div className="line-chat-header">
-            <span style={{ fontWeight: 800, fontSize: 13 }}>LINE Support Assistant</span>
+        <div className="whatsapp-chat-box">
+          <div className="whatsapp-chat-header">
+            <span style={{ fontWeight: 800, fontSize: 13 }}>WhatsApp Support Assistant</span>
             <button onClick={() => setOpen(false)} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', fontWeight: 'bold' }}>✕</button>
           </div>
-          <div className="line-chat-body" ref={bodyRef}>
+          <div className="whatsapp-chat-body" ref={bodyRef}>
             {msgs.map((m, i) => (
               <div key={i} className={`chat-bubble ${m.from === 'user' ? 'user' : ''}`}>{m.text}</div>
             ))}
           </div>
-          <div className="line-chat-input">
+          <div className="whatsapp-chat-input">
             <input
               type="text"
               placeholder="Type message..."
@@ -48,13 +51,13 @@ export default function FloatingLine() {
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && send()}
             />
-            <button onClick={send} className="btn btn-line" style={{ padding: '4px 10px', fontSize: 11 }}>Send</button>
+            <button onClick={send} className="btn btn-whatsapp" style={{ padding: '4px 10px', fontSize: 11 }}>Send</button>
           </div>
         </div>
       )}
 
-      <button onClick={() => setOpen((o) => !o)} className="floating-line-btn" title="Chat on LINE" aria-label="Chat on LINE">
-        <LineIcon size={28} />
+      <button onClick={() => setOpen((o) => !o)} className="floating-whatsapp-btn" title="Chat on WhatsApp" aria-label="Chat on WhatsApp">
+        <WhatsAppIcon size={28} />
       </button>
     </div>
   )

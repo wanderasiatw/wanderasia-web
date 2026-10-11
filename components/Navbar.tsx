@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useSite } from './SiteProvider'
-import { LineIcon, LogoIcon } from './Icons'
+import { LogoIcon, WhatsAppIcon } from './Icons'
 
 export default function Navbar() {
   const { t, lang, setLang, toggleQr } = useSite()
@@ -33,9 +33,9 @@ export default function Navbar() {
             <button onClick={() => setLang('EN')} className={`lang-btn ${lang === 'EN' ? 'active' : ''}`}>EN</button>
             <button onClick={() => setLang('ZH')} className={`lang-btn ${lang === 'ZH' ? 'active' : ''}`}>中文</button>
           </div>
-          <button onClick={toggleQr} className="btn btn-line">
-            <LineIcon />
-            <span>LINE</span>
+          <button onClick={toggleQr} className="btn btn-whatsapp">
+            <WhatsAppIcon />
+            <span>WhatsApp</span>
           </button>
         </div>
       </div>

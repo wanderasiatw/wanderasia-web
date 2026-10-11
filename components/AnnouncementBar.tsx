@@ -1,6 +1,7 @@
 'use client'
 
 import { useSite } from './SiteProvider'
+import { CONTACT } from '@/lib/contact'
 
 export default function AnnouncementBar() {
   const { t } = useSite()
@@ -12,7 +13,7 @@ export default function AnnouncementBar() {
           <span>{t('announcement')}</span>
         </div>
         <div className="flex gap-4">
-          <span>📞 +886 2 2345 6789</span>
+          <a href={CONTACT.phoneHref}>📞 {CONTACT.phone}</a>
         </div>
       </div>
     </div>

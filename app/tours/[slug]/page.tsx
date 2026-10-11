@@ -57,8 +57,8 @@ export default async function TourDetailPage({ params }: { params: { slug: strin
                   <input type="text" className="form-control" placeholder="John Doe" required />
                 </div>
                 <div className="form-group">
-                  <label>Email or LINE ID</label>
-                  <input type="text" className="form-control" placeholder="line_id / email" required />
+                  <label>Email or WhatsApp Number</label>
+                  <input type="text" className="form-control" placeholder="email / WhatsApp number" required />
                 </div>
                 <div className="form-group">
                   <label>Travel Date</label>
