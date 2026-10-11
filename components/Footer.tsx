@@ -11,7 +11,8 @@ export default function Footer() {
       <div className="wa-container">
         <div className="footer-grid">
           <div className="footer-col">
-            <h4 style={{ color: 'white', fontSize: 16 }}>Wander Asia</h4>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo-light.png" alt="Wander Asia – Extraordinary Journeys, Asia" style={{ width: 200, marginBottom: 16 }} />
             <p style={{ marginBottom: 12 }}>Your trusted travel partner across East &amp; Southeast Asia with local hospitality.</p>
             <p>License: TA-2024-889</p>
           </div>

@@ -9,6 +9,8 @@
     --primary-light: #ccfbf1;
     --primary-bg: #f0fdfa;
     --dark: #0f172a;
+    --brand-green: #173f35;
+    --brand-gold: #c79a58;
     --dark-card: #1e293b;
     --slate-600: #475569;
     --slate-400: #94a3b8;
@@ -106,28 +108,27 @@ header {
     display: flex;
     align-items: center;
     gap: 10px;
-    font-weight: 800;
-    font-size: 20px;
-    color: var(--dark);
 }
-.logo-box {
-    width: 38px;
-    height: 38px;
-    background: linear-gradient(135deg, var(--primary), #2dd4bf);
-    color: white;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 10px rgba(13, 148, 136, 0.3);
+.logo-symbol {
+    height: 46px;
+    width: auto;
+}
+.logo-wordmark {
+    display: block;
+    height: 22px;
+    width: auto;
 }
 .logo-sub {
     display: block;
-    font-size: 9px;
-    letter-spacing: 1.5px;
-    color: var(--primary);
+    font-size: 8.5px;
+    letter-spacing: 2.2px;
+    color: var(--brand-green);
     text-transform: uppercase;
-    margin-top: -2px;
+    margin-top: 3px;
+    white-space: nowrap;
+}
+.logo-star {
+    color: var(--brand-gold);
 }
 
 .nav-links {
@@ -187,6 +188,7 @@ header {
     color: var(--slate-600);
     border-radius: var(--radius-sm);
     cursor: pointer;
+    white-space: nowrap;
 }
 .lang-btn.active {
     background: var(--white);
@@ -802,8 +804,10 @@ section[id] { scroll-margin-top: 80px; }
 
 @media (max-width: 768px) {
   .announcement-bar .wa-container > div:last-child { display: none; }
-  .logo { font-size: 16px; }
-  .logo-box { width: 32px; height: 32px; }
+  .logo { gap: 6px; }
+  .logo-symbol { height: 30px; }
+  .logo-wordmark { height: 13px; }
+  .logo-sub { display: none; }
   .header-inner { height: 60px; }
   .btn-whatsapp { padding: 8px 12px; }
 }
