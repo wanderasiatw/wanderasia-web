@@ -25,7 +25,7 @@ export default async function TourDetailPage({ params }: { params: { slug: strin
           <div className="flex flex-col gap-6">
             <div className="panel">
               <h2 className="section-title" style={{ fontSize: 20, marginBottom: 8 }}>Overview</h2>
-              <p style={{ color: 'var(--slate-600)', fontSize: 14 }}>{tour.desc}</p>
+              <p style={{ color: 'var(--stone-600)', fontSize: 14 }}>{tour.desc}</p>
             </div>
 
             {tour.highlights.length > 0 && (
@@ -47,9 +47,9 @@ export default async function TourDetailPage({ params }: { params: { slug: strin
 
           <div>
             <div className="panel" style={{ position: 'sticky', top: 90, boxShadow: 'var(--shadow-lg)' }}>
-              <span style={{ fontSize: 11, color: 'var(--slate-400)' }}>Price per person</span>
+              <span style={{ fontSize: 11, color: 'var(--stone-400)' }}>Price per person</span>
               <div style={{ fontSize: 28, fontWeight: 900, color: 'var(--primary)', marginBottom: 16 }}>
-                {formatPrice(tour.price)} <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--slate-600)' }}>{CURRENCY}</span>
+                {formatPrice(tour.price)} <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--stone-600)' }}>{CURRENCY}</span>
               </div>
               <form className="flex flex-col gap-3">
                 <div className="form-group">

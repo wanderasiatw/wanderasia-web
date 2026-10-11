@@ -21,7 +21,7 @@ export default function Hero() {
       <div className="hero-bg" />
       <div className="wa-container hero-content">
         <div className="badge-hero">
-          <ShieldIcon size={14} color="#99f6e4" />
+          <ShieldIcon size={14} color="var(--gold-light)" />
           <span>{t('heroTag')}</span>
         </div>
         <h1>{t('heroTitle')}</h1>
