@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useSite } from './SiteProvider'
-import { LogoIcon, WhatsAppIcon } from './Icons'
+import { WhatsAppIcon } from './Icons'
 
 export default function Navbar() {
   const { t, lang, setLang, toggleQr } = useSite()
@@ -11,12 +11,12 @@ export default function Navbar() {
     <header>
       <div className="wa-container flex justify-between items-center header-inner">
         <Link href="/" className="logo">
-          <div className="logo-box">
-            <LogoIcon />
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo-symbol.png" alt="" className="logo-symbol" />
           <div>
-            <span>Wander Asia</span>
-            <span className="logo-sub">Travel Agency</span>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo-wordmark.png" alt="Wander Asia" className="logo-wordmark" />
+            <span className="logo-sub">Extraordinary Journeys <span className="logo-star">✦</span> Asia</span>
           </div>
         </Link>
 
