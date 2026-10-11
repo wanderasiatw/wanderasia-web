@@ -11,7 +11,7 @@ export default function TourModal({ tour, onClose }: { tour: Tour; onClose: () =
 
   function submitBooking(e: FormEvent) {
     e.preventDefault()
-    // TODO: send to your backend / email / LINE Notify
+    // TODO: send to your backend / email / WhatsApp
     setSent(true)
   }
 
@@ -51,7 +51,7 @@ export default function TourModal({ tour, onClose }: { tour: Tour; onClose: () =
 
           {sent ? (
             <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--primary)', textAlign: 'center', padding: 12 }}>
-              Booking request for {tour.title} ({guests} guest{guests > 1 ? 's' : ''}) received! We will contact you via Email/LINE shortly.
+              Booking request for {tour.title} ({guests} guest{guests > 1 ? 's' : ''}) received! We will contact you via Email/WhatsApp shortly.
             </p>
           ) : (
             <form onSubmit={submitBooking}>

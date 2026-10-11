@@ -4,8 +4,8 @@ import { SiteProvider } from '@/components/SiteProvider'
 import AnnouncementBar from '@/components/AnnouncementBar'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
-import FloatingLine from '@/components/FloatingLine'
-import LineQrModal from '@/components/LineQrModal'
+import FloatingWhatsApp from '@/components/FloatingWhatsApp'
+import WhatsAppQrModal from '@/components/WhatsAppQrModal'
 
 export const metadata: Metadata = {
   title: 'Wander Asia - Premium Handpicked Tours Across Asia',
@@ -21,8 +21,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Navbar />
           {children}
           <Footer />
-          <FloatingLine />
-          <LineQrModal />
+          <FloatingWhatsApp />
+          <WhatsAppQrModal />
         </SiteProvider>
       </body>
     </html>

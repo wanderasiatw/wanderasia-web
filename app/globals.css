@@ -16,8 +16,8 @@
     --slate-100: #f1f5f9;
     --slate-50: #f8fafc;
     --white: #ffffff;
-    --line-green: #00c300;
-    --line-green-hover: #009900;
+    --whatsapp-green: #25d366;
+    --whatsapp-green-hover: #1da851;
     --amber: #f59e0b;
     --radius-lg: 16px;
     --radius-md: 10px;
@@ -164,12 +164,12 @@ header {
 .btn-primary:hover {
     background-color: var(--primary-hover);
 }
-.btn-line {
-    background-color: var(--line-green);
+.btn-whatsapp {
+    background-color: var(--whatsapp-green);
     color: var(--white);
 }
-.btn-line:hover {
-    background-color: var(--line-green-hover);
+.btn-whatsapp:hover {
+    background-color: var(--whatsapp-green-hover);
 }
 .lang-switch {
     background: var(--slate-100);
@@ -623,8 +623,8 @@ footer {
     color: var(--primary);
 }
 
-/* Floating LINE Button & Chatbox */
-.floating-line-wrap {
+/* Floating WhatsApp Button & Chatbox */
+.floating-whatsapp-wrap {
     position: fixed;
     bottom: 20px;
     right: 20px;
@@ -634,24 +634,24 @@ footer {
     align-items: flex-end;
     gap: 10px;
 }
-.floating-line-btn {
+.floating-whatsapp-btn {
     width: 54px;
     height: 54px;
     border-radius: 50%;
-    background: var(--line-green);
+    background: var(--whatsapp-green);
     color: white;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 6px 18px rgba(0, 195, 0, 0.4);
+    box-shadow: 0 6px 18px rgba(37, 211, 102, 0.4);
     cursor: pointer;
     border: none;
     transition: transform 0.2s ease;
 }
-.floating-line-btn:hover {
+.floating-whatsapp-btn:hover {
     transform: scale(1.1);
 }
-.line-chat-box {
+.whatsapp-chat-box {
     width: 300px;
     background: var(--white);
     border-radius: var(--radius-lg);
@@ -659,15 +659,15 @@ footer {
     border: 1px solid var(--slate-200);
     overflow: hidden;
 }
-.line-chat-header {
-    background: var(--line-green);
+.whatsapp-chat-header {
+    background: var(--whatsapp-green);
     color: white;
     padding: 12px 16px;
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
-.line-chat-body {
+.whatsapp-chat-body {
     padding: 14px;
     background: var(--slate-50);
     max-height: 200px;
@@ -683,13 +683,13 @@ footer {
     max-width: 90%;
     margin-bottom: 8px;
 }
-.line-chat-input {
+.whatsapp-chat-input {
     display: flex;
     padding: 8px;
     background: white;
     border-top: 1px solid var(--slate-200);
 }
-.line-chat-input input {
+.whatsapp-chat-input input {
     flex: 1;
     border: none;
     font-size: 12px;
@@ -773,9 +773,9 @@ footer {
 
 /* Extra helpers for the Next.js version */
 .chat-bubble.user {
-  background: var(--line-green);
+  background: var(--whatsapp-green);
   color: var(--white);
-  border-color: var(--line-green);
+  border-color: var(--whatsapp-green);
   margin-left: auto;
 }
 .page-banner {
@@ -805,5 +805,5 @@ section[id] { scroll-margin-top: 80px; }
   .logo { font-size: 16px; }
   .logo-box { width: 32px; height: 32px; }
   .header-inner { height: 60px; }
-  .btn-line { padding: 8px 12px; }
+  .btn-whatsapp { padding: 8px 12px; }
 }

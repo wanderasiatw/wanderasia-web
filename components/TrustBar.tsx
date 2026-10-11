@@ -19,9 +19,9 @@ export default function TrustBar() {
           </div>
         </div>
         <div className="trust-item">
-          <div className="trust-icon" style={{ color: 'var(--line-green)', background: '#dcfce7' }}><ChatIcon size={24} /></div>
+          <div className="trust-icon" style={{ color: 'var(--whatsapp-green)', background: '#dcfce7' }}><ChatIcon size={24} /></div>
           <div>
-            <h4>24/7 LINE Support</h4>
+            <h4>24/7 WhatsApp Support</h4>
             <p>Instant Multilingual Assistant</p>
           </div>
         </div>
