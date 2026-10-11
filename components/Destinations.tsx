@@ -13,7 +13,7 @@ export default function Destinations() {
   const { t, setFilter } = useSite()
 
   return (
-    <section id="destinations" className="section" style={{ background: 'var(--white)', borderTop: '1px solid var(--slate-200)' }}>
+    <section id="destinations" className="section" style={{ background: 'var(--white)', borderTop: '1px solid var(--stone-200)' }}>
       <div className="wa-container">
         <div className="section-header">
           <div>

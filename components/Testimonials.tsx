@@ -6,8 +6,8 @@ import { useSite } from './SiteProvider'
 // Replace these with real customer reviews before launch.
 const REVIEWS = [
   { initials: 'SM', name: 'Sarah Mitchell', trip: 'Taiwan Tour • Nov 2024', text: 'Unforgettable experience in Taiwan! Our guide made Jiufen and Sun Moon Lake feel so authentic. Seamless WhatsApp support.', avatar: {} },
-  { initials: 'DK', name: 'David K.', trip: 'Japan Tour • March 2024', text: 'Flawless Sakura tour in Japan! The hotel selections near Mt. Fuji were breathtaking. Highly recommend!', avatar: { background: '#e0f2fe', color: '#0284c7' } },
-  { initials: 'LW', name: 'Lin Wei & Family', trip: 'Korea Trip • Dec 2024', text: 'The Korea winter wonderland itinerary was perfect for our family. Kids loved the ski resort experience!', avatar: { background: '#fef3c7', color: '#d97706' } },
+  { initials: 'DK', name: 'David K.', trip: 'Japan Tour • March 2024', text: 'Flawless Sakura tour in Japan! The hotel selections near Mt. Fuji were breathtaking. Highly recommend!', avatar: { background: 'var(--gold-bg)', color: 'var(--gold-text)' } },
+  { initials: 'LW', name: 'Lin Wei & Family', trip: 'Korea Trip • Dec 2024', text: 'The Korea winter wonderland itinerary was perfect for our family. Kids loved the ski resort experience!', avatar: { background: 'var(--stone-100)', color: 'var(--stone-600)' } },
 ]
 
 export default function Testimonials() {
@@ -28,12 +28,12 @@ export default function Testimonials() {
                   <div className="avatar" style={r.avatar}>{r.initials}</div>
                   <div>
                     <h4 style={{ fontSize: 13, fontWeight: 800 }}>{r.name}</h4>
-                    <span style={{ fontSize: 10, color: 'var(--slate-400)' }}>{r.trip}</span>
+                    <span style={{ fontSize: 10, color: 'var(--stone-400)' }}>{r.trip}</span>
                   </div>
                 </div>
                 <p className="review-text">&ldquo;{r.text}&rdquo;</p>
               </div>
-              <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--amber)' }}>★★★★★ Google Review</span>
+              <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--gold-text)' }}>★★★★★ Google Review</span>
             </div>
           ))}
         </div>

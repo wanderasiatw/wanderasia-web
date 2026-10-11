@@ -12,7 +12,7 @@ export default function TrustBar() {
           </div>
         </div>
         <div className="trust-item">
-          <div className="trust-icon" style={{ color: 'var(--amber)', background: '#fef3c7' }}><StarIcon size={24} /></div>
+          <div className="trust-icon" style={{ color: 'var(--brand-gold)', background: 'var(--gold-bg)' }}><StarIcon size={24} /></div>
           <div>
             <h4>4.9 / 5 Rating</h4>
             <p>Based on 1,200+ Google Reviews</p>
