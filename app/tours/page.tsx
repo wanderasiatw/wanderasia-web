@@ -1,5 +1,5 @@
 import TourRows from '@/components/TourRows'
-import { getAllTours } from '@/lib/sanity'
+import { getAllTours } from '@/lib/cms'
 
 export const revalidate = 60
 

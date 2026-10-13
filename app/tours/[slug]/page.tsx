@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { getTourBySlug } from '@/lib/sanity'
+import { getTourBySlug } from '@/lib/cms'
 import { CURRENCY, categoryOf, formatPrice } from '@/lib/tours'
 import { askAboutLink } from '@/lib/contact'
 import BookingForm from '@/components/BookingForm'

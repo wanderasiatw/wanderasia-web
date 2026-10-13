@@ -2,7 +2,7 @@ import Hero from '@/components/Hero'
 import TrustBar from '@/components/TrustBar'
 import TourRows from '@/components/TourRows'
 import WhyChoose from '@/components/WhyChoose'
-import { getFeaturedTours } from '@/lib/sanity'
+import { getFeaturedTours } from '@/lib/cms'
 
 export const revalidate = 60
 
