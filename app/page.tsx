@@ -2,9 +2,11 @@ import Hero from '@/components/Hero'
 import TrustBar from '@/components/TrustBar'
 import TourRows from '@/components/TourRows'
 import WhyChoose from '@/components/WhyChoose'
-import { getFeaturedTours } from '@/lib/sanity'
+import ServiceCards from '@/components/ServiceCards'
+import { getFeaturedTours } from '@/lib/cms'
 
-export const revalidate = 60
+// Rendered on each request so CMS changes show up without a rebuild
+export const dynamic = 'force-dynamic'
 
 export default async function HomePage() {
   const tours = await getFeaturedTours()
@@ -14,6 +16,7 @@ export default async function HomePage() {
       <Hero />
       <TrustBar />
       <TourRows tours={tours} />
+      <ServiceCards />
       <WhyChoose />
     </main>
   )

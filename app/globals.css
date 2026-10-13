@@ -900,3 +900,10 @@ section[id], .tour-row[id] { scroll-margin-top: 90px; }
   .header-inner .btn-whatsapp span { display: none; } /* icon only, to make room for the logo */
   .header-inner .lang-btn { padding: 4px 8px; }
 }
+
+/* Service price options */
+.price-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.price-table td { padding: 10px 0; border-bottom: 1px solid var(--stone-200); vertical-align: top; }
+.price-table tr:last-child td { border-bottom: 0; }
+.price-table td:last-child { text-align: right; font-weight: 800; color: var(--primary); white-space: nowrap; padding-left: 12px; }
+.price-table small { font-weight: 600; color: var(--stone-600); }

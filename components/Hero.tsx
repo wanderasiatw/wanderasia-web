@@ -3,16 +3,16 @@
 import { useState, type FormEvent } from 'react'
 import { useSite } from './SiteProvider'
 import { ShieldIcon, WhatsAppIcon } from './Icons'
-import { CATEGORIES, PRIVATE_TOURS } from '@/lib/tours'
+import { privateTourService } from '@/lib/tours'
 import { whatsappLink } from '@/lib/contact'
 
 export default function Hero() {
-  const { t, lang } = useSite()
+  const { t, lang, categories, services } = useSite()
   const [type, setType] = useState('')
   const [date, setDate] = useState('')
   const [guests, setGuests] = useState(2)
 
-  const options = [...CATEGORIES.map((c) => ({ key: c.key, title: c.title })), { key: 'private', title: PRIVATE_TOURS.title }]
+  const options = [...categories.map((c) => ({ key: c.key, title: c.title })), { key: 'private', title: privateTourService(services).title }]
 
   function checkAvailability(e: FormEvent) {
     e.preventDefault()

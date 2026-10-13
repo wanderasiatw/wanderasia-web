@@ -1,16 +1,17 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
-import { CATEGORIES, PRIVATE_TOURS, formatPrice, type Category, type Tour } from '@/lib/tours'
-import { askAboutLink, whatsappLink } from '@/lib/contact'
+import { formatPrice, privateTourService, type Category, type Tour } from '@/lib/tours'
+import { askAboutLink } from '@/lib/contact'
 import { scrollToTours, useSite, type DictKey, type Lang } from './SiteProvider'
 import TourCover, { CATEGORY_ICONS } from './TourCover'
 import TourModal from './TourModal'
 
 type T = (key: DictKey) => string
 
-function priceLabel(tour: Tour, t: T) {
+export function priceLabel(tour: Tour, t: T) {
   if (tour.price === 0) return t('free')
   if (tour.price == null) return t('priceOnRequest')
   return formatPrice(tour.price)
@@ -18,19 +19,22 @@ function priceLabel(tour: Tour, t: T) {
 
 /** All tours in rows by category, plus the private tours bubble */
 export default function TourRows({ tours, title }: { tours: Tour[]; title?: string }) {
-  const { t, lang } = useSite()
+  const { t, lang, categories, services } = useSite()
   const [selected, setSelected] = useState<Tour | null>(null)
+  const privateTours = privateTourService(services)
 
   // A row per category that has tours, then one shared row for categories that are coming soon
   const other: Lang = lang === 'EN' ? 'ZH' : 'EN'
-  const rows = CATEGORIES.filter((c) => tours.some((p) => p.category === c.key)).map((c) => ({
-    id: `tours-${c.key}`,
-    title: c.title[lang],
-    subtitle: c.title[other],
-    blurb: c.blurb[lang],
-    cards: tours.filter((p) => p.category === c.key).map((tour) => <TourCard key={tour.id} tour={tour} t={t} onOpen={() => setSelected(tour)} />),
-  }))
-  const soon = CATEGORIES.filter((c) => c.comingSoon && !tours.some((p) => p.category === c.key))
+  const rows = categories
+    .filter((c) => tours.some((p) => p.category === c.key))
+    .map((c) => ({
+      id: `tours-${c.key}`,
+      title: c.title[lang],
+      subtitle: c.title[other] !== c.title[lang] ? c.title[other] : '',
+      blurb: c.blurb[lang],
+      cards: tours.filter((p) => p.category === c.key).map((tour) => <TourCard key={tour.id} tour={tour} t={t} lang={lang} onOpen={() => setSelected(tour)} />),
+    }))
+  const soon = categories.filter((c) => c.comingSoon && !tours.some((p) => p.category === c.key))
   if (soon.length > 0) {
     rows.push({
       id: 'tours-soon',
@@ -50,19 +54,14 @@ export default function TourRows({ tours, title }: { tours: Tour[]; title?: stri
             <span className="section-sub">{t('toursSub')}</span>
             <h2 className="section-title">{title ?? t('toursTitle')}</h2>
           </div>
-          <a
-            href={whatsappLink(PRIVATE_TOURS.whatsappText)}
-            target="_blank"
-            rel="noreferrer"
-            className="private-bubble"
-          >
+          <Link href={`/services/${privateTours.slug}`} className="private-bubble">
             <span className="private-bubble-icon"><PrivateIcon size={18} /></span>
             <span>
-              <strong>{PRIVATE_TOURS.title[lang]}</strong>
-              <small>{PRIVATE_TOURS.blurb[lang]}</small>
+              <strong>{privateTours.title[lang]}</strong>
+              <small>{privateTours.summary[lang]}</small>
             </span>
             <ArrowRight size={16} />
-          </a>
+          </Link>
         </div>
 
         <div className="filter-tabs" style={{ marginBottom: 28 }}>
@@ -90,21 +89,21 @@ export default function TourRows({ tours, title }: { tours: Tour[]; title?: stri
   )
 }
 
-function TourCard({ tour, t, onOpen }: { tour: Tour; t: T; onOpen: () => void }) {
-  const facts = [tour.startTime, tour.duration].filter(Boolean).join(' • ')
+function TourCard({ tour, t, lang, onOpen }: { tour: Tour; t: T; lang: Lang; onOpen: () => void }) {
+  const facts = [tour.startTime?.[lang], tour.duration?.[lang]].filter(Boolean).join(' • ')
 
   return (
     <div className="tour-card">
       <div className="tour-img-wrap">
-        <TourCover category={tour.category} image={tour.image} alt={tour.title} />
+        <TourCover category={tour.category} image={tour.image} alt={tour.title[lang]} />
         {tour.comingSoon && <div className="tour-badge">{t('detailsSoon')}</div>}
-        <div className="tour-loc">{tour.location}</div>
+        <div className="tour-loc">{tour.location[lang]}</div>
       </div>
       <div className="tour-body">
         <div>
-          <h3 className="tour-title">{tour.title}</h3>
+          <h3 className="tour-title">{tour.title[lang]}</h3>
           {facts && <p className="tour-meta">{facts}</p>}
-          <p className="tour-desc">{tour.desc}</p>
+          <p className="tour-desc">{tour.desc[lang]}</p>
         </div>
         <div className="tour-footer">
           <div>
@@ -113,7 +112,7 @@ function TourCard({ tour, t, onOpen }: { tour: Tour; t: T; onOpen: () => void })
           </div>
           {tour.comingSoon ? (
             <a
-              href={askAboutLink(`the ${tour.title}`)}
+              href={askAboutLink(`the ${tour.title.EN}`)}
               target="_blank"
               rel="noreferrer"
               className="btn btn-outline"
