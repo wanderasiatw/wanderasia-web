@@ -21,7 +21,6 @@ export default function Navbar() {
         </Link>
 
         <ul className="nav-links">
-          <li><Link href="/#destinations">{t('navDest')}</Link></li>
           <li><Link href="/#tours">{t('navTours')}</Link></li>
           <li><Link href="/#about">{t('navAbout')}</Link></li>
           <li><Link href="/#reviews">{t('navReviews')}</Link></li>
