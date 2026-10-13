@@ -1,85 +1,146 @@
-import * as sanity from './sanity'
-import { CATEGORIES, TOURS, type Tour, type TourCategory } from './tours'
+import {
+  CATEGORIES,
+  SERVICES,
+  TOURS,
+  type Category,
+  type PriceOption,
+  type Service,
+  type Text,
+  type TextList,
+  type Tour,
+  type TourCategory,
+} from './tours'
 
-// The Plyndi CMS, e.g. https://plyndi-cms.<account>.workers.dev
-// Until CMS_API_URL is set the site keeps reading Sanity; lib/sanity.ts goes once the CMS is live.
+// The Plyndi CMS, e.g. https://wanderasia-cms.<account>.workers.dev
+// Until CMS_API_URL is set, or whenever the CMS can't be reached, the built-in content in lib/tours.ts is shown.
 const CMS_API_URL = process.env.CMS_API_URL?.replace(/\/+$/, '')
 
-/** A published tour as GET /api/v1/tours returns it. The …Zh fields are not shown on the site yet. */
-interface CmsTour {
-  id: string
-  slug: string
-  category: string
-  title: string
-  location: string | null
-  price: number | null
-  duration: string | null
-  meetingPoint: string | null
-  startTime: string | null
-  mainImage: string | null
-  description: string | null
-  body: string | null
-  highlights: string[]
-  tastings: { name: string; nameZh: string | null; image: string | null }[]
-  note: string | null
-  comingSoon: boolean
+type Raw = Record<string, any>
+
+const str = (v: unknown) => (typeof v === 'string' && v.trim() ? v : undefined)
+const list = (v: unknown) => (Array.isArray(v) ? v.filter((s): s is string => typeof s === 'string') : [])
+const paragraphs = (v: unknown) => (str(v) ? (v as string).split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean) : [])
+
+/** English and Chinese versions of a field; the Chinese falls back to the English */
+function text(doc: Raw, key: string, fallback = ''): Text {
+  const en = str(doc[key]) ?? fallback
+  return { EN: en, ZH: str(doc[`${key}Zh`]) ?? en }
+}
+function optionalText(doc: Raw, key: string): Text | undefined {
+  return str(doc[key]) ? text(doc, key) : undefined
+}
+/** Lists fall back as a whole: an empty Chinese list shows the English one */
+function textList(doc: Raw, key: string, split = list): TextList {
+  const en = split(doc[key])
+  const zh = split(doc[`${key}Zh`])
+  return { EN: en, ZH: zh.length ? zh : en }
 }
 
 const isCategory = (c: unknown): c is TourCategory => CATEGORIES.some((cat) => cat.key === c)
 
-function normalize(doc: CmsTour): Tour {
+function toTour(doc: Raw): Tour {
   return {
     id: doc.id,
     slug: doc.slug,
-    category: doc.category as TourCategory,
-    title: doc.title || 'Untitled Tour',
-    location: doc.location || 'Taipei',
+    category: doc.category,
+    title: text(doc, 'title', 'Untitled Tour'),
+    location: text(doc, 'location', 'Taipei'),
     price: typeof doc.price === 'number' ? doc.price : null,
-    duration: doc.duration ?? undefined,
-    meetingPoint: doc.meetingPoint ?? undefined,
-    startTime: doc.startTime ?? undefined,
-    image: doc.mainImage ?? undefined,
-    desc: doc.description || '',
-    body: doc.body ? doc.body.split(/\n\s*\n/).filter(Boolean) : [],
-    highlights: doc.highlights ?? [],
-    tastings: (doc.tastings ?? []).map((t) => ({ name: t.name, zh: t.nameZh || '', image: t.image ?? undefined })),
-    note: doc.note ?? undefined,
-    comingSoon: doc.comingSoon,
+    duration: optionalText(doc, 'duration'),
+    meetingPoint: optionalText(doc, 'meetingPoint'),
+    startTime: optionalText(doc, 'startTime'),
+    image: str(doc.mainImage),
+    desc: text(doc, 'description'),
+    body: textList(doc, 'body', paragraphs),
+    highlights: textList(doc, 'highlights'),
+    tastings: (Array.isArray(doc.tastings) ? doc.tastings : []).map((t: Raw) => ({ name: t.name ?? '', zh: t.nameZh ?? '', image: str(t.image) })),
+    note: optionalText(doc, 'note'),
+    comingSoon: Boolean(doc.comingSoon),
+    seoTitle: str(doc.seoTitle),
+    seoDescription: str(doc.seoDescription),
   }
 }
 
-/** CMS tours that fit the current categories, or our launch tours when there are none */
-function toTours(docs: CmsTour[] | undefined): Tour[] {
-  const tours = (docs || []).filter((d) => isCategory(d.category)).map(normalize)
-  return tours.length > 0 ? tours : TOURS
+function toService(doc: Raw): Service {
+  return {
+    id: doc.id,
+    slug: doc.slug,
+    kind: doc.kind,
+    title: text(doc, 'title', 'Untitled'),
+    summary: text(doc, 'summary'),
+    body: textList(doc, 'body', paragraphs),
+    included: textList(doc, 'included'),
+    capacity: optionalText(doc, 'capacity'),
+    duration: optionalText(doc, 'duration'),
+    priceOptions: (Array.isArray(doc.priceOptions) ? doc.priceOptions : []).map(
+      (o: Raw): PriceOption => ({ label: text(o, 'label'), price: typeof o.price === 'number' ? o.price : null, unit: o.unit ?? '' }),
+    ),
+    image: str(doc.mainImage),
+    whatsappText: str(doc.whatsappText) ?? `Hi Wander Asia! I'd like to ask about ${str(doc.title) ?? 'your services'}.`,
+    featured: Boolean(doc.featured),
+    seoTitle: str(doc.seoTitle),
+    seoDescription: str(doc.seoDescription),
+  }
 }
 
-/** The JSON at `path`, or null when it is missing or the CMS can't be reached */
+function toCategory(doc: Raw): Category {
+  return { key: doc.slug, title: text(doc, 'title'), blurb: text(doc, 'blurb'), comingSoon: Boolean(doc.comingSoon) }
+}
+
+/** The JSON at `path`, or null when it is missing, the CMS isn't set up, or it can't be reached */
 async function cmsFetch<T>(path: string): Promise<T | null> {
+  if (!CMS_API_URL) return null
   try {
     const res = await fetch(`${CMS_API_URL}${path}`, { next: { revalidate: 60 } })
     if (res.status === 404) return null
     if (!res.ok) throw new Error(`${res.status} ${res.statusText}`)
     return (await res.json()) as T
   } catch (err) {
-    console.error('[cms] fetch failed, using fallback data:', err)
+    console.error('[cms] fetch failed, using built-in content:', err)
     return null
   }
 }
 
+/** CMS tours that fit the website's categories, or the launch tours when there are none */
+function toTours(docs: Raw[] | undefined): Tour[] {
+  const tours = (docs ?? []).filter((d) => isCategory(d.category)).map(toTour)
+  return tours.length > 0 ? tours : TOURS
+}
+
 export async function getFeaturedTours(): Promise<Tour[]> {
-  if (!CMS_API_URL) return sanity.getFeaturedTours()
-  return toTours((await cmsFetch<{ tours: CmsTour[] }>('/api/v1/tours?featured=1'))?.tours)
+  return toTours((await cmsFetch<{ tours: Raw[] }>('/api/v1/tours?featured=1'))?.tours)
 }
 
 export async function getAllTours(): Promise<Tour[]> {
-  if (!CMS_API_URL) return sanity.getAllTours()
-  return toTours((await cmsFetch<{ tours: CmsTour[] }>('/api/v1/tours'))?.tours)
+  return toTours((await cmsFetch<{ tours: Raw[] }>('/api/v1/tours'))?.tours)
 }
 
 export async function getTourBySlug(slug: string): Promise<Tour | null> {
-  if (!CMS_API_URL) return sanity.getTourBySlug(slug)
-  const doc = (await cmsFetch<{ tour: CmsTour }>(`/api/v1/tours/${encodeURIComponent(slug)}`))?.tour
-  if (doc && isCategory(doc.category)) return normalize(doc)
+  if (CMS_API_URL) {
+    const doc = (await cmsFetch<{ tour: Raw }>(`/api/v1/tours/${encodeURIComponent(slug)}`))?.tour
+    if (doc && isCategory(doc.category)) return toTour(doc)
+  }
   return TOURS.find((t) => t.slug === slug) ?? null
+}
+
+/** Rows for the tours section, in the order set in the CMS */
+export async function getCategories(): Promise<Category[]> {
+  const docs = (await cmsFetch<{ categories: Raw[] }>('/api/v1/categories'))?.categories
+  const categories = (docs ?? []).filter((d) => isCategory(d.slug)).map(toCategory)
+  return categories.length > 0 ? categories : CATEGORIES
+}
+
+/** Published services, or the built-in private tours service when there are none */
+export async function getServices(): Promise<Service[]> {
+  const docs = (await cmsFetch<{ services: Raw[] }>('/api/v1/services'))?.services
+  const services = (docs ?? []).map(toService)
+  return services.length > 0 ? services : SERVICES
+}
+
+export async function getServiceBySlug(slug: string): Promise<Service | null> {
+  if (CMS_API_URL) {
+    const doc = (await cmsFetch<{ service: Raw }>(`/api/v1/services/${encodeURIComponent(slug)}`))?.service
+    if (doc) return toService(doc)
+  }
+  return SERVICES.find((s) => s.slug === slug) ?? null
 }

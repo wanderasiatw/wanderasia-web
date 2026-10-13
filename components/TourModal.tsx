@@ -8,25 +8,25 @@ import TourFacts from './TourFacts'
 import { useSite } from './SiteProvider'
 
 export default function TourModal({ tour, price, onClose }: { tour: Tour; price: string; onClose: () => void }) {
-  const { lang } = useSite()
-  const category = categoryOf(tour.category)
+  const { lang, t, categories } = useSite()
+  const category = categoryOf(categories, tour.category)
 
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-card" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header-img">
-          <TourCover category={tour.category} image={tour.image} alt={tour.title} />
-          <button onClick={onClose} className="modal-close" aria-label="Close">✕</button>
+          <TourCover category={tour.category} image={tour.image} alt={tour.title[lang]} />
+          <button onClick={onClose} className="modal-close" aria-label={t('close')}>✕</button>
         </div>
         <div className="modal-body">
           <span style={{ fontSize: 11, fontWeight: 800, color: 'var(--gold-text)', textTransform: 'uppercase', letterSpacing: 1 }}>
-            {category?.title[lang]} • {tour.location}
+            {category?.title[lang]} • {tour.location[lang]}
           </span>
-          <h3 className="modal-title" style={{ fontSize: 22, fontWeight: 700, marginBottom: 10 }}>{tour.title}</h3>
+          <h3 className="modal-title" style={{ fontSize: 22, fontWeight: 700, marginBottom: 10 }}>{tour.title[lang]}</h3>
 
           <TourFacts tour={tour} />
 
-          <p style={{ fontSize: 13, color: 'var(--stone-600)', margin: '12px 0' }}>{tour.desc}</p>
+          <p style={{ fontSize: 13, color: 'var(--stone-600)', margin: '12px 0' }}>{tour.desc[lang]}</p>
 
           {tour.tastings.length > 0 && (
             <div className="tasting-chips" style={{ marginBottom: 14 }}>
@@ -37,15 +37,15 @@ export default function TourModal({ tour, price, onClose }: { tour: Tour; price:
           )}
 
           <div className="modal-price">
-            <span>Price / person</span>
+            <span>{t('pricePerPerson')}</span>
             <strong>{price}</strong>
           </div>
-          {tour.note && <p style={{ fontSize: 12, color: 'var(--gold-text)', fontWeight: 600, marginBottom: 14 }}>{tour.note}</p>}
+          {tour.note && <p style={{ fontSize: 12, color: 'var(--gold-text)', fontWeight: 600, marginBottom: 14 }}>{tour.note[lang]}</p>}
 
-          <BookingForm tourTitle={tour.title} />
+          <BookingForm tourTitle={tour.title.EN} />
 
           <Link href={`/tours/${tour.slug}`} style={{ display: 'block', textAlign: 'center', fontSize: 12, fontWeight: 700, color: 'var(--primary)', marginTop: 12 }}>
-            See full tour details →
+            {t('seeDetails')}
           </Link>
         </div>
       </div>

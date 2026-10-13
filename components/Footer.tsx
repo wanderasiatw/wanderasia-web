@@ -2,11 +2,11 @@
 
 import Link from 'next/link'
 import { useSite } from './SiteProvider'
-import { CONTACT, whatsappLink } from '@/lib/contact'
-import { PRIVATE_TOURS } from '@/lib/tours'
+import { CONTACT } from '@/lib/contact'
 
 export default function Footer() {
-  const { toggleQr } = useSite()
+  const { toggleQr, lang, categories, services } = useSite()
+  const open = categories.filter((c) => !c.comingSoon)
   return (
     <footer id="contact">
       <div className="wa-container">
@@ -21,10 +21,12 @@ export default function Footer() {
           <div className="footer-col">
             <h4>Quick Links</h4>
             <ul className="footer-links">
-              <li><Link href="/#tours-free">Free Tours</Link></li>
-              <li><Link href="/#tours-food">Food Tours</Link></li>
-              <li><Link href="/#tours-night">Night / Drink Tours</Link></li>
-              <li><a href={whatsappLink(PRIVATE_TOURS.whatsappText)} target="_blank" rel="noreferrer">Private Tours</a></li>
+              {open.map((c) => (
+                <li key={c.key}><Link href={`/#tours-${c.key}`}>{c.title[lang]}</Link></li>
+              ))}
+              {services.map((s) => (
+                <li key={s.id}><Link href={`/services/${s.slug}`}>{s.title[lang]}</Link></li>
+              ))}
             </ul>
           </div>
 
