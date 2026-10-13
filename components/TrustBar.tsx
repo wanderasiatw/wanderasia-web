@@ -1,4 +1,4 @@
-import { ChatIcon, ShieldIcon, StarIcon } from './Icons'
+import { ChatIcon, ShieldIcon } from './Icons'
 
 export default function TrustBar() {
   return (
@@ -9,13 +9,6 @@ export default function TrustBar() {
           <div>
             <h4>Licensed Agency</h4>
             <p>License No. TA-2024-889 • Insured</p>
-          </div>
-        </div>
-        <div className="trust-item">
-          <div className="trust-icon" style={{ color: 'var(--brand-gold)', background: 'var(--gold-bg)' }}><StarIcon size={24} /></div>
-          <div>
-            <h4>4.9 / 5 Rating</h4>
-            <p>Based on 1,200+ Google Reviews</p>
           </div>
         </div>
         <div className="trust-item">
