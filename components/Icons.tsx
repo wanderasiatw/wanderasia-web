@@ -7,9 +7,6 @@ export const WhatsAppIcon = ({ size, color }: P) => (
 export const ShieldIcon = ({ size, color }: P) => (
   <svg className="icon-svg" style={s(size, color)} viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-5.45 9-12V5l-9-4z" /></svg>
 )
-export const StarIcon = ({ size, color }: P) => (
-  <svg className="icon-svg" style={s(size, color)} viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" /></svg>
-)
 export const ChatIcon = ({ size, color }: P) => (
   <svg className="icon-svg" style={s(size, color)} viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" /></svg>
 )

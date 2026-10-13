@@ -9,7 +9,6 @@ const DICT = {
     announcement: '🥟 New: Dongmen Street Food Tour in Taipei, now taking bookings!',
     navTours: 'Tours',
     navAbout: 'About Us',
-    navReviews: 'Reviews',
     navContact: 'Contact',
     heroTag: 'Licensed Agency • TA-2024-889',
     heroTitle: 'EXPLORE ASIA WITH WANDER ASIA',
@@ -31,14 +30,11 @@ const DICT = {
     priceOnRequest: 'Price on request',
     whySub: 'Guaranteed Quality',
     whyTitle: 'WHY CHOOSE WANDER ASIA?',
-    revSub: 'Verified Feedback',
-    revTitle: 'WHAT OUR TRAVELERS SAY',
   },
   ZH: {
     announcement: '🥟 全新台北東門美食導覽，現正開放預約！',
     navTours: '旅遊行程',
     navAbout: '關於我們',
-    navReviews: '旅客評價',
     navContact: '聯絡我們',
     heroTag: '合法立案旅行社 • TA-2024-889',
     heroTitle: '與 WANDER ASIA 一同探索亞洲',
@@ -60,8 +56,6 @@ const DICT = {
     priceOnRequest: '價格請洽詢',
     whySub: '品質保證',
     whyTitle: '為什麼選擇 WANDER ASIA？',
-    revSub: '真實評價',
-    revTitle: '旅客怎麼說',
   },
 } as const
 
