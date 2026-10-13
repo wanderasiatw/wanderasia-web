@@ -1,6 +1,6 @@
 # wanderasia-web
 
-Next.js 14 (App Router) + Tailwind site for Wander Asia. Tours come from the Plyndi CMS (separate `plyndi-cms` repo), with Sanity as the source until that is switched on.
+Next.js 14 (App Router) + Tailwind site for Wander Asia. Content comes from the Plyndi CMS (separate `plyndi-cms` repo).
 
 ```bash
 npm install
@@ -9,10 +9,13 @@ npm run build
 ```
 
 - Styles: `app/globals.css` (design tokens + component classes from the original HTML design).
-- Tours are shown in rows by category (free, food, night, hiking, special). Pages read them through `lib/cms.ts`:
-  - With `CMS_API_URL` set (e.g. `https://plyndi-cms.<account>.workers.dev`), tours come from the Plyndi CMS API.
-  - Without it, they still come from Sanity (`lib/sanity.ts`, `tourPackage`). Sanity code and packages are removed once the CMS is live.
-  - Either way, when the source has no published tours in these categories or can't be reached, the launch tours in `lib/tours.ts` are shown.
-  - Pages refresh their data at most every 60 seconds, so CMS edits show up within about a minute.
+- Content comes from the Plyndi CMS (separate `plyndi-cms` repo) through `lib/cms.ts`:
+  - Tours, shown in rows by category (free, food, night, hiking, special).
+  - Categories: row names, descriptions, order and "coming soon" flags.
+  - Services (private tours, airport transfer, car with driver, custom itineraries): a section on the home page and a page each at `/services/<slug>`. The Private Tours bubble, footer links and the hero's tour-type list use them too.
+  - Set `CMS_API_URL` (e.g. `https://wanderasia-cms.<account>.workers.dev`) to read the CMS. Without it, or when the CMS can't be reached, the built-in content in `lib/tours.ts` is shown.
+  - Pages refresh their data at most every 60 seconds, so published CMS changes show up within about a minute.
+- Languages: everything visitors read has English and Chinese (中文) text, switched in the browser. Chinese CMS fields fall back to English when empty; fixed labels live in the dictionary in `components/SiteProvider.tsx`. WhatsApp booking messages stay in English so the team always knows which tour is meant.
+- SEO: tour and service pages use the SEO title and description set in the CMS (falling back to the title and short description). Set `SITE_URL` if the site is not served from https://wanderasia.tw.
 - Logo files live in `public/` as SVG: `logo.svg` (full, light backgrounds), `logo-light.svg` (full, dark backgrounds), `logo-symbol.svg` and `logo-wordmark.svg` (header).
 - `postcss.config.js` must be named exactly that — otherwise Tailwind/CSS is not compiled and the site renders unstyled.
