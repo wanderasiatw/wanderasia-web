@@ -7,7 +7,7 @@ const FEATURES = [
   { Icon: PinIcon, title: 'Local Taiwan Expertise', desc: 'Headquartered in Taipei with guides who know hidden gems, night markets, and authentic culture.' },
   { Icon: DollarIcon, title: 'Transparent Pricing', desc: '100% upfront pricing with zero mandatory shopping stops or unexpected extra fees.' },
   { Icon: PenIcon, title: 'Tailor-Made Trips', desc: 'Custom itineraries for families, couples, and corporate groups with full flexibility.' },
-  { Icon: ChatIcon, title: '24/7 Dedicated Support', desc: 'Real-time WhatsApp messaging support throughout your entire journey in Asia.' },
+  { Icon: ChatIcon, title: '24/7 Dedicated Support', desc: 'Real-time WhatsApp messaging support throughout your entire journey in Taiwan.' },
 ]
 
 export default function WhyChoose() {

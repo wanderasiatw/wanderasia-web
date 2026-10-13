@@ -14,7 +14,7 @@ export default function Footer() {
           <div className="footer-col">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/logo-light.svg" alt="Wander Asia 漫遊亞洲 – Tour in Taiwan" style={{ width: 200, marginBottom: 16 }} />
-            <p style={{ marginBottom: 12 }}>Your trusted travel partner across East &amp; Southeast Asia with local hospitality.</p>
+            <p style={{ marginBottom: 12 }}>Your trusted local tour partner in Taiwan, with genuine local hospitality.</p>
             <p>License: TA-2024-889</p>
           </div>
 
