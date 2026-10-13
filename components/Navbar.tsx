@@ -15,7 +15,7 @@ export default function Navbar() {
           <img src="/logo-symbol.svg" alt="" className="logo-symbol" />
           <div>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo-wordmark.svg" alt="Wander Asia 漫游亚洲" className="logo-wordmark" />
+            <img src="/logo-wordmark.svg" alt="Wander Asia 漫遊亞洲" className="logo-wordmark" />
             <span className="logo-sub">Tour in Taiwan</span>
           </div>
         </Link>
