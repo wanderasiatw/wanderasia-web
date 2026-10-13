@@ -11,7 +11,8 @@ import { useSite, type DictKey } from './SiteProvider'
 /** A service page's content, in the visitor's chosen language */
 export default function ServiceDetail({ service }: { service: Service }) {
   const { lang, t } = useSite()
-  const paragraphs = service.body[lang].length > 0 ? service.body[lang] : [service.summary[lang]].filter(Boolean)
+  // The summary is already under the title, so only the full description goes here
+  const paragraphs = service.body[lang]
   const included = service.included[lang]
   const facts = [
     { label: t('capacity'), value: service.capacity?.[lang] },
