@@ -13,3 +13,8 @@ export const CONTACT = {
 export function whatsappLink(text?: string) {
   return text ? `${CONTACT.whatsappUrl}?text=${encodeURIComponent(text)}` : CONTACT.whatsappUrl
 }
+
+/** WhatsApp link asking to hear when a tour's details are out */
+export function askAboutLink(name: string) {
+  return whatsappLink(`Hi Wander Asia! I'm interested in ${name}. Please let me know when details are available.`)
+}

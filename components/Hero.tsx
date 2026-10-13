@@ -1,19 +1,29 @@
 'use client'
 
 import { useState, type FormEvent } from 'react'
-import { scrollToTours, useSite } from './SiteProvider'
-import { SearchIcon, ShieldIcon } from './Icons'
+import { useSite } from './SiteProvider'
+import { ShieldIcon, WhatsAppIcon } from './Icons'
+import { CATEGORIES, PRIVATE_TOURS } from '@/lib/tours'
+import { whatsappLink } from '@/lib/contact'
 
 export default function Hero() {
-  const { t, setFilter } = useSite()
-  const [dest, setDest] = useState('ALL')
-  const [type, setType] = useState('ALL')
+  const { t, lang } = useSite()
+  const [type, setType] = useState('')
   const [date, setDate] = useState('')
+  const [guests, setGuests] = useState(2)
 
-  function handleSearch(e: FormEvent) {
+  const options = [...CATEGORIES.map((c) => ({ key: c.key, title: c.title })), { key: 'private', title: PRIVATE_TOURS.title }]
+
+  function checkAvailability(e: FormEvent) {
     e.preventDefault()
-    setFilter({ dest, type })
-    scrollToTours()
+    const tour = options.find((o) => o.key === type)?.title.EN ?? 'Not sure yet'
+    const msg = [
+      "Hi Wander Asia! I'd like to check availability.",
+      `Tour: ${tour}`,
+      `Date: ${date || 'flexible'}`,
+      `Guests: ${guests === 10 ? '10+' : guests}`,
+    ].join('\n')
+    window.open(whatsappLink(msg), '_blank', 'noopener,noreferrer')
   }
 
   return (
@@ -28,15 +38,14 @@ export default function Hero() {
         <p>{t('heroSub')}</p>
 
         <div className="search-card">
-          <form onSubmit={handleSearch} className="search-grid">
+          <form onSubmit={checkAvailability} className="search-grid">
             <div className="form-group">
-              <label htmlFor="search-dest">{t('lblDest')}</label>
-              <select id="search-dest" className="form-control" value={dest} onChange={(e) => setDest(e.target.value)}>
-                <option value="ALL">{t('allDest')}</option>
-                <option value="Japan">Japan (日本)</option>
-                <option value="Taiwan">Taiwan (台灣)</option>
-                <option value="Korea">South Korea (韓國)</option>
-                <option value="Thailand">Thailand (泰國)</option>
+              <label htmlFor="search-type">{t('lblType')}</label>
+              <select id="search-type" className="form-control" value={type} onChange={(e) => setType(e.target.value)}>
+                <option value="">{t('anyTour')}</option>
+                {options.map((o) => (
+                  <option key={o.key} value={o.key}>{o.title[lang]}</option>
+                ))}
               </select>
             </div>
 
@@ -46,19 +55,18 @@ export default function Hero() {
             </div>
 
             <div className="form-group">
-              <label htmlFor="search-type">{t('lblType')}</label>
-              <select id="search-type" className="form-control" value={type} onChange={(e) => setType(e.target.value)}>
-                <option value="ALL">{t('allTypes')}</option>
-                <option value="Sakura">Sakura &amp; Nature</option>
-                <option value="Culture">Cultural &amp; Food</option>
-                <option value="Winter">Winter &amp; Snow</option>
+              <label htmlFor="search-guests">{t('lblGuests')}</label>
+              <select id="search-guests" className="form-control" value={guests} onChange={(e) => setGuests(Number(e.target.value))}>
+                {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => (
+                  <option key={n} value={n}>{n === 10 ? '10+' : n}</option>
+                ))}
               </select>
             </div>
 
             <div className="form-group">
-              <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: 11 }}>
-                <SearchIcon />
-                <span>{t('search')}</span>
+              <button type="submit" className="btn btn-whatsapp" style={{ width: '100%', padding: 11 }}>
+                <WhatsAppIcon />
+                <span>{t('checkAvail')}</span>
               </button>
             </div>
           </form>

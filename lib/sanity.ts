@@ -1,6 +1,6 @@
 import { createClient } from '@sanity/client'
 import imageUrlBuilder from '@sanity/image-url'
-import { FALLBACK_TOURS, type Tour } from './tours'
+import { CATEGORIES, TOURS, type Tour, type TourCategory } from './tours'
 
 export const client = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'ifzr2wb3',
@@ -15,49 +15,59 @@ export function urlFor(source: any) {
   return builder.image(source)
 }
 
-// Fields every query returns, already shaped like the `Tour` type
+// Fields every query returns
 const TOUR_FIELDS = `
   _id,
   title,
   "slug": slug.current,
+  category,
+  location,
   price,
   duration,
-  location,
-  tourType,
-  rating,
+  meetingPoint,
+  startTime,
   description,
+  body,
   highlights,
+  tastings[]{ name, nameZh, image },
+  note,
+  comingSoon,
   mainImage
 `
 
-function normalize(doc: any): Tour {
-  // Accept "South Korea" / "korea" etc. and map to the filter keys used in the UI
-  const loc = String(doc.location || '').toLowerCase()
-  const destination = loc.includes('korea')
-    ? 'Korea'
-    : loc.includes('japan')
-    ? 'Japan'
-    : loc.includes('thai')
-    ? 'Thailand'
-    : loc.includes('taiwan')
-    ? 'Taiwan'
-    : doc.location || 'Asia'
+const isCategory = (c: unknown): c is TourCategory => CATEGORIES.some((cat) => cat.key === c)
 
+function normalize(doc: any): Tour {
   return {
     id: doc._id,
     slug: doc.slug || doc._id,
+    category: doc.category,
     title: doc.title || 'Untitled Tour',
-    destination,
-    type: doc.tourType || 'Culture',
-    price: Number(doc.price) || 0,
-    rating: doc.rating ? String(doc.rating) : '4.8',
+    location: doc.location || 'Taipei',
+    price: typeof doc.price === 'number' ? doc.price : null,
     duration: doc.duration,
-    image: doc.mainImage
-      ? urlFor(doc.mainImage).width(800).height(500).fit('crop').url()
-      : 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=600&auto=format&fit=crop',
+    meetingPoint: doc.meetingPoint,
+    startTime: doc.startTime,
+    image: doc.mainImage ? urlFor(doc.mainImage).width(800).height(500).fit('crop').url() : undefined,
     desc: doc.description || '',
+    body: typeof doc.body === 'string' ? doc.body.split(/\n\s*\n/).filter(Boolean) : [],
     highlights: Array.isArray(doc.highlights) ? doc.highlights : [],
+    tastings: Array.isArray(doc.tastings)
+      ? doc.tastings.map((t: any) => ({
+          name: t.name || '',
+          zh: t.nameZh || '',
+          image: t.image ? urlFor(t.image).width(500).height(500).fit('crop').url() : undefined,
+        }))
+      : [],
+    note: doc.note,
+    comingSoon: Boolean(doc.comingSoon),
   }
+}
+
+/** Sanity tours that fit the current categories, or our launch tours when there are none */
+function toTours(docs: any[] | null): Tour[] {
+  const tours = (docs || []).filter((d) => isCategory(d.category)).map(normalize)
+  return tours.length > 0 ? tours : TOURS
 }
 
 async function safeFetch(query: string, params: Record<string, any> = {}) {
@@ -70,19 +80,15 @@ async function safeFetch(query: string, params: Record<string, any> = {}) {
 }
 
 export async function getFeaturedTours(): Promise<Tour[]> {
-  const docs = await safeFetch(`*[_type == "tourPackage" && featured == true]{${TOUR_FIELDS}}`)
-  if (!docs || docs.length === 0) return FALLBACK_TOURS
-  return docs.map(normalize)
+  return toTours(await safeFetch(`*[_type == "tourPackage" && featured == true]{${TOUR_FIELDS}}`))
 }
 
 export async function getAllTours(): Promise<Tour[]> {
-  const docs = await safeFetch(`*[_type == "tourPackage"] | order(_createdAt desc){${TOUR_FIELDS}}`)
-  if (!docs || docs.length === 0) return FALLBACK_TOURS
-  return docs.map(normalize)
+  return toTours(await safeFetch(`*[_type == "tourPackage"] | order(_createdAt desc){${TOUR_FIELDS}}`))
 }
 
 export async function getTourBySlug(slug: string): Promise<Tour | null> {
   const doc = await safeFetch(`*[_type == "tourPackage" && slug.current == $slug][0]{${TOUR_FIELDS}}`, { slug })
-  if (doc) return normalize(doc)
-  return FALLBACK_TOURS.find((t) => t.slug === slug) ?? null
+  if (doc && isCategory(doc.category)) return normalize(doc)
+  return TOURS.find((t) => t.slug === slug) ?? null
 }

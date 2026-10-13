@@ -10,7 +10,7 @@ const DESTINATIONS = [
 ]
 
 export default function Destinations() {
-  const { t, setFilter } = useSite()
+  const { t } = useSite()
 
   return (
     <section id="destinations" className="section" style={{ background: 'var(--white)', borderTop: '1px solid var(--stone-200)' }}>
@@ -27,10 +27,7 @@ export default function Destinations() {
             <div
               key={d.key}
               className="dest-card"
-              onClick={() => {
-                setFilter({ dest: d.key, type: 'ALL' })
-                scrollToTours()
-              }}
+              onClick={() => scrollToTours()}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={d.image} alt={d.name} />

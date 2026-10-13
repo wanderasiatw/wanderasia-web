@@ -12,11 +12,11 @@ export default function Navbar() {
       <div className="wa-container flex justify-between items-center header-inner">
         <Link href="/" className="logo">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo-symbol.png" alt="" className="logo-symbol" />
+          <img src="/logo-symbol.svg" alt="" className="logo-symbol" />
           <div>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo-wordmark.png" alt="Wander Asia" className="logo-wordmark" />
-            <span className="logo-sub">Extraordinary Journeys <span className="logo-star">✦</span> Asia</span>
+            <img src="/logo-wordmark.svg" alt="Wander Asia 漫遊亞洲" className="logo-wordmark" />
+            <span className="logo-sub">Tour in Taiwan</span>
           </div>
         </Link>
 
@@ -33,7 +33,7 @@ export default function Navbar() {
             <button onClick={() => setLang('EN')} className={`lang-btn ${lang === 'EN' ? 'active' : ''}`}>EN</button>
             <button onClick={() => setLang('ZH')} className={`lang-btn ${lang === 'ZH' ? 'active' : ''}`}>中文</button>
           </div>
-          <button onClick={toggleQr} className="btn btn-whatsapp">
+          <button onClick={toggleQr} className="btn btn-whatsapp" aria-label="WhatsApp">
             <WhatsAppIcon />
             <span>WhatsApp</span>
           </button>

@@ -114,7 +114,7 @@ header {
     box-shadow: var(--shadow-sm);
 }
 .header-inner {
-    height: 70px;
+    height: 76px;
 }
 .logo {
     display: flex;
@@ -122,25 +122,25 @@ header {
     gap: 10px;
 }
 .logo-symbol {
-    height: 46px;
+    height: 50px;
     width: auto;
 }
+/* Bilingual wordmark: WANDER ASIA over 漫遊亞洲 */
 .logo-wordmark {
     display: block;
-    height: 22px;
+    height: 32px;
     width: auto;
 }
+/* "Tour in Taiwan", spaced out to the width of the wordmark */
 .logo-sub {
     display: block;
-    font-size: 8.5px;
-    letter-spacing: 2.2px;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 5.4px;
     color: var(--brand-green);
     text-transform: uppercase;
-    margin-top: 3px;
+    margin-top: 4px;
     white-space: nowrap;
-}
-.logo-star {
-    color: var(--brand-gold);
 }
 
 .nav-links {
@@ -183,6 +183,14 @@ header {
 }
 .btn-whatsapp:hover {
     background-color: var(--whatsapp-green-hover);
+}
+.btn-outline {
+    background: var(--white);
+    color: var(--primary);
+    border: 1px solid var(--primary);
+}
+.btn-outline:hover {
+    background: var(--primary-bg);
 }
 .lang-switch {
     background: var(--stone-100);
@@ -364,7 +372,7 @@ header {
     letter-spacing: 2px;
 }
 
-/* Filter Tabs */
+/* Filter Tabs (tour category chips) */
 .filter-tabs {
     display: flex;
     gap: 8px;
@@ -381,11 +389,6 @@ header {
     color: var(--stone-600);
     cursor: pointer;
     white-space: nowrap;
-}
-.filter-btn.active {
-    background: var(--primary);
-    color: var(--white);
-    border-color: var(--primary);
 }
 
 /* Tour Grid & Card */
@@ -810,18 +813,174 @@ footer {
   padding: 20px;
   box-shadow: var(--shadow-sm);
 }
-.empty-state { grid-column: 1 / -1; text-align: center; color: var(--stone-600); padding: 40px 0; font-size: 14px; }
 @media (max-width: 992px) { .detail-grid { grid-template-columns: 1fr; } }
 
 /* Keep section titles visible below the sticky header when jumping to #anchors */
-section[id] { scroll-margin-top: 80px; }
+section[id], .tour-row[id] { scroll-margin-top: 90px; }
+
+/* Tour rows: the category heading sits beside its cards */
+.tour-row {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 24px;
+  padding: 28px 0;
+  border-top: 1px solid var(--stone-200);
+}
+.tour-row:first-of-type { border-top: none; padding-top: 0; }
+.tour-row .tour-grid { grid-template-columns: repeat(3, 1fr); }
+.tour-row-title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--dark);
+  line-height: 1.2;
+}
+.tour-row-subtitle { display: block; font-size: 13px; font-weight: 600; color: var(--gold-text); margin-top: 2px; }
+.tour-row-head p { font-size: 13px; color: var(--stone-600); margin-top: 8px; }
+.tour-footer .btn, .tour-price-ask { white-space: nowrap; }
+@media (max-width: 992px) {
+  .tour-row { grid-template-columns: 1fr; gap: 14px; }
+  .tour-row .tour-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 768px) {
+  .tour-row .tour-grid { grid-template-columns: 1fr; }
+}
+
+/* Branded cover shown until a tour has its own photo */
+.tour-cover {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--gold-light);
+  background: radial-gradient(circle at 70% 25%, rgba(199, 154, 88, 0.35), transparent 55%), linear-gradient(135deg, var(--brand-green), var(--dark));
+}
+.tour-cover-food { background: radial-gradient(circle at 30% 30%, rgba(228, 201, 156, 0.45), transparent 55%), linear-gradient(135deg, #8a6631, var(--brand-green)); }
+.tour-cover-night { background: radial-gradient(circle at 75% 20%, rgba(199, 154, 88, 0.4), transparent 45%), linear-gradient(160deg, #1b2b3a, var(--dark)); }
+.tour-cover-hiking { background: radial-gradient(circle at 50% 15%, rgba(228, 201, 156, 0.35), transparent 50%), linear-gradient(180deg, #2f6150, var(--brand-green)); }
+.tour-cover-special { background: radial-gradient(circle at 30% 70%, rgba(199, 154, 88, 0.45), transparent 55%), linear-gradient(135deg, var(--dark-card), var(--dark)); }
+
+.tour-meta { font-size: 11px; font-weight: 700; color: var(--gold-text); margin-bottom: 6px; }
+.tour-price-ask { font-size: 13px; }
+
+/* Private tours bubble */
+.private-bubble {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--gold-bg);
+  border: 1px solid var(--gold-light);
+  color: var(--dark);
+  padding: 8px 16px 8px 8px;
+  border-radius: 999px;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.private-bubble:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.private-bubble-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--brand-gold);
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.private-bubble strong { display: block; font-size: 13px; font-weight: 800; }
+.private-bubble small { display: block; font-size: 11px; color: var(--stone-600); }
+
+/* Tour details */
+.tour-facts { list-style: none; display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: var(--dark); }
+.tour-facts li { display: flex; align-items: center; gap: 8px; }
+.tour-facts svg { color: var(--gold-text); flex-shrink: 0; }
+.tour-note {
+  margin-top: 14px;
+  padding: 10px 12px;
+  background: var(--gold-bg);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gold-text);
+}
+.tasting-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.tasting-chip {
+  background: var(--primary-bg);
+  color: var(--primary);
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 700;
+}
+.tasting-chip span { font-weight: 500; margin-left: 2px; }
+.tasting-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+.tasting-card img, .tasting-tile {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+}
+.tasting-tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--gold-bg), var(--gold-light));
+  color: var(--gold-text);
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+}
+.tasting-card figcaption { font-size: 12px; font-weight: 700; margin-top: 6px; text-align: center; }
+.tasting-card figcaption span { display: block; font-weight: 500; color: var(--stone-600); }
+
+/* Booking */
+.modal-price {
+  background: var(--stone-50);
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--stone-200);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  font-size: 11px;
+  color: var(--stone-600);
+}
+.modal-price strong { font-size: 16px; font-weight: 900; color: var(--primary); }
+.booking-row { display: grid; grid-template-columns: 1fr auto; gap: 12px; }
+.stepper {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--stone-200);
+  border-radius: var(--radius-md);
+  background: var(--stone-50);
+  height: 40px;
+}
+.stepper button {
+  border: none;
+  background: none;
+  width: 34px;
+  height: 100%;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--primary);
+  cursor: pointer;
+}
+.stepper span { min-width: 22px; text-align: center; font-weight: 800; font-size: 14px; }
+@media (max-width: 992px) { .tasting-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 480px) { .tasting-grid { grid-template-columns: repeat(2, 1fr); } }
 
 @media (max-width: 768px) {
   .announcement-bar .wa-container > div:last-child { display: none; }
   .logo { gap: 6px; }
-  .logo-symbol { height: 30px; }
-  .logo-wordmark { height: 13px; }
-  .logo-sub { display: none; }
-  .header-inner { height: 60px; }
-  .btn-whatsapp { padding: 8px 12px; }
+  .logo-symbol { height: 34px; }
+  .logo-wordmark { height: 22px; }
+  .logo-sub { font-size: 6.5px; letter-spacing: 3.6px; margin-top: 3px; }
+  .header-inner { height: 62px; }
+  .header-inner .logo { flex-shrink: 0; }
+  .header-inner .btn-whatsapp { padding: 8px 10px; }
+  .header-inner .btn-whatsapp span { display: none; } /* icon only, to make room for the logo */
+  .header-inner .lang-btn { padding: 4px 8px; }
 }
