@@ -1,6 +1,6 @@
 import Hero from '@/components/Hero'
 import TrustBar from '@/components/TrustBar'
-import FeaturedTours from '@/components/FeaturedTours'
+import TourRows from '@/components/TourRows'
 import Destinations from '@/components/Destinations'
 import WhyChoose from '@/components/WhyChoose'
 import Testimonials from '@/components/Testimonials'
@@ -15,7 +15,7 @@ export default async function HomePage() {
     <main>
       <Hero />
       <TrustBar />
-      <FeaturedTours tours={tours} />
+      <TourRows tours={tours} />
       <Destinations />
       <WhyChoose />
       <Testimonials />

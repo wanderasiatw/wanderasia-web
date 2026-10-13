@@ -2,7 +2,8 @@
 
 import Link from 'next/link'
 import { useSite } from './SiteProvider'
-import { CONTACT } from '@/lib/contact'
+import { CONTACT, whatsappLink } from '@/lib/contact'
+import { PRIVATE_TOURS } from '@/lib/tours'
 
 export default function Footer() {
   const { toggleQr } = useSite()
@@ -12,7 +13,7 @@ export default function Footer() {
         <div className="footer-grid">
           <div className="footer-col">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo-light.png" alt="Wander Asia – Extraordinary Journeys, Asia" style={{ width: 200, marginBottom: 16 }} />
+            <img src="/logo-light.svg" alt="Wander Asia 漫游亚洲 – Tour in Taiwan" style={{ width: 200, marginBottom: 16 }} />
             <p style={{ marginBottom: 12 }}>Your trusted travel partner across East &amp; Southeast Asia with local hospitality.</p>
             <p>License: TA-2024-889</p>
           </div>
@@ -20,10 +21,10 @@ export default function Footer() {
           <div className="footer-col">
             <h4>Quick Links</h4>
             <ul className="footer-links">
-              <li><Link href="/tours">Japan Packages</Link></li>
-              <li><Link href="/tours">Taiwan Highlights</Link></li>
-              <li><Link href="/tours">Korea Snow Tours</Link></li>
-              <li><Link href="/#about">Custom Travel</Link></li>
+              <li><Link href="/#tours-free">Free Tours</Link></li>
+              <li><Link href="/#tours-food">Food Tours</Link></li>
+              <li><Link href="/#tours-night">Night / Drink Tours</Link></li>
+              <li><a href={whatsappLink(PRIVATE_TOURS.whatsappText)} target="_blank" rel="noreferrer">Private Tours</a></li>
             </ul>
           </div>
 
