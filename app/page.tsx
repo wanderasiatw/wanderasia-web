@@ -5,7 +5,8 @@ import WhyChoose from '@/components/WhyChoose'
 import ServiceCards from '@/components/ServiceCards'
 import { getFeaturedTours } from '@/lib/cms'
 
-export const revalidate = 60
+// Rendered on each request so CMS changes show up without a rebuild
+export const dynamic = 'force-dynamic'
 
 export default async function HomePage() {
   const tours = await getFeaturedTours()

@@ -13,7 +13,22 @@ import {
 
 // The Plyndi CMS, e.g. https://wanderasia-cms.<account>.workers.dev
 // Until CMS_API_URL is set, or whenever the CMS can't be reached, the built-in content in lib/tours.ts is shown.
-const CMS_API_URL = process.env.CMS_API_URL?.replace(/\/+$/, '')
+// Read on each request: on Cloudflare, environment variables are only available while handling one.
+const cmsApiUrl = () => process.env.CMS_API_URL?.replace(/\/+$/, '')
+
+/**
+ * On Cloudflare the site reaches the CMS through a service binding named CMS (see wrangler.jsonc): a direct,
+ * private link between the two Workers that skips the public internet (a plain fetch() between two workers.dev
+ * Workers can fail with Cloudflare error 1042). Elsewhere (next dev, Vercel) there is no binding and plain fetch() is used.
+ */
+async function cmsBinding(): Promise<{ fetch: typeof fetch } | undefined> {
+  try {
+    const { getCloudflareContext } = await import('@opennextjs/cloudflare')
+    return (getCloudflareContext().env as { CMS?: { fetch: typeof fetch } }).CMS
+  } catch {
+    return undefined
+  }
+}
 
 type Raw = Record<string, any>
 
@@ -89,9 +104,12 @@ function toCategory(doc: Raw): Category {
 
 /** The JSON at `path`, or null when it is missing, the CMS isn't set up, or it can't be reached */
 async function cmsFetch<T>(path: string): Promise<T | null> {
-  if (!CMS_API_URL) return null
+  const base = cmsApiUrl()
+  if (!base) return null
   try {
-    const res = await fetch(`${CMS_API_URL}${path}`, { next: { revalidate: 60 } })
+    const url = `${base}${path}`
+    const binding = await cmsBinding()
+    const res = binding ? await binding.fetch(url) : await fetch(url, { next: { revalidate: 60 } })
     if (res.status === 404) return null
     if (!res.ok) throw new Error(`${res.status} ${res.statusText}`)
     return (await res.json()) as T
@@ -116,7 +134,7 @@ export async function getAllTours(): Promise<Tour[]> {
 }
 
 export async function getTourBySlug(slug: string): Promise<Tour | null> {
-  if (CMS_API_URL) {
+  if (cmsApiUrl()) {
     const doc = (await cmsFetch<{ tour: Raw }>(`/api/v1/tours/${encodeURIComponent(slug)}`))?.tour
     if (doc && isCategory(doc.category)) return toTour(doc)
   }
@@ -138,7 +156,7 @@ export async function getServices(): Promise<Service[]> {
 }
 
 export async function getServiceBySlug(slug: string): Promise<Service | null> {
-  if (CMS_API_URL) {
+  if (cmsApiUrl()) {
     const doc = (await cmsFetch<{ service: Raw }>(`/api/v1/services/${encodeURIComponent(slug)}`))?.service
     if (doc) return toService(doc)
   }

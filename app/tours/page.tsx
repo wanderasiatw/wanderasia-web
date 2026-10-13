@@ -1,7 +1,8 @@
 import TourRows from '@/components/TourRows'
 import { getAllTours } from '@/lib/cms'
 
-export const revalidate = 60
+// Rendered on each request so CMS changes show up without a rebuild
+export const dynamic = 'force-dynamic'
 
 export const metadata = { title: 'Our Tours in Taiwan | Wander Asia' }
 

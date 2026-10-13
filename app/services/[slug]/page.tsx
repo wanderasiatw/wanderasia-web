@@ -3,12 +3,14 @@ import { notFound } from 'next/navigation'
 import { getServiceBySlug } from '@/lib/cms'
 import ServiceDetail from '@/components/ServiceDetail'
 
-export const revalidate = 60
+// Pages are rendered on each request so CMS changes show up without a rebuild
+export const dynamic = 'force-dynamic'
 
-type Props = { params: { slug: string } }
+type Props = { params: Promise<{ slug: string }> }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const service = await getServiceBySlug(params.slug)
+  const { slug } = await params
+  const service = await getServiceBySlug(slug)
   if (!service) return {}
   const title = service.seoTitle ?? `${service.title.EN} | Wander Asia`
   const description = service.seoDescription ?? service.summary.EN
@@ -21,7 +23,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ServicePage({ params }: Props) {
-  const service = await getServiceBySlug(params.slug)
+  const { slug } = await params
+  const service = await getServiceBySlug(slug)
   if (!service) notFound()
   return <ServiceDetail service={service} />
 }

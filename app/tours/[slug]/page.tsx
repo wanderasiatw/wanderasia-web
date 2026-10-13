@@ -3,12 +3,14 @@ import { notFound } from 'next/navigation'
 import { getTourBySlug } from '@/lib/cms'
 import TourDetail from '@/components/TourDetail'
 
-export const revalidate = 60
+// Pages are rendered on each request so CMS changes show up without a rebuild
+export const dynamic = 'force-dynamic'
 
-type Props = { params: { slug: string } }
+type Props = { params: Promise<{ slug: string }> }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const tour = await getTourBySlug(params.slug)
+  const { slug } = await params
+  const tour = await getTourBySlug(slug)
   if (!tour) return {}
   const title = tour.seoTitle ?? `${tour.title.EN} | Wander Asia`
   const description = tour.seoDescription ?? tour.desc.EN
@@ -21,7 +23,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function TourDetailPage({ params }: Props) {
-  const tour = await getTourBySlug(params.slug)
+  const { slug } = await params
+  const tour = await getTourBySlug(slug)
   if (!tour) notFound()
   return <TourDetail tour={tour} />
 }
