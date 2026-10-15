@@ -5,7 +5,7 @@ import { useSite } from './SiteProvider'
 import { CONTACT } from '@/lib/contact'
 
 export default function Footer() {
-  const { toggleQr, lang, categories, services } = useSite()
+  const { toggleQr, lang, href, categories, services } = useSite()
   const open = categories.filter((c) => !c.comingSoon)
   return (
     <footer id="contact">
@@ -14,18 +14,17 @@ export default function Footer() {
           <div className="footer-col">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/logo-light.svg" alt="Wander Asia 漫遊亞洲 – Tour in Taiwan" style={{ width: 200, marginBottom: 16 }} />
-            <p style={{ marginBottom: 12 }}>Your trusted local tour partner in Taiwan, with genuine local hospitality.</p>
-            <p>License: TA-2024-889</p>
+            <p>Your trusted local tour partner in Taiwan, with genuine local hospitality.</p>
           </div>
 
           <div className="footer-col">
             <h4>Quick Links</h4>
             <ul className="footer-links">
               {open.map((c) => (
-                <li key={c.key}><Link href={`/#tours-${c.key}`}>{c.title[lang]}</Link></li>
+                <li key={c.key}><Link href={href(`/#tours-${c.key}`)}>{c.title[lang]}</Link></li>
               ))}
               {services.map((s) => (
-                <li key={s.id}><Link href={`/services/${s.slug}`}>{s.title[lang]}</Link></li>
+                <li key={s.id}><Link href={href(`/services/${s.slug}`)}>{s.title[lang]}</Link></li>
               ))}
             </ul>
           </div>

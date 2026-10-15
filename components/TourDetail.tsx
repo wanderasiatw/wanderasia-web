@@ -9,7 +9,7 @@ import { useSite } from './SiteProvider'
 
 /** The tour page's content, in the visitor's chosen language */
 export default function TourDetail({ tour }: { tour: Tour }) {
-  const { lang, t, categories } = useSite()
+  const { lang, t, href, categories } = useSite()
   const category = categoryOf(categories, tour.category)
   const summary = [tour.startTime?.[lang], tour.duration?.[lang]].filter(Boolean).join(' • ')
   const paragraphs = tour.body[lang].length > 0 ? tour.body[lang] : [tour.desc[lang]]
@@ -77,7 +77,7 @@ export default function TourDetail({ tour }: { tour: Tour }) {
               </div>
             )}
 
-            <Link href="/tours" style={{ fontSize: 13, fontWeight: 700, color: 'var(--primary)' }}>{t('backToTours')}</Link>
+            <Link href={href('/tours')} style={{ fontSize: 13, fontWeight: 700, color: 'var(--primary)' }}>{t('backToTours')}</Link>
           </div>
 
           <div>

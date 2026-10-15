@@ -1,0 +1,183 @@
+export type Lang = 'EN' | 'ZH'
+
+export const LANGS: Lang[] = ['EN', 'ZH']
+
+/** The `lang` attribute and hreflang code for each language (the Chinese is Traditional, as used in Taiwan) */
+export const HTML_LANG: Record<Lang, string> = { EN: 'en', ZH: 'zh-Hant' }
+export const OG_LOCALE: Record<Lang, string> = { EN: 'en_US', ZH: 'zh_TW' }
+
+/** Language from the URL segment: /zh/... is Chinese; English pages have no prefix (they are /en/... internally, see middleware.ts) */
+export function langFromParam(param: string): Lang | null {
+  return param === 'en' ? 'EN' : param === 'zh' ? 'ZH' : null
+}
+
+/** A site path in the given language, e.g. ('ZH', '/tours') → '/zh/tours', ('ZH', '/#tours') → '/zh#tours' */
+export function localePath(lang: Lang, path: string): string {
+  if (lang === 'EN') return path
+  if (path === '/') return '/zh'
+  return path.startsWith('/#') ? `/zh${path.slice(1)}` : `/zh${path}`
+}
+
+/** The language-free path of a URL path, e.g. '/zh/tours' → '/tours', '/zh' → '/' */
+export function stripLang(pathname: string): string {
+  const rest = pathname.replace(/^\/(zh|en)(?=\/|$)/, '')
+  return rest === '' ? '/' : rest
+}
+
+// Fixed labels in both languages
+export const DICT = {
+  EN: {
+    announcement: '🥟 New: Dongmen Street Food Tour in Taipei, now taking bookings!',
+    navTours: 'Tours',
+    navAbout: 'About Us',
+    navContact: 'Contact',
+    heroTag: 'Local Guides in Taipei',
+    heroTitle: 'EXPLORE ASIA WITH WANDER ASIA',
+    heroSub: 'Discover Handpicked Tours Across Taiwan with Premium Local Experiences',
+    lblType: 'Tour Type',
+    lblDate: 'Travel Date',
+    lblGuests: 'Guests',
+    anyTour: 'Not sure yet',
+    checkAvail: 'Check Availability',
+    toursSub: 'Led by Local Guides',
+    toursTitle: 'OUR TOURS IN TAIWAN',
+    viewTour: 'View Tour',
+    comingSoon: 'Coming soon',
+    soonBlurb: 'More tours on the way. Ask us and we’ll let you know when they launch.',
+    askWhatsApp: 'Ask on WhatsApp',
+    free: 'Free',
+    tipsWelcome: 'Tips welcome',
+    priceOnRequest: 'Price on request',
+    whySub: 'Guaranteed Quality',
+    whyTitle: 'WHY CHOOSE WANDER ASIA?',
+    navServices: 'Services',
+    aboutTour: 'About this tour',
+    tasteTitle: 'What you’ll taste',
+    tasteBlurb: 'The must-try finger foods from local vendors. You get your own portion of each one.',
+    highlights: 'Highlights',
+    backToTours: '← Back to all tours',
+    backHome: '← Back to home',
+    pricePerPerson: 'Price per person',
+    soonAskWhatsApp: 'Details coming soon. Ask on WhatsApp',
+    meet: 'Meet',
+    starts: 'Starts',
+    duration: 'Duration',
+    capacity: 'Group size',
+    yourName: 'Your Name',
+    date: 'Date',
+    guests: 'Guests',
+    fewerGuests: 'Fewer guests',
+    moreGuests: 'More guests',
+    bookWhatsApp: 'Book on WhatsApp',
+    bookSent: 'Press send in WhatsApp and we’ll confirm your spot shortly.',
+    bookNote: 'We confirm every booking personally on WhatsApp.',
+    servicesSub: 'More Ways to Travel',
+    servicesTitle: 'OUR SERVICES',
+    fromPrice: 'From {price}',
+    enquire: 'Enquire on WhatsApp',
+    learnMore: 'Learn more',
+    included: 'What’s included',
+    prices: 'Prices',
+    unit_person: 'per person',
+    unit_group: 'per group',
+    unit_vehicle: 'per vehicle',
+    unit_hour: 'per hour',
+    unit_day: 'per day',
+    unit_trip: 'per trip',
+    trustLocalTitle: 'Local Guides',
+    trustLocalText: 'Tours led by people who live in Taipei',
+    trustChatTitle: '24/7 WhatsApp Support',
+    trustChatText: 'Instant Multilingual Assistant',
+    allToursHeading: 'Our Tours in Taiwan',
+    allToursBlurb: 'Free tours, food tours, night & drink tours and private tours with a local guide',
+    allToursTitle: 'ALL TOURS',
+    home: 'Home',
+    tours: 'Tours',
+    notFoundTitle: 'Page not found',
+    notFoundText: 'This page doesn’t exist or has moved. Have a look at our tours instead.',
+    metaTitle: 'Wander Asia 漫遊亞洲 - Tour in Taiwan',
+    metaDesc: 'Free tours, food tours, night & drink tours and private tours in Taiwan with a local guide.',
+    metaToursTitle: 'Our Tours in Taiwan | Wander Asia',
+    siteName: 'Wander Asia',
+  },
+  ZH: {
+    announcement: '🥟 全新台北東門美食導覽，現正開放預約！',
+    navTours: '旅遊行程',
+    navAbout: '關於我們',
+    navContact: '聯絡我們',
+    heroTag: '台北在地導遊帶路',
+    heroTitle: '與 WANDER ASIA 一同探索亞洲',
+    heroSub: '精選台灣頂級旅遊行程與在地體驗',
+    lblType: '行程類型',
+    lblDate: '出發日期',
+    lblGuests: '人數',
+    anyTour: '還沒決定',
+    checkAvail: '查詢名額',
+    toursSub: '在地導遊帶路',
+    toursTitle: '台灣在地行程',
+    viewTour: '查看行程',
+    comingSoon: '即將推出',
+    soonBlurb: '更多行程即將推出，歡迎詢問，開放時第一時間通知你。',
+    askWhatsApp: 'WhatsApp 詢問',
+    free: '免費',
+    tipsWelcome: '小費隨喜',
+    priceOnRequest: '價格請洽詢',
+    whySub: '品質保證',
+    whyTitle: '為什麼選擇 WANDER ASIA？',
+    navServices: '服務',
+    aboutTour: '行程介紹',
+    tasteTitle: '品嚐美食',
+    tasteBlurb: '在地攤商的必吃小吃，每一樣都有你的專屬份量。',
+    highlights: '行程亮點',
+    backToTours: '← 返回所有行程',
+    backHome: '← 返回首頁',
+    pricePerPerson: '每人價格',
+    soonAskWhatsApp: '詳情即將公布，WhatsApp 詢問',
+    meet: '集合地點',
+    starts: '出發時間',
+    duration: '行程時間',
+    capacity: '人數',
+    yourName: '您的姓名',
+    date: '日期',
+    guests: '人數',
+    fewerGuests: '減少人數',
+    moreGuests: '增加人數',
+    bookWhatsApp: '透過 WhatsApp 預約',
+    bookSent: '請在 WhatsApp 按下傳送，我們會盡快為您確認名額。',
+    bookNote: '每筆預約都由我們在 WhatsApp 親自確認。',
+    servicesSub: '更多旅遊服務',
+    servicesTitle: '我們的服務',
+    fromPrice: '{price} 起',
+    enquire: 'WhatsApp 詢問',
+    learnMore: '了解更多',
+    included: '服務內容',
+    prices: '價格方案',
+    unit_person: '每人',
+    unit_group: '每團',
+    unit_vehicle: '每車',
+    unit_hour: '每小時',
+    unit_day: '每天',
+    unit_trip: '每趟',
+    trustLocalTitle: '在地導遊',
+    trustLocalText: '由住在台北的導遊親自帶路',
+    trustChatTitle: '24/7 WhatsApp 客服',
+    trustChatText: '多語即時協助',
+    allToursHeading: '台灣在地行程',
+    allToursBlurb: '免費導覽、美食導覽、夜遊小酌與私人導覽，由在地導遊帶路',
+    allToursTitle: '所有行程',
+    home: '首頁',
+    tours: '旅遊行程',
+    notFoundTitle: '找不到頁面',
+    notFoundText: '這個頁面不存在或已移動，歡迎看看我們的行程。',
+    metaTitle: '漫遊亞洲 Wander Asia - 台灣在地導覽',
+    metaDesc: '台北免費導覽、美食導覽、夜遊小酌與私人導覽，由在地導遊帶路。',
+    metaToursTitle: '台灣在地行程 | 漫遊亞洲 Wander Asia',
+    siteName: '漫遊亞洲 Wander Asia',
+  },
+} as const
+
+export type DictKey = keyof (typeof DICT)['EN']
+
+export function translate(lang: Lang, key: DictKey): string {
+  return DICT[lang][key]
+}

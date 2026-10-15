@@ -10,7 +10,7 @@ import { useSite, type DictKey } from './SiteProvider'
 
 /** A service page's content, in the visitor's chosen language */
 export default function ServiceDetail({ service }: { service: Service }) {
-  const { lang, t } = useSite()
+  const { lang, t, href } = useSite()
   // The summary is already under the title, so only the full description goes here
   const paragraphs = service.body[lang]
   const included = service.included[lang]
@@ -81,7 +81,7 @@ export default function ServiceDetail({ service }: { service: Service }) {
               </div>
             )}
 
-            <Link href="/" style={{ fontSize: 13, fontWeight: 700, color: 'var(--primary)' }}>{t('backHome')}</Link>
+            <Link href={href('/')} style={{ fontSize: 13, fontWeight: 700, color: 'var(--primary)' }}>{t('backHome')}</Link>
           </div>
 
           <div>
