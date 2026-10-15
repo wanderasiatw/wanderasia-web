@@ -412,6 +412,11 @@ header {
     transform: translateY(-4px);
     box-shadow: var(--shadow-md);
 }
+/* The tour title's link covers the whole card, so a tap anywhere opens the tour */
+article.tour-card { position: relative; }
+.tour-card-link::after { content: ''; position: absolute; inset: 0; z-index: 1; border-radius: inherit; }
+.tour-card-link:focus-visible { outline: none; }
+.tour-card:has(.tour-card-link:focus-visible) { outline: 3px solid var(--brand-gold); outline-offset: 2px; }
 .tour-img-wrap {
     position: relative;
     height: 180px;
@@ -778,6 +783,39 @@ section[id], .tour-row[id] { scroll-margin-top: 90px; }
 .tour-cover-special { background: radial-gradient(circle at 30% 70%, rgba(199, 154, 88, 0.45), transparent 55%), linear-gradient(135deg, var(--dark-card), var(--dark)); }
 
 .tour-meta { font-size: 11px; font-weight: 700; color: var(--gold-text); margin-bottom: 6px; }
+
+/* Tours and categories still on the way, as one strip of WhatsApp "ask us" chips */
+.soon-strip {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 24px;
+  align-items: center;
+  margin-top: 8px;
+  padding: 22px 24px;
+  background: var(--white);
+  border: 1px dashed var(--gold-light);
+  border-radius: var(--radius-lg);
+  scroll-margin-top: 90px;
+}
+.soon-strip p { font-size: 13px; color: var(--stone-600); margin-top: 6px; }
+.soon-list { list-style: none; display: flex; flex-wrap: wrap; gap: 10px; }
+.soon-list li[id] { scroll-margin-top: 90px; }
+.soon-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--stone-200);
+  background: var(--stone-50);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--dark);
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+.soon-chip svg { color: var(--whatsapp-green-hover); }
+.soon-chip:hover { border-color: var(--whatsapp-green); background: var(--white); }
+@media (max-width: 992px) { .soon-strip { grid-template-columns: 1fr; gap: 14px; } }
 .tour-price-ask { font-size: 13px; }
 
 /* Private tours bubble */

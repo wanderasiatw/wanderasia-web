@@ -13,7 +13,7 @@ export function fromLabel(service: Service, t: (key: DictKey) => string) {
 
 /** The home page's services section: featured services as cards */
 export default function ServiceCards() {
-  const { t, lang, services } = useSite()
+  const { t, lang, href, services } = useSite()
   const featured = services.filter((s) => s.featured)
   if (featured.length === 0) return null
 
@@ -39,7 +39,7 @@ export default function ServiceCards() {
                 </div>
                 <div className="tour-footer">
                   <span className={`tour-price ${fromPrice(s) == null ? 'tour-price-ask' : ''}`}>{fromLabel(s, t)}</span>
-                  <Link href={`/services/${s.slug}`} className="btn btn-primary" style={{ padding: '6px 12px', fontSize: 11 }}>
+                  <Link href={href(`/services/${s.slug}`)} className="btn btn-primary" style={{ padding: '6px 12px', fontSize: 11 }}>
                     {t('learnMore')}
                   </Link>
                 </div>

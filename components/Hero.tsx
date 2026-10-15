@@ -2,7 +2,7 @@
 
 import { useState, type FormEvent } from 'react'
 import { useSite } from './SiteProvider'
-import { ShieldIcon, WhatsAppIcon } from './Icons'
+import { PinIcon, WhatsAppIcon } from './Icons'
 import { privateTourService } from '@/lib/tours'
 import { whatsappLink } from '@/lib/contact'
 
@@ -31,7 +31,7 @@ export default function Hero() {
       <div className="hero-bg" />
       <div className="wa-container hero-content">
         <div className="badge-hero">
-          <ShieldIcon size={14} color="var(--gold-light)" />
+          <PinIcon size={14} color="var(--gold-light)" />
           <span>{t('heroTag')}</span>
         </div>
         <h1>{t('heroTitle')}</h1>

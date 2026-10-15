@@ -1,21 +1,23 @@
-import { ChatIcon, ShieldIcon } from './Icons'
+import { ChatIcon, PinIcon } from './Icons'
+import { translate, type Lang } from '@/lib/i18n'
 
-export default function TrustBar() {
+export default function TrustBar({ lang }: { lang: Lang }) {
+  const t = (key: Parameters<typeof translate>[1]) => translate(lang, key)
   return (
     <section className="trust-bar">
       <div className="wa-container trust-grid">
         <div className="trust-item">
-          <div className="trust-icon"><ShieldIcon size={24} /></div>
+          <div className="trust-icon"><PinIcon size={24} /></div>
           <div>
-            <h4>Licensed Agency</h4>
-            <p>License No. TA-2024-889 • Insured</p>
+            <h4>{t('trustLocalTitle')}</h4>
+            <p>{t('trustLocalText')}</p>
           </div>
         </div>
         <div className="trust-item">
           <div className="trust-icon" style={{ color: 'var(--whatsapp-green)', background: '#dcfce7' }}><ChatIcon size={24} /></div>
           <div>
-            <h4>24/7 WhatsApp Support</h4>
-            <p>Instant Multilingual Assistant</p>
+            <h4>{t('trustChatTitle')}</h4>
+            <p>{t('trustChatText')}</p>
           </div>
         </div>
       </div>

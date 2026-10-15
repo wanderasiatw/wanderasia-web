@@ -1,13 +1,12 @@
 'use client'
 
-import { useState } from 'react'
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
-import { formatPrice, privateTourService, type Category, type Tour } from '@/lib/tours'
+import { formatPrice, privateTourService, type Tour, type TourCategory } from '@/lib/tours'
 import { askAboutLink } from '@/lib/contact'
 import { scrollToTours, useSite, type DictKey, type Lang } from './SiteProvider'
 import TourCover, { CATEGORY_ICONS } from './TourCover'
-import TourModal from './TourModal'
+import { WhatsAppIcon } from './Icons'
 
 type T = (key: DictKey) => string
 
@@ -17,13 +16,14 @@ export function priceLabel(tour: Tour, t: T) {
   return formatPrice(tour.price)
 }
 
-/** All tours in rows by category, plus the private tours bubble */
-export default function TourRows({ tours, title }: { tours: Tour[]; title?: string }) {
-  const { t, lang, categories, services } = useSite()
-  const [selected, setSelected] = useState<Tour | null>(null)
+/**
+ * Tours that are ready, in rows by category; everything still on the way in one "coming soon" strip; plus the private tours bubble.
+ * `tours` are the ready ones and `upcoming` the categories of tours whose details aren't out yet (see splitComingSoon).
+ */
+export default function TourRows({ tours, upcoming, title }: { tours: Tour[]; upcoming: TourCategory[]; title?: string }) {
+  const { t, lang, href, categories, services } = useSite()
   const privateTours = privateTourService(services)
 
-  // A row per category that has tours, then one shared row for categories that are coming soon
   const other: Lang = lang === 'EN' ? 'ZH' : 'EN'
   const rows = categories
     .filter((c) => tours.some((p) => p.category === c.key))
@@ -32,18 +32,13 @@ export default function TourRows({ tours, title }: { tours: Tour[]; title?: stri
       title: c.title[lang],
       subtitle: c.title[other] !== c.title[lang] ? c.title[other] : '',
       blurb: c.blurb[lang],
-      cards: tours.filter((p) => p.category === c.key).map((tour) => <TourCard key={tour.id} tour={tour} t={t} lang={lang} onOpen={() => setSelected(tour)} />),
+      tours: tours.filter((p) => p.category === c.key),
     }))
-  const soon = categories.filter((c) => c.comingSoon && !tours.some((p) => p.category === c.key))
-  if (soon.length > 0) {
-    rows.push({
-      id: 'tours-soon',
-      title: t('comingSoon'),
-      subtitle: '',
-      blurb: t('soonBlurb'),
-      cards: soon.map((c) => <ComingSoonCard key={c.key} category={c} t={t} lang={lang} />),
-    })
-  }
+  // Categories with nothing ready yet: flagged "coming soon" in the CMS, or only holding tours whose details aren't out
+  const soon = categories.filter(
+    (c) => !tours.some((p) => p.category === c.key) && (c.comingSoon || upcoming.includes(c.key)),
+  )
+  const tabs = [...rows.map((r) => ({ id: r.id, title: r.title })), ...(soon.length > 0 ? [{ id: 'tours-soon', title: t('comingSoon') }] : [])]
   const PrivateIcon = CATEGORY_ICONS.private
 
   return (
@@ -54,7 +49,7 @@ export default function TourRows({ tours, title }: { tours: Tour[]; title?: stri
             <span className="section-sub">{t('toursSub')}</span>
             <h2 className="section-title">{title ?? t('toursTitle')}</h2>
           </div>
-          <Link href={`/services/${privateTours.slug}`} className="private-bubble">
+          <Link href={href(`/services/${privateTours.slug}`)} className="private-bubble">
             <span className="private-bubble-icon"><PrivateIcon size={18} /></span>
             <span>
               <strong>{privateTours.title[lang]}</strong>
@@ -64,13 +59,15 @@ export default function TourRows({ tours, title }: { tours: Tour[]; title?: stri
           </Link>
         </div>
 
-        <div className="filter-tabs" style={{ marginBottom: 28 }}>
-          {rows.map((row) => (
-            <button key={row.id} onClick={() => scrollToTours(row.id)} className="filter-btn">
-              {row.title}
-            </button>
-          ))}
-        </div>
+        {tabs.length > 1 && (
+          <div className="filter-tabs" style={{ marginBottom: 28 }}>
+            {tabs.map((tab) => (
+              <button key={tab.id} onClick={() => scrollToTours(tab.id)} className="filter-btn">
+                {tab.title}
+              </button>
+            ))}
+          </div>
+        )}
 
         {rows.map((row) => (
           <div key={row.id} id={row.id} className="tour-row">
@@ -79,29 +76,53 @@ export default function TourRows({ tours, title }: { tours: Tour[]; title?: stri
               {row.subtitle && <span className="tour-row-subtitle">{row.subtitle}</span>}
               <p>{row.blurb}</p>
             </div>
-            <div className="tour-grid">{row.cards}</div>
+            <div className="tour-grid">
+              {row.tours.map((tour) => (
+                <TourCard key={tour.id} tour={tour} t={t} lang={lang} href={href(`/tours/${tour.slug}`)} />
+              ))}
+            </div>
           </div>
         ))}
-      </div>
 
-      {selected && <TourModal tour={selected} price={priceLabel(selected, t)} onClose={() => setSelected(null)} />}
+        {soon.length > 0 && (
+          <div id="tours-soon" className="soon-strip">
+            <div>
+              <h3 className="tour-row-title">{t('comingSoon')}</h3>
+              <p>{t('soonBlurb')}</p>
+            </div>
+            <ul className="soon-list">
+              {soon.map((c) => (
+                // Each keeps its row's anchor, so footer links to it still land here
+                <li key={c.key} id={`tours-${c.key}`}>
+                  <a href={askAboutLink(c.title.EN)} target="_blank" rel="noreferrer" className="soon-chip">
+                    <WhatsAppIcon size={14} />
+                    <span>{c.title[lang]}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
     </section>
   )
 }
 
-function TourCard({ tour, t, lang, onOpen }: { tour: Tour; t: T; lang: Lang; onOpen: () => void }) {
+/** A tour card; the whole card links to the tour's page */
+function TourCard({ tour, t, lang, href }: { tour: Tour; t: T; lang: Lang; href: string }) {
   const facts = [tour.startTime?.[lang], tour.duration?.[lang]].filter(Boolean).join(' • ')
 
   return (
-    <div className="tour-card">
+    <article className="tour-card">
       <div className="tour-img-wrap">
         <TourCover category={tour.category} image={tour.image} alt={tour.title[lang]} />
-        {tour.comingSoon && <div className="tour-badge">{t('detailsSoon')}</div>}
         <div className="tour-loc">{tour.location[lang]}</div>
       </div>
       <div className="tour-body">
         <div>
-          <h3 className="tour-title">{tour.title[lang]}</h3>
+          <h3 className="tour-title">
+            <Link href={href} className="tour-card-link">{tour.title[lang]}</Link>
+          </h3>
           {facts && <p className="tour-meta">{facts}</p>}
           <p className="tour-desc">{tour.desc[lang]}</p>
         </div>
@@ -110,52 +131,12 @@ function TourCard({ tour, t, lang, onOpen }: { tour: Tour; t: T; lang: Lang; onO
             {tour.price === 0 && <span className="tour-price-label">{t('tipsWelcome')}</span>}
             <span className={`tour-price ${tour.price == null ? 'tour-price-ask' : ''}`}>{priceLabel(tour, t)}</span>
           </div>
-          {tour.comingSoon ? (
-            <a
-              href={askAboutLink(`the ${tour.title.EN}`)}
-              target="_blank"
-              rel="noreferrer"
-              className="btn btn-outline"
-              style={{ padding: '6px 12px', fontSize: 11 }}
-            >
-              {t('askWhatsApp')}
-            </a>
-          ) : (
-            <button onClick={onOpen} className="btn btn-primary" style={{ padding: '6px 12px', fontSize: 11 }}>
-              {t('viewTour')}
-            </button>
-          )}
+          {/* Looks like a button; the card's link covers it */}
+          <span className="btn btn-primary" aria-hidden="true" style={{ padding: '6px 12px', fontSize: 11 }}>
+            {t('viewTour')}
+          </span>
         </div>
       </div>
-    </div>
-  )
-}
-
-function ComingSoonCard({ category, t, lang }: { category: Category; t: T; lang: Lang }) {
-  return (
-    <div className="tour-card">
-      <div className="tour-img-wrap">
-        <TourCover category={category.key} alt={category.title[lang]} />
-        <div className="tour-badge">{t('comingSoon')}</div>
-      </div>
-      <div className="tour-body">
-        <div>
-          <h3 className="tour-title">{category.title[lang]}</h3>
-          <p className="tour-desc">{category.blurb[lang]}</p>
-        </div>
-        <div className="tour-footer">
-          <span className="tour-price tour-price-ask">{t('comingSoon')}</span>
-          <a
-            href={askAboutLink(category.title.EN)}
-            target="_blank"
-            rel="noreferrer"
-            className="btn btn-outline"
-            style={{ padding: '6px 12px', fontSize: 11 }}
-          >
-            {t('askWhatsApp')}
-          </a>
-        </div>
-      </div>
-    </div>
+    </article>
   )
 }

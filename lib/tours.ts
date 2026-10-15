@@ -1,4 +1,4 @@
-import type { Lang } from '@/components/SiteProvider'
+import type { Lang } from '@/lib/i18n'
 
 /** Text in both site languages. Chinese falls back to English when it hasn't been translated. */
 export type Text = Record<Lang, string>
@@ -89,6 +89,12 @@ export function formatPrice(n: number) {
 export function fromPrice(service: Service): number | null {
   const prices = service.priceOptions.map((o) => o.price).filter((p): p is number => typeof p === 'number')
   return prices.length ? Math.min(...prices) : null
+}
+
+/** Tours ready to show (details published), and the categories of the ones whose details aren't out yet */
+export function splitComingSoon(tours: Tour[]): { ready: Tour[]; upcoming: TourCategory[] } {
+  const upcoming = tours.filter((t) => t.comingSoon).map((t) => t.category)
+  return { ready: tours.filter((t) => !t.comingSoon), upcoming: Array.from(new Set(upcoming)) }
 }
 
 export function categoryOf(categories: Category[], key: string) {
