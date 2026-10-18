@@ -59,7 +59,8 @@ export default function TourRows({ tours, upcoming, title }: { tours: Tour[]; up
           </Link>
         </div>
 
-        {tabs.length > 1 && (
+        {/* Jump links only help once there are two or more rows of tours */}
+        {rows.length > 1 && (
           <div className="filter-tabs" style={{ marginBottom: 28 }}>
             {tabs.map((tab) => (
               <button key={tab.id} onClick={() => scrollToTours(tab.id)} className="filter-btn">

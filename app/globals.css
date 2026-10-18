@@ -221,17 +221,25 @@ header {
     position: relative;
     background: linear-gradient(135deg, var(--dark) 0%, var(--brand-green) 100%);
     color: var(--white);
-    padding: 60px 0 80px 0;
+    padding: 96px 0 110px 0;
     overflow: hidden;
     text-align: center;
 }
 .hero-bg {
     position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
-    background-image: url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop');
+    background-image: url('/images/hero-jiufen.jpg');
     background-size: cover;
-    background-position: center;
-    opacity: 0.25;
+    background-position: center 40%;
+    opacity: 0.55;
+}
+/* Darken the photo so the white text stays readable */
+.hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(180deg, rgba(19,38,31,0.55) 0%, rgba(19,38,31,0.35) 45%, rgba(19,38,31,0.8) 100%);
 }
 .hero-content {
     position: relative;
@@ -253,16 +261,20 @@ header {
     margin-bottom: 20px;
 }
 .hero h1 {
-    font-size: 40px;
+    font-size: 48px;
     font-weight: 700;
     letter-spacing: 0.5px;
     line-height: 1.2;
-    margin-bottom: 12px;
-    text-transform: uppercase;
+    margin-bottom: 14px;
+    text-shadow: 0 2px 18px rgba(0,0,0,0.35);
 }
 .hero p {
-    font-size: 16px;
-    color: var(--stone-200);
+    font-size: 17px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+    color: #f1ece2;
     margin-bottom: 32px;
     font-weight: 400;
 }
@@ -987,3 +999,36 @@ section[id], .tour-row[id] { scroll-margin-top: 90px; }
 .price-table tr:last-child td { border-bottom: 0; }
 .price-table td:last-child { text-align: right; font-weight: 800; color: var(--primary); white-space: nowrap; padding-left: 12px; }
 .price-table small { font-weight: 600; color: var(--stone-600); }
+
+/* Photo credit in the hero (required by the photo's CC BY license) */
+.hero-credit {
+  position: absolute;
+  right: 16px;
+  bottom: 10px;
+  z-index: 2;
+  margin: 0 !important;
+  font-size: 10px !important;
+  color: rgba(255,255,255,0.65) !important;
+}
+.hero-credit a { color: inherit; text-decoration: underline; }
+
+/* How it works */
+.how-section { background: var(--white); border-top: 1px solid var(--stone-200); border-bottom: 1px solid var(--stone-200); }
+.how-head { max-width: 600px; margin: 0 auto 36px auto; }
+.how-grid { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; counter-reset: none; }
+.how-step { position: relative; padding: 24px; border-radius: var(--radius-lg); background: var(--stone-50); border: 1px solid var(--stone-200); }
+.how-num { display: block; font-family: var(--font-display); font-size: 34px; font-weight: 700; color: var(--brand-gold); line-height: 1; margin-bottom: 12px; }
+.how-step h3 { font-size: 17px; font-weight: 700; color: var(--brand-green); margin-bottom: 6px; }
+.how-step p { font-size: 13px; color: var(--stone-600); line-height: 1.6; }
+@media (max-width: 768px) { .how-grid { grid-template-columns: 1fr; gap: 14px; } }
+
+/* A single featured service: image beside the text instead of a lone narrow card */
+.service-single .tour-card { flex-direction: row; max-width: 760px; }
+.service-single .tour-img-wrap { flex: 0 0 42%; height: auto; min-height: 220px; }
+.service-single .tour-body { flex: 1; }
+@media (max-width: 640px) {
+  .service-single .tour-card { flex-direction: column; }
+  .service-single .tour-img-wrap { min-height: 180px; }
+}
+.hero h1, .hero p { text-wrap: balance; }
+@media (max-width: 768px) { .hero-credit { right: auto; left: 16px; } }
