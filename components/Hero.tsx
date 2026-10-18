@@ -5,6 +5,7 @@ import { useSite } from './SiteProvider'
 import { PinIcon, WhatsAppIcon } from './Icons'
 import { privateTourService } from '@/lib/tours'
 import { whatsappLink } from '@/lib/contact'
+import { HERO } from '@/lib/home-content'
 
 export default function Hero() {
   const { t, lang, categories, services } = useSite()
@@ -32,10 +33,10 @@ export default function Hero() {
       <div className="wa-container hero-content">
         <div className="badge-hero">
           <PinIcon size={14} color="var(--gold-light)" />
-          <span>{t('heroTag')}</span>
+          <span>{HERO.tag[lang]}</span>
         </div>
-        <h1>{t('heroTitle')}</h1>
-        <p>{t('heroSub')}</p>
+        <h1>{HERO.title[lang]}</h1>
+        <p>{HERO.sub[lang]}</p>
 
         <div className="search-card">
           <form onSubmit={checkAvailability} className="search-grid">
@@ -72,6 +73,10 @@ export default function Hero() {
           </form>
         </div>
       </div>
+      <p className="hero-credit">
+        {HERO.photo.place[lang]} · <a href={HERO.photo.source} target="_blank" rel="noreferrer">{HERO.photo.author}</a>,{' '}
+        <a href={HERO.photo.licenseUrl} target="_blank" rel="noreferrer license">{HERO.photo.license}</a>
+      </p>
     </section>
   )
 }

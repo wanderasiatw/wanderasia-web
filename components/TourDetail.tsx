@@ -94,6 +94,9 @@ export default function TourDetail({ tour }: { tour: Tour }) {
               ) : (
                 <BookingForm tourTitle={tour.title.EN} />
               )}
+              <Link href={href(`/inquire?item=tours:${tour.slug}`)} className="btn btn-outline" style={{ width: '100%', padding: 12, marginTop: 10 }}>
+                {t('preferEmail')}
+              </Link>
             </div>
           </div>
         </div>

@@ -22,6 +22,6 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  // Pages only: skip Next.js internals and files such as /logo.svg, /icon.png, /sitemap.xml and /robots.txt
-  matcher: ['/((?!_next/|.*\\..*).*)'],
+  // Pages only: skip Next.js internals, API routes (/api/inquire) and files such as /logo.svg, /sitemap.xml and /robots.txt
+  matcher: ['/((?!_next/|api/|.*\\..*).*)'],
 }

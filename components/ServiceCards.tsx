@@ -26,7 +26,8 @@ export default function ServiceCards() {
             <h2 className="section-title">{t('servicesTitle')}</h2>
           </div>
         </div>
-        <div className="tour-grid">
+        {/* A lone service gets a wide card so the row doesn't look empty */}
+        <div className={featured.length === 1 ? 'service-single' : 'tour-grid'}>
           {featured.map((s) => (
             <div key={s.id} className="tour-card">
               <div className="tour-img-wrap">

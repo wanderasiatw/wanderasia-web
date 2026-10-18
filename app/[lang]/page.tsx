@@ -3,6 +3,7 @@ import Hero from '@/components/Hero'
 import TrustBar from '@/components/TrustBar'
 import TourRows from '@/components/TourRows'
 import WhyChoose from '@/components/WhyChoose'
+import HowItWorks from '@/components/HowItWorks'
 import ServiceCards from '@/components/ServiceCards'
 import JsonLd from '@/components/JsonLd'
 import { getFeaturedTours } from '@/lib/cms'
@@ -30,6 +31,7 @@ export default async function HomePage({ params }: Props) {
       <Hero />
       <TrustBar lang={lang} />
       <TourRows tours={ready} upcoming={upcoming} />
+      <HowItWorks />
       <ServiceCards />
       <WhyChoose />
     </main>

@@ -2,16 +2,12 @@
 
 import { useSite } from './SiteProvider'
 import { ChatIcon, DollarIcon, PenIcon, PinIcon } from './Icons'
+import { WHY_FEATURES } from '@/lib/home-content'
 
-const FEATURES = [
-  { Icon: PinIcon, title: 'Local Taiwan Expertise', desc: 'Headquartered in Taipei with guides who know hidden gems, night markets, and authentic culture.' },
-  { Icon: DollarIcon, title: 'Transparent Pricing', desc: '100% upfront pricing with zero mandatory shopping stops or unexpected extra fees.' },
-  { Icon: PenIcon, title: 'Tailor-Made Trips', desc: 'Custom itineraries for families, couples, and corporate groups with full flexibility.' },
-  { Icon: ChatIcon, title: '24/7 Dedicated Support', desc: 'Real-time WhatsApp messaging support throughout your entire journey in Taiwan.' },
-]
+const ICONS = { pin: PinIcon, dollar: DollarIcon, pen: PenIcon, chat: ChatIcon }
 
 export default function WhyChoose() {
-  const { t } = useSite()
+  const { t, lang } = useSite()
   return (
     <section id="about" className="section why-section">
       <div className="wa-container">
@@ -21,13 +17,16 @@ export default function WhyChoose() {
         </div>
 
         <div className="features-grid">
-          {FEATURES.map(({ Icon, title, desc }) => (
-            <div key={title} className="feature-card">
-              <div className="feature-icon"><Icon /></div>
-              <h3>{title}</h3>
-              <p>{desc}</p>
-            </div>
-          ))}
+          {WHY_FEATURES.map(({ icon, title, text }) => {
+            const Icon = ICONS[icon]
+            return (
+              <div key={title.EN} className="feature-card">
+                <div className="feature-icon"><Icon /></div>
+                <h3>{title[lang]}</h3>
+                <p>{text[lang]}</p>
+              </div>
+            )
+          })}
         </div>
       </div>
     </section>

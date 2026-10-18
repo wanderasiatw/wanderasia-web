@@ -91,6 +91,9 @@ export default function ServiceDetail({ service }: { service: Service }) {
                 <WhatsAppIcon />
                 <span>{t('enquire')}</span>
               </a>
+              <Link href={href(`/inquire?item=services:${service.slug}`)} className="btn btn-outline" style={{ width: '100%', padding: 12, marginTop: 10 }}>
+                {t('preferEmail')}
+              </Link>
             </div>
           </div>
         </div>
