@@ -15,6 +15,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Tours whose details aren't out yet are left out until they are
     ...tours.filter((t) => !t.comingSoon).map((t) => `/tours/${t.slug}`),
     ...services.map((s) => `/services/${s.slug}`),
+    '/inquire',
   ]
   return paths.flatMap((path) => {
     const languages = Object.fromEntries(LANGS.map((l) => [HTML_LANG[l], absoluteUrl(l, path)]))

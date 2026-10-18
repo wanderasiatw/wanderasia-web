@@ -5,7 +5,7 @@ import { useSite } from './SiteProvider'
 import { CONTACT } from '@/lib/contact'
 
 export default function Footer() {
-  const { toggleQr, lang, href, categories, services } = useSite()
+  const { toggleQr, lang, t, href, categories, services } = useSite()
   const open = categories.filter((c) => !c.comingSoon)
   return (
     <footer id="contact">
@@ -26,6 +26,7 @@ export default function Footer() {
               {services.map((s) => (
                 <li key={s.id}><Link href={href(`/services/${s.slug}`)}>{s.title[lang]}</Link></li>
               ))}
+              <li><Link href={href('/inquire')}>{t('sendInquiry')}</Link></li>
             </ul>
           </div>
 

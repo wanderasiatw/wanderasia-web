@@ -162,3 +162,60 @@ export async function getServiceBySlug(slug: string): Promise<Service | null> {
   }
   return SERVICES.find((s) => s.slug === slug) ?? null
 }
+
+// ---------------------------------------------------------------------------
+// Forms (e.g. the inquiry form). The CMS defines the fields; the website draws them and passes submissions on.
+
+export interface FormLabel {
+  en: string
+  zh?: string
+}
+
+export interface FormField {
+  name: string
+  type: 'text' | 'email' | 'tel' | 'textarea' | 'date' | 'number' | 'choice'
+  label: FormLabel
+  hint?: FormLabel
+  required?: boolean
+  max?: number
+  min?: number
+  options?: { value: string; label: FormLabel; group?: string }[]
+}
+
+export interface PublicForm {
+  id: string
+  title: FormLabel
+  intro: FormLabel | null
+  thanks: FormLabel
+  privacy: FormLabel | null
+  fields: FormField[]
+  oneOf: { fields: string[]; message: FormLabel }[]
+}
+
+/** A form's definition from the CMS, or null when there is no CMS or it can't be reached */
+export async function getForm(id: string): Promise<PublicForm | null> {
+  return (await cmsFetch<{ form: PublicForm }>(`/api/v1/forms/${encodeURIComponent(id)}`))?.form ?? null
+}
+
+/**
+ * Passes a filled-in form to the CMS and returns its answer as-is. The visitor's IP goes along so the CMS can
+ * apply its hourly limit per visitor; only this site can set it, because it talks to the CMS over the binding.
+ */
+export async function sendForm(id: string, body: string, visitorIp: string | null): Promise<Response> {
+  const base = cmsApiUrl()
+  if (!base) return Response.json({ error: 'Forms are not available' }, { status: 503 })
+  const url = `${base}/api/v1/forms/${encodeURIComponent(id)}`
+  const init: RequestInit = {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', ...(visitorIp ? { 'cf-connecting-ip': visitorIp } : {}) },
+    body,
+  }
+  try {
+    const binding = await cmsBinding()
+    const res = binding ? await binding.fetch(url, init) : await fetch(url, init)
+    return new Response(await res.text(), { status: res.status, headers: { 'content-type': 'application/json' } })
+  } catch (err) {
+    console.error('[cms] sending form failed:', err)
+    return Response.json({ error: 'Forms are not available' }, { status: 503 })
+  }
+}
