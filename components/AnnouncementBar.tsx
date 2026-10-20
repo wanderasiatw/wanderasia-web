@@ -13,7 +13,7 @@ export default function AnnouncementBar() {
           <span>{t('announcement')}</span>
         </div>
         <div className="flex gap-4">
-          <a href={CONTACT.phoneHref}>📞 {CONTACT.phone}</a>
+          <a href={CONTACT.whatsappUrl} target="_blank" rel="noreferrer">💬 WhatsApp {CONTACT.whatsapp}</a>
         </div>
       </div>
     </div>

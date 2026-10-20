@@ -31,11 +31,8 @@ export default function Footer() {
           </div>
 
           <div className="footer-col">
-            <h4>New Taipei Office</h4>
-            <p lang="zh-Hant">{CONTACT.addressZh}</p>
-            <p>{CONTACT.addressEn}</p>
-            <p style={{ marginTop: 6 }}>Phone: <a href={CONTACT.phoneHref}>{CONTACT.phone}</a></p>
-            <p style={{ marginTop: 6 }}>Email: <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a></p>
+            <h4>Contact Us</h4>
+            <p>Email: <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a></p>
           </div>
 
           <div className="footer-col">

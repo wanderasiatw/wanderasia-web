@@ -47,7 +47,6 @@ export function pageMetadata(
 
 /** The business itself, as schema.org data for search engines */
 export function organizationJsonLd(lang: Lang) {
-  const a = CONTACT.address
   return {
     '@context': 'https://schema.org',
     '@type': 'TravelAgency',
@@ -58,15 +57,7 @@ export function organizationJsonLd(lang: Lang) {
     logo: `${siteUrl()}/logo.svg`,
     image: `${siteUrl()}/logo.svg`,
     description: translate(lang, 'metaDesc'),
-    telephone: CONTACT.phoneHref.replace(/^tel:/, ''),
     email: CONTACT.email,
-    address: {
-      '@type': 'PostalAddress',
-      streetAddress: a.street,
-      addressLocality: a.district,
-      addressRegion: a.city,
-      addressCountry: a.countryCode,
-    },
     areaServed: { '@type': 'City', name: 'Taipei' },
   }
 }
