@@ -1,0 +1,128 @@
+// Booking types and helpers shared by the server and the browser.
+// The CMS (plyndi-cms) owns bookings, seats and payments; the website shows them and passes requests on.
+// See lib/booking/server.ts for the CMS API the website expects.
+
+export type BookingStatus = 'confirmed' | 'pending_payment' | 'paid' | 'expired' | 'cancelled'
+
+/** Stripe: cards, Apple Pay and Google Pay for travelers from abroad. ECPay: Taiwan cards, ATM transfer and convenience stores, in TWD. */
+export type PaymentMethod = 'stripe' | 'ecpay'
+export const PAYMENT_METHODS: PaymentMethod[] = ['stripe', 'ecpay']
+
+/** One date and start time of a tour, with its seats and prices */
+export interface Departure {
+  id: string
+  /** YYYY-MM-DD, Taiwan time */
+  date: string
+  /** HH:MM, 24-hour, Taiwan time */
+  time: string
+  capacity: number
+  seatsLeft: number
+  /** Per adult; 0 = free */
+  price: number
+  /** Per child; the adult price when the CMS doesn't set one */
+  childPrice: number
+  /** ISO code, e.g. USD or TWD */
+  currency: string
+}
+
+export interface Booking {
+  ref: string
+  /** Secret part of the booking link, so strangers can't open other people's bookings */
+  token: string
+  status: BookingStatus
+  tourSlug: string
+  tourTitle: string
+  departureId: string
+  date: string
+  time: string
+  adults: number
+  children: number
+  total: number
+  currency: string
+  name: string
+  email: string
+  phone: string
+  country?: string
+  notes?: string
+  lang: 'en' | 'zh'
+  /** When unpaid seats are released (pending_payment only) */
+  holdExpiresAt: string | null
+  /** The ways this booking can be paid, as set up in the CMS */
+  paymentMethods: PaymentMethod[]
+  paidWith?: PaymentMethod
+  createdAt: string
+}
+
+/** What the booking form sends */
+export interface BookingRequest {
+  tourSlug: string
+  departureId: string
+  adults: number
+  children: number
+  name: string
+  email: string
+  phone: string
+  country: string
+  notes: string
+  agree: boolean
+  lang: 'en' | 'zh'
+  /** Spam checks: hidden field, time the form was shown, Cloudflare Turnstile token */
+  _hp?: string
+  _t?: number
+  turnstile?: string
+}
+
+/** Where to send the customer to pay: a page address (Stripe Checkout) or a form to post (ECPay) */
+export type Checkout = { url: string } | { form: { action: string; fields: Record<string, string> } }
+
+/** Most guests one booking can hold, whatever the seats left */
+export const MAX_GUESTS_PER_BOOKING = 10
+/** Minutes unpaid seats are held */
+export const HOLD_MINUTES = 30
+
+export const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
+
+export function bookingTotal(dep: Pick<Departure, 'price' | 'childPrice'>, adults: number, children: number) {
+  return dep.price * adults + dep.childPrice * children
+}
+
+/** e.g. $35 or NT$1,200 */
+export function formatMoney(amount: number, currency: string) {
+  try {
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency, maximumFractionDigits: amount % 1 ? 2 : 0 }).format(amount)
+  } catch {
+    return `${currency} ${amount}`
+  }
+}
+
+const LOCALE = { EN: 'en-US', ZH: 'zh-TW' } as const
+
+/** A YYYY-MM-DD date as a Date at noon UTC, so it shows as the same day everywhere */
+export const dateOf = (ymd: string) => new Date(`${ymd}T12:00:00Z`)
+
+/** e.g. "Sat, 24 Oct 2026" or "2026年10月24日 週六" */
+export function formatDate(ymd: string, lang: 'EN' | 'ZH', withYear = true) {
+  return new Intl.DateTimeFormat(LOCALE[lang], {
+    weekday: 'short',
+    day: 'numeric',
+    month: lang === 'EN' ? 'short' : 'long',
+    ...(withYear ? { year: 'numeric' } : {}),
+    timeZone: 'UTC',
+  }).format(dateOf(ymd))
+}
+
+/** "19:00" → "7:00 PM" (English) or "19:00" (Chinese) */
+export function formatTime(hhmm: string, lang: 'EN' | 'ZH') {
+  if (lang === 'ZH') return hhmm
+  const [h, m] = hhmm.split(':').map(Number)
+  return `${((h + 11) % 12) + 1}:${String(m).padStart(2, '0')} ${h < 12 ? 'AM' : 'PM'}`
+}
+
+export function monthTitle(year: number, month: number, lang: 'EN' | 'ZH') {
+  return new Intl.DateTimeFormat(LOCALE[lang], { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(Date.UTC(year, month, 1, 12)))
+}
+
+/** Today's date in Taiwan, YYYY-MM-DD */
+export function taiwanToday() {
+  return new Date(Date.now() + 8 * 3600_000).toISOString().slice(0, 10)
+}

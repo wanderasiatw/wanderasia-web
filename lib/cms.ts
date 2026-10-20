@@ -219,3 +219,23 @@ export async function sendForm(id: string, body: string, visitorIp: string | nul
     return Response.json({ error: 'Forms are not available' }, { status: 503 })
   }
 }
+
+// ---------------------------------------------------------------------------
+// Bookings. lib/booking.ts uses this to reach the CMS booking API.
+
+/**
+ * Sends a request to the CMS and returns its answer, or null when there is no CMS or it can't be reached.
+ * Like sendForm(), it goes over the CMS service binding on Cloudflare and plain fetch() elsewhere.
+ */
+export async function cmsRequest(path: string, init?: RequestInit): Promise<Response | null> {
+  const base = cmsApiUrl()
+  if (!base) return null
+  try {
+    const url = `${base}${path}`
+    const binding = await cmsBinding()
+    return binding ? await binding.fetch(url, init) : await fetch(url, { cache: 'no-store', ...init })
+  } catch (err) {
+    console.error('[cms] request failed:', path, err)
+    return null
+  }
+}

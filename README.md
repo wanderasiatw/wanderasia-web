@@ -27,3 +27,12 @@ npm run deploy    # build and deploy to Cloudflare (wrangler must be signed in t
   - Set `SITE_URL` if the site is not served from https://wanderasia.tw.
 - Logo files live in `public/` as SVG: `logo.svg` (full, light backgrounds), `logo-light.svg` (full, dark backgrounds), `logo-symbol.svg` and `logo-wordmark.svg` (header).
 - `postcss.config.js` must be named exactly that — otherwise Tailwind/CSS is not compiled and the site renders unstyled.
+
+## Online booking
+
+Tour page **Book now** → `/tours/<slug>/book` (Date → Guests → Details → Review) → `/booking/<ref>?t=<token>` (Payment, then the confirmation). Booking terms are at `/terms` (text in `lib/terms.ts`, still a draft for Wander Asia to confirm).
+
+- The CMS owns departures, seats, bookings and payments. The website only shows them and passes requests on: `lib/booking/server.ts` lists the CMS API it expects (departures, create booking, get booking, start checkout with Stripe or ECPay). The payment provider's webhook goes to the CMS, which marks the booking paid.
+- A tour shows **Book now** only when the CMS returns departures for it. Until then (and on the live site today) the tour page keeps the WhatsApp booking form, so nothing changes for visitors.
+- **Demo mode** for showing the flow on localhost: `.env.local` has `BOOKING_DEMO=1`. It uses sample dates, seats and prices (`lib/booking/demo.ts`; `BOOKING_DEMO_PRICE` sets the sample price for tours without one, default 35), a stand-in payment page, and keeps bookings in memory until the dev server restarts. Every booking page shows a "Demo mode" notice. Never set `BOOKING_DEMO` on Cloudflare.
+- Spam protection: a hidden field and a minimum fill time are always on. Cloudflare Turnstile switches on when `TURNSTILE_SITE_KEY` and `TURNSTILE_SECRET_KEY` are set.

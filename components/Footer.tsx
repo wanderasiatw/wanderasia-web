@@ -46,6 +46,10 @@ export default function Footer() {
 
         <div style={{ textAlign: 'center', paddingTop: 20, fontSize: 11 }}>
           © {new Date().getFullYear()} Wander Asia Travel Agency. All rights reserved.
+          <span className="footer-credit">
+            {' · '}Website by{' '}
+            <a href="https://plyndi.com/?utm_source=wanderasia&utm_medium=footer_credit" target="_blank" rel="noopener">Plyndi</a>
+          </span>
         </div>
       </div>
     </footer>

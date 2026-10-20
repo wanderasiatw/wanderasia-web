@@ -2,13 +2,22 @@
 
 import Link from 'next/link'
 import { CURRENCY, categoryOf, formatPrice, type Tour } from '@/lib/tours'
-import { askAboutLink } from '@/lib/contact'
+import { askAboutLink, whatsappLink } from '@/lib/contact'
+import { fill } from '@/lib/i18n'
+import { formatDate, formatMoney } from '@/lib/booking/types'
 import BookingForm from './BookingForm'
 import TourFacts from './TourFacts'
 import { useSite } from './SiteProvider'
 
+/** Online booking for the tour, when the CMS has dates for it: price per adult and the first date with seats */
+export interface TourBooking {
+  price: number
+  currency: string
+  nextDate: string | null
+}
+
 /** The tour page's content, in the visitor's chosen language */
-export default function TourDetail({ tour }: { tour: Tour }) {
+export default function TourDetail({ tour, booking }: { tour: Tour; booking?: TourBooking | null }) {
   const { lang, t, href, categories } = useSite()
   const category = categoryOf(categories, tour.category)
   const summary = [tour.startTime?.[lang], tour.duration?.[lang]].filter(Boolean).join(' • ')
@@ -83,11 +92,32 @@ export default function TourDetail({ tour }: { tour: Tour }) {
           <div>
             <div className="panel" style={{ position: 'sticky', top: 90, boxShadow: 'var(--shadow-lg)' }}>
               <span style={{ fontSize: 11, color: 'var(--stone-400)' }}>{t('pricePerPerson')}</span>
-              <div style={{ fontSize: 28, fontWeight: 900, color: 'var(--primary)', marginBottom: 16 }}>
-                {tour.price === 0 ? t('free') : tour.price == null ? <span style={{ fontSize: 20 }}>{t('priceOnRequest')}</span> : formatPrice(tour.price)}{' '}
-                {tour.price ? <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--stone-600)' }}>{CURRENCY}</span> : null}
-              </div>
-              {tour.comingSoon ? (
+              {booking ? (
+                <div style={{ fontSize: 28, fontWeight: 900, color: 'var(--primary)', marginBottom: 16 }}>
+                  {booking.price === 0 ? t('free') : formatMoney(booking.price, booking.currency)}{' '}
+                  {booking.price ? <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--stone-600)' }}>{booking.currency}</span> : null}
+                </div>
+              ) : (
+                <div style={{ fontSize: 28, fontWeight: 900, color: 'var(--primary)', marginBottom: 16 }}>
+                  {tour.price === 0 ? t('free') : tour.price == null ? <span style={{ fontSize: 20 }}>{t('priceOnRequest')}</span> : formatPrice(tour.price)}{' '}
+                  {tour.price ? <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--stone-600)' }}>{CURRENCY}</span> : null}
+                </div>
+              )}
+              {booking && !tour.comingSoon ? (
+                <>
+                  {booking.nextDate && (
+                    <p className="tour-book-meta">
+                      <strong>{fill(t('nextAvailable'), { date: formatDate(booking.nextDate, lang, false) })}</strong>
+                    </p>
+                  )}
+                  <Link href={href(`/tours/${tour.slug}/book`)} className="btn btn-primary" style={{ width: '100%', padding: 14, fontSize: 15 }}>
+                    {t('bookNow')}
+                  </Link>
+                  <a href={whatsappLink(`Hi Wander Asia! I have a question about the ${tour.title.EN}.`)} target="_blank" rel="noreferrer" className="link-quiet">
+                    {t('askQuestion')}
+                  </a>
+                </>
+              ) : tour.comingSoon ? (
                 <a href={askAboutLink(`the ${tour.title.EN}`)} target="_blank" rel="noreferrer" className="btn btn-whatsapp" style={{ width: '100%', padding: 12 }}>
                   {t('soonAskWhatsApp')}
                 </a>
