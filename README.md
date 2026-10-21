@@ -36,3 +36,10 @@ Tour page **Book now** → `/tours/<slug>/book` (Date → Guests → Details →
 - A tour shows **Book now** only when the CMS returns departures for it. Until then (and on the live site today) the tour page keeps the WhatsApp booking form, so nothing changes for visitors.
 - **Demo mode** for showing the flow on localhost: `.env.local` has `BOOKING_DEMO=1`. It uses sample dates, seats and prices (`lib/booking/demo.ts`; `BOOKING_DEMO_PRICE` sets the sample price for tours without one, default 35), a stand-in payment page, and keeps bookings in memory until the dev server restarts. Every booking page shows a "Demo mode" notice. Never set `BOOKING_DEMO` on Cloudflare.
 - Spam protection: a hidden field and a minimum fill time are always on. Cloudflare Turnstile switches on when `TURNSTILE_SITE_KEY` and `TURNSTILE_SECRET_KEY` are set.
+
+## Blog
+
+`/blog` lists posts with tabs for Tour stories, Guest stories and Travel tips; each post is at `/blog/<slug>` with its photos, the tour it's about, and a "Share your story" box (email or WhatsApp). The home page shows the three newest posts. Menu order: Tours, Services, Blog, Contact, About Us (with a menu button on phones).
+
+- Posts come from the CMS: `lib/blog.ts` lists the API it expects (`/api/v1/posts`, `/api/v1/posts/:slug`) and the fields.
+- Demo mode: `BLOG_DEMO=1` in `.env.local` shows four sample posts, labelled "Sample", kept out of the sitemap and search results. Without it and without CMS posts, the blog shows "Stories from our tours are coming soon" and the home page hides the section.

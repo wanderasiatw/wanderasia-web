@@ -22,6 +22,9 @@ const cmsApiUrl = () => process.env.CMS_API_URL?.replace(/\/+$/, '')
  * Workers can fail with Cloudflare error 1042). Elsewhere (next dev, Vercel) there is no binding and plain fetch() is used.
  */
 async function cmsBinding(): Promise<{ fetch: typeof fetch } | undefined> {
+  // Testing against a CMS running on this computer (CMS_API_URL=http://localhost:8787): talk to it directly,
+  // because the binding in `next dev` points at the CMS Worker on Cloudflare, not the local one
+  if (/^http:\/\/(localhost|127\.0\.0\.1)(:|\/|$)/.test(cmsApiUrl() ?? '')) return undefined
   try {
     const { getCloudflareContext } = await import('@opennextjs/cloudflare')
     return (getCloudflareContext().env as { CMS?: { fetch: typeof fetch } }).CMS

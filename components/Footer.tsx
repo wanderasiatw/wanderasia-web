@@ -26,7 +26,9 @@ export default function Footer() {
               {services.map((s) => (
                 <li key={s.id}><Link href={href(`/services/${s.slug}`)}>{s.title[lang]}</Link></li>
               ))}
+              <li><Link href={href('/blog')}>{t('navBlog')}</Link></li>
               <li><Link href={href('/inquire')}>{t('sendInquiry')}</Link></li>
+              <li><Link href={href('/terms')}>{t('bookingTerms')}</Link></li>
             </ul>
           </div>
 

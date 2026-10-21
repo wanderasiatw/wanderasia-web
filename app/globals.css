@@ -617,13 +617,6 @@ footer {
 .footer-links a:hover {
     color: var(--brand-gold);
 }
-.footer-credit a {
-    color: var(--ivory);
-    font-weight: 700;
-}
-.footer-credit a:hover {
-    color: var(--brand-gold);
-}
 
 /* Floating WhatsApp Button & Chatbox */
 .floating-whatsapp-wrap {

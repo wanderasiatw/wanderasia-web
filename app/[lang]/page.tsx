@@ -6,6 +6,8 @@ import WhyChoose from '@/components/WhyChoose'
 import HowItWorks from '@/components/HowItWorks'
 import ServiceCards from '@/components/ServiceCards'
 import JsonLd from '@/components/JsonLd'
+import LatestPosts from '@/components/blog/LatestPosts'
+import { getPosts } from '@/lib/blog'
 import { getFeaturedTours } from '@/lib/cms'
 import { splitComingSoon } from '@/lib/tours'
 import { langFromParam, translate } from '@/lib/i18n'
@@ -23,7 +25,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function HomePage({ params }: Props) {
   const lang = langFromParam((await params).lang) ?? 'EN'
-  const { ready, upcoming } = splitComingSoon(await getFeaturedTours())
+  const [tours, posts] = await Promise.all([getFeaturedTours(), getPosts()])
+  const { ready, upcoming } = splitComingSoon(tours)
 
   return (
     <main>
@@ -33,6 +36,7 @@ export default async function HomePage({ params }: Props) {
       <TourRows tours={ready} upcoming={upcoming} />
       <HowItWorks />
       <ServiceCards />
+      <LatestPosts posts={posts} />
       <WhyChoose />
     </main>
   )
