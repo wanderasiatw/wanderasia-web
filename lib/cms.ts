@@ -20,7 +20,8 @@ import {
 //                text is converted automatically (opencc-js, Traditional → Simplified)
 //   titleJa      Japanese — optional; falls back to English when the CMS doesn't send it
 //   titleKo      Korean — optional; falls back to English when the CMS doesn't send it
-// Tastings use the same pattern on `name` (name, nameZh, nameZhHans, nameJa, nameKo).
+// Tastings use the same pattern on `name` (name, nameZh, nameZhHans, nameJa, nameKo), and gallery
+// photos (the `photos` repeater on a tour) use it on `caption`.
 // Form labels (lib/cms.ts, FormLabel) are objects: { en, zh, zhHans, ja, ko } with the same fallbacks.
 //
 // The Plyndi CMS, e.g. https://wanderasia-cms.<account>.workers.dev
@@ -101,6 +102,10 @@ function toTour(doc: Raw): Tour {
     meetingPoint: optionalText(doc, 'meetingPoint'),
     startTime: optionalText(doc, 'startTime'),
     image: str(doc.mainImage),
+    photos: (Array.isArray(doc.photos) ? doc.photos : [])
+      .map((p: Raw) => ({ image: str(p.image) ?? '', caption: text(p, 'caption') }))
+      .filter((p) => p.image),
+    videoUrl: str(doc.videoUrl),
     desc: text(doc, 'description'),
     body: textList(doc, 'body', paragraphs),
     highlights: textList(doc, 'highlights'),

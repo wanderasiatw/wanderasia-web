@@ -32,6 +32,12 @@ export interface Tasting {
   image?: string
 }
 
+/** One extra photo in a tour's gallery, with its caption in every language */
+export interface TourPhoto {
+  image: string
+  caption: Text
+}
+
 export interface Tour {
   id: string
   slug: string
@@ -45,6 +51,10 @@ export interface Tour {
   startTime?: Text
   /** Cover photo; the category cover is shown when missing */
   image?: string
+  /** Gallery photos for the tour page, shown after the cover photo */
+  photos: TourPhoto[]
+  /** A YouTube or Vimeo link, shown at the end of the gallery */
+  videoUrl?: string
   /** One-line summary for cards */
   desc: Text
   /** Full description paragraphs for the tour page */
@@ -174,6 +184,7 @@ export const TOURS: Tour[] = [
     desc: en('Route and meeting point coming soon. Message us to be first to join.'),
     body: enList([]),
     highlights: enList([]),
+    photos: [],
     tastings: [],
     comingSoon: true,
   },
@@ -187,6 +198,7 @@ export const TOURS: Tour[] = [
     desc: en('Route and meeting point coming soon. Message us to be first to join.'),
     body: enList([]),
     highlights: enList([]),
+    photos: [],
     tastings: [],
     comingSoon: true,
   },
@@ -219,6 +231,7 @@ export const TOURS: Tour[] = [
       { name: 'Mung bean cake', zh: '綠豆糕' },
       { name: 'Sweet potato balls', zh: '地瓜球' },
     ],
+    photos: [],
     note: en('Tips are welcome. Give whatever you feel we’ve earned.'),
   },
   {
@@ -231,6 +244,7 @@ export const TOURS: Tour[] = [
     desc: en('Details coming soon. Message us to be first to join.'),
     body: enList([]),
     highlights: enList([]),
+    photos: [],
     tastings: [],
     comingSoon: true,
   },

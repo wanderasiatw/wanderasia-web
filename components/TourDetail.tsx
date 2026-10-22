@@ -7,6 +7,7 @@ import { fill } from '@/lib/i18n'
 import { formatDate, formatMoney } from '@/lib/booking/types'
 import BookingForm from './BookingForm'
 import TourFacts from './TourFacts'
+import TourGallery from './TourGallery'
 import { useSite } from './SiteProvider'
 
 /** Online booking for the tour, when the CMS has dates for it: price per adult and the first date with seats */
@@ -38,6 +39,8 @@ export default function TourDetail({ tour, booking }: { tour: Tour; booking?: To
       <section className="section">
         <div className="wa-container detail-grid">
           <div className="flex flex-col gap-6">
+            <TourGallery tour={tour} />
+
             <div className="panel">
               <h2 className="section-title" style={{ fontSize: 20, marginBottom: 12 }}>{t('aboutTour')}</h2>
               <TourFacts tour={tour} />
