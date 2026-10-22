@@ -6,6 +6,7 @@ import { HTML_LANG, langFromParam, translate } from '@/lib/i18n'
 import { absoluteUrl, breadcrumbJsonLd, pageMetadata, providerJsonLd } from '@/lib/seo'
 import TourDetail from '@/components/TourDetail'
 import JsonLd from '@/components/JsonLd'
+import { getDepartures, nextAvailable } from '@/lib/booking/server'
 
 // Pages are rendered on each request so CMS changes show up without a rebuild
 export const dynamic = 'force-dynamic'
@@ -17,9 +18,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const lang = langFromParam(param) ?? 'EN'
   const tour = await getTourBySlug(slug)
   if (!tour) return {}
-  // The CMS SEO fields are in English, so Chinese pages use the Chinese title and summary
-  const title = lang === 'EN' ? (tour.seoTitle ?? `${tour.title.EN} | Wander Asia`) : `${tour.title.ZH} | ${translate('ZH', 'siteName')}`
-  const description = lang === 'EN' ? (tour.seoDescription ?? tour.desc.EN) : tour.desc.ZH
+  // The CMS SEO fields are in English, so the other languages use their own title and summary
+  const title = lang === 'EN' ? (tour.seoTitle ?? `${tour.title.EN} | Wander Asia`) : `${tour.title[lang]} | ${translate(lang, 'siteName')}`
+  const description = lang === 'EN' ? (tour.seoDescription ?? tour.desc.EN) : tour.desc[lang]
   // Tours whose details aren't out yet stay out of search results until they are
   return pageMetadata(lang, `/tours/${tour.slug}`, { title, description, image: tour.image, noindex: tour.comingSoon })
 }
@@ -29,6 +30,11 @@ export default async function TourDetailPage({ params }: Props) {
   const lang = langFromParam(param) ?? 'EN'
   const tour = await getTourBySlug(slug)
   if (!tour) notFound()
+
+  // Online booking shows when the CMS has dates for this tour; otherwise the WhatsApp booking form does
+  const departures = await getDepartures(tour)
+  const first = departures?.[0]
+  const booking = first ? { price: first.price, currency: first.currency, nextDate: nextAvailable(departures)?.date ?? null } : null
 
   const path = `/tours/${tour.slug}`
   const trip = {
@@ -54,7 +60,7 @@ export default async function TourDetailPage({ params }: Props) {
   return (
     <>
       {!tour.comingSoon && <JsonLd data={[trip, crumbs]} />}
-      <TourDetail tour={tour} />
+      <TourDetail tour={tour} booking={booking} />
     </>
   )
 }

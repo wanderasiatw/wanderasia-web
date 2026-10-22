@@ -17,9 +17,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const lang = langFromParam(param) ?? 'EN'
   const service = await getServiceBySlug(slug)
   if (!service) return {}
-  // The CMS SEO fields are in English, so Chinese pages use the Chinese title and summary
-  const title = lang === 'EN' ? (service.seoTitle ?? `${service.title.EN} | Wander Asia`) : `${service.title.ZH} | ${translate('ZH', 'siteName')}`
-  const description = lang === 'EN' ? (service.seoDescription ?? service.summary.EN) : service.summary.ZH
+  // The CMS SEO fields are in English, so the other languages use their own title and summary
+  const title = lang === 'EN' ? (service.seoTitle ?? `${service.title.EN} | Wander Asia`) : `${service.title[lang]} | ${translate(lang, 'siteName')}`
+  const description = lang === 'EN' ? (service.seoDescription ?? service.summary.EN) : service.summary[lang]
   return pageMetadata(lang, `/services/${service.slug}`, { title, description, image: service.image })
 }
 
