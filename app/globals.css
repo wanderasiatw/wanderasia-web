@@ -415,6 +415,18 @@ input[type="date"].form-control::-webkit-calendar-picker-indicator {
     opacity: 0.6;
 }
 .search-grid .btn { height: 44px; }
+/* Small WhatsApp link under the availability search */
+.hero-chat {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--stone-600);
+    text-decoration: none;
+}
+.hero-chat:hover { color: var(--primary); text-decoration: underline; }
 @media (max-width: 768px) {
     /* 16px stops iOS from zooming into the field on tap */
     .form-control { font-size: 16px; height: 48px; }

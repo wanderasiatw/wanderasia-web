@@ -31,7 +31,7 @@ export default async function HomePage({ params }: Props) {
   return (
     <main>
       <JsonLd data={organizationJsonLd(lang)} />
-      <Hero />
+      <Hero tours={ready} />
       <TrustBar lang={lang} />
       <TourRows tours={ready} upcoming={upcoming} />
       <HowItWorks />

@@ -1,30 +1,52 @@
 'use client'
 
 import { useState, type FormEvent } from 'react'
-import { useSite } from './SiteProvider'
+import { useRouter } from 'next/navigation'
+import { CalendarCheck } from 'lucide-react'
+import { scrollToTours, useSite } from './SiteProvider'
 import { PinIcon, WhatsAppIcon } from './Icons'
-import { privateTourService } from '@/lib/tours'
+import { privateTourService, type Tour } from '@/lib/tours'
 import { whatsappLink } from '@/lib/contact'
 import { HERO } from '@/lib/home-content'
 
-export default function Hero() {
-  const { t, lang, categories, services } = useSite()
+/** Today in Taipei as YYYY-MM-DD, so past dates can't be picked */
+const taipeiToday = () => new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Taipei' })
+
+export default function Hero({ tours = [] }: { tours?: Tour[] }) {
+  const { t, lang, href, services } = useSite()
+  const router = useRouter()
   const [type, setType] = useState('')
   const [date, setDate] = useState('')
   const [guests, setGuests] = useState(2)
 
-  const options = [...categories.map((c) => ({ key: c.key, title: c.title })), { key: 'private', title: privateTourService(services).title }]
+  const privateTour = privateTourService(services)
+  const options = [
+    ...tours.map((tour) => ({ key: `tour:${tour.slug}`, title: tour.title })),
+    { key: 'private', title: privateTour.title },
+  ]
+  const chosen = options.find((o) => o.key === type)
 
+  // Same details, sent as a WhatsApp message for people who'd rather chat
+  const chatMsg = [
+    "Hi Wander Asia! I'd like to check availability.",
+    `Tour: ${chosen?.title.EN ?? 'Not sure yet'}`,
+    `Date: ${date || 'flexible'}`,
+    `Guests: ${guests === 10 ? '10+' : guests}`,
+  ].join('\n')
+
+  /** Opens the tour's booking page (live dates and seats) with the date and guests filled in */
   function checkAvailability(e: FormEvent) {
     e.preventDefault()
-    const tour = options.find((o) => o.key === type)?.title.EN ?? 'Not sure yet'
-    const msg = [
-      "Hi Wander Asia! I'd like to check availability.",
-      `Tour: ${tour}`,
-      `Date: ${date || 'flexible'}`,
-      `Guests: ${guests === 10 ? '10+' : guests}`,
-    ].join('\n')
-    window.open(whatsappLink(msg), '_blank', 'noopener,noreferrer')
+    if (type.startsWith('tour:')) {
+      const q = new URLSearchParams()
+      if (date) q.set('date', date)
+      q.set('a', String(guests))
+      router.push(`${href(`/tours/${type.slice(5)}/book`)}?${q}`)
+    } else if (type === 'private') {
+      router.push(href(`/services/${privateTour.slug}`))
+    } else {
+      scrollToTours('tours', lang)
+    }
   }
 
   return (
@@ -52,7 +74,7 @@ export default function Hero() {
 
             <div className="form-group">
               <label htmlFor="search-date">{t('lblDate')}</label>
-              <input id="search-date" type="date" className="form-control" value={date} onChange={(e) => setDate(e.target.value)} />
+              <input id="search-date" type="date" className="form-control" min={taipeiToday()} value={date} onChange={(e) => setDate(e.target.value)} />
             </div>
 
             <div className="form-group">
@@ -65,12 +87,16 @@ export default function Hero() {
             </div>
 
             <div className="form-group">
-              <button type="submit" className="btn btn-whatsapp" style={{ width: '100%', padding: 11 }}>
-                <WhatsAppIcon />
+              <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: 11 }}>
+                <CalendarCheck size={18} aria-hidden="true" />
                 <span>{t('checkAvail')}</span>
               </button>
             </div>
           </form>
+          <a className="hero-chat" href={whatsappLink(chatMsg)} target="_blank" rel="noopener noreferrer">
+            <WhatsAppIcon size={14} />
+            <span>{t('preferChat')}</span>
+          </a>
         </div>
       </div>
       <p className="hero-credit">
