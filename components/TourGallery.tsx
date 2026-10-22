@@ -32,9 +32,9 @@ function embedUrl(url: string): string | null {
 }
 
 /**
- * The tour page's photo gallery: the cover photo first, then the tour's CMS photos, then its video.
- * Shown only when there is more to see than the cover photo alone — a stage with thumbnails below it,
- * and a full-screen viewer on click, with arrows, keyboard and swipe to move through the photos.
+ * The tour page's photo mosaic: the cover photo large, the next CMS photos beside it (and the video
+ * when it fits), each cell opening the full-screen viewer — with arrows, keyboard and swipe to move
+ * through everything. Shown only when the tour has at least one photo of its own.
  */
 export default function TourGallery({ tour }: { tour: Tour }) {
   const { lang, t } = useSite()
@@ -72,9 +72,13 @@ export default function TourGallery({ tour }: { tour: Tour }) {
     }
   }, [open, go])
 
-  if (items.length < 2) return null
+  // The mosaic needs at least one photo of the tour's own; a video alone leaves the page as it was
+  if (photoCount === 0) return null
 
   const current = items[Math.min(index, items.length - 1)]
+  // The cells the mosaic shows: the first photos, plus the video when it fits; everything stays reachable in the viewer
+  const cells = items.slice(0, 3)
+  const lastPhotoCell = cells.reduce((acc, item, i) => (item.kind === 'photo' ? i : acc), -1)
   const counter = `${Math.min(index, items.length - 1) + 1} / ${items.length}`
 
   const swipe = {
@@ -101,44 +105,28 @@ export default function TourGallery({ tour }: { tour: Tour }) {
   )
 
   return (
-    <div className="panel">
-      <h2 className="section-title" style={{ fontSize: 20, marginBottom: 12 }}>{t('galleryTitle')}</h2>
-
-      <div className="gallery-stage" {...swipe}>
-        {current.kind === 'photo' ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={current.src} alt={current.caption || tour.title[lang]} onClick={() => setOpen(true)} />
-        ) : (
-          <iframe src={current.src} title={t('videoLabel')} allow="accelerometer; autoplay; encrypted-media; picture-in-picture" allowFullScreen />
-        )}
-        {arrows('gallery-arrow')}
-        <span className="gallery-counter">{counter}</span>
-        {photoCount > 1 && (
-          <button type="button" className="gallery-viewall" onClick={() => { if (current.kind !== 'photo') setIndex(0); setOpen(true) }}>
-            {fill(t('viewAllPhotos'), { n: photoCount })}
-          </button>
-        )}
-      </div>
-      {current.kind === 'photo' && current.caption && <p className="gallery-caption">{current.caption}</p>}
-
-      <div className="gallery-thumbs">
-        {items.map((item, i) => (
-          <button
-            key={`${item.kind}-${item.src}`}
-            type="button"
-            className={i === index ? 'gallery-thumb active' : 'gallery-thumb'}
-            aria-label={item.kind === 'video' ? t('videoLabel') : item.caption || tour.title[lang]}
-            onClick={() => setIndex(i)}
-          >
-            {item.kind === 'photo' ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={item.src} alt="" loading="lazy" />
-            ) : (
-              <span className="gallery-thumb-video"><Play size={18} />{t('videoLabel')}</span>
-            )}
-          </button>
-        ))}
-      </div>
+    <div className={`tp-mosaic tp-mosaic-${cells.length}`}>
+      {cells.map((item, i) => (
+        <button
+          key={`${item.kind}-${item.src}`}
+          type="button"
+          className={i === 0 ? 'tp-cell tp-cell-main' : 'tp-cell'}
+          aria-label={item.kind === 'video' ? t('videoLabel') : item.caption || tour.title[lang]}
+          onClick={() => { setIndex(i); setOpen(true) }}
+        >
+          {item.kind === 'photo' ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={item.src} alt="" loading={i === 0 ? 'eager' : 'lazy'} decoding="async" />
+          ) : (
+            <span className="tp-cell-video">
+              <Play size={20} />
+              {t('videoLabel')}
+            </span>
+          )}
+          {item.kind === 'photo' && item.caption && <span className="tp-cell-caption">{item.caption}</span>}
+          {i === lastPhotoCell && photoCount > 1 && <span className="tp-viewall">{fill(t('viewAllPhotos'), { n: photoCount })}</span>}
+        </button>
+      ))}
 
       {open && (
         <div className="gallery-lightbox" role="dialog" aria-modal="true" onClick={() => setOpen(false)}>

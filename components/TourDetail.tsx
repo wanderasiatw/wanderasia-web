@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { BadgeCheck } from 'lucide-react'
-import { categoryOf, currencyOf, formatPrice, type Tour } from '@/lib/tours'
+import { CURRENCY, categoryOf, formatPrice, type Tour } from '@/lib/tours'
 import { askAboutLink, whatsappLink } from '@/lib/contact'
 import { fill } from '@/lib/i18n'
 import { formatDate, formatMoney } from '@/lib/booking/types'
@@ -24,45 +24,55 @@ export interface TourBooking {
 export default function TourDetail({ tour, booking, related = [] }: { tour: Tour; booking?: TourBooking | null; related?: Tour[] }) {
   const { lang, t, href, categories } = useSite()
   const category = categoryOf(categories, tour.category)
-  const summary = [tour.startTime?.[lang], tour.duration?.[lang]].filter(Boolean).join(' • ')
   const paragraphs = tour.body[lang].length > 0 ? tour.body[lang] : [tour.desc[lang]]
   const highlights = tour.highlights[lang]
-  const hasEssentials = Boolean(tour.meetingPoint || tour.startTime || tour.duration || tour.facts.length > 0 || tour.ratings.length > 0)
   // The guest cap for the WhatsApp form, read from a "group size" key fact when the CMS states one
   const capFact = tour.facts.find((f) => f.icon === 'users' || f.icon === 'group')
   const maxGuests = capFact ? Number(capFact.text.EN.match(/\d+/)?.[0]) || undefined : undefined
+  // Whether the mosaic gallery has anything to show (the tour's own photos; the video rides along in the viewer)
+  const hasMedia = Boolean(tour.image) || tour.photos.length > 0
 
   return (
-    <main>
-      <div className={tour.image ? 'hero hero-photo' : 'hero'} style={{ padding: '60px 0' }}>
-        <div className="hero-bg" style={tour.image ? { backgroundImage: `url(${tour.image})` } : undefined} />
-        <div className="wa-container hero-content">
-          <div className="hero-badges">
-            <div className="badge-hero">{category?.title[lang]} • {tour.location[lang]}</div>
-            {tour.badge && <span className="badge-chip">{tour.badge[lang]}</span>}
-          </div>
-          <h1>{tour.title[lang]}</h1>
-          {tour.subtitle && <p className="hero-subtitle">{tour.subtitle[lang]}</p>}
-          {summary && <p style={{ marginBottom: 0 }}>{summary}</p>}
-        </div>
-      </div>
+    <main className="tour-page">
+      <div className="wa-container">
+        {category && (
+          <nav className="tp-crumb">
+            {t('taiwanLabel')}
+            <span>/</span>
+            {category.title[lang]}
+          </nav>
+        )}
 
-      {hasEssentials && (
-        <div className="essentials-band">
-          <div className="wa-container essentials-inner">
-            <TourFacts tour={tour} />
-            <RatingChips tour={tour} />
+        <div className="tp-intro">
+          <div className="tp-intro-main">
+            {(category || tour.location[lang]) && (
+              <div className="tp-eyebrow">{[category?.title[lang], tour.location[lang]].filter(Boolean).join(' • ')}</div>
+            )}
+            <h1 className="tp-title">{tour.title[lang]}</h1>
+            {tour.subtitle && <p className="tp-lede">{tour.subtitle[lang]}</p>}
           </div>
+          <RatingChips tour={tour} />
         </div>
-      )}
 
-      <section className="section">
-        <div className="wa-container detail-grid">
-          <div className="flex flex-col gap-6">
+        {hasMedia ? (
+          <div className="tp-mosaic-wrap">
+            {tour.badge && <span className="badge-chip tp-badge">{tour.badge[lang]}</span>}
             <TourGallery tour={tour} />
+          </div>
+        ) : (
+          tour.badge && (
+            <div className="tp-badge-row">
+              <span className="badge-chip">{tour.badge[lang]}</span>
+            </div>
+          )
+        )}
 
-            <div className="panel">
-              <h2 className="section-title" style={{ fontSize: 20, marginBottom: 12 }}>{t('aboutTour')}</h2>
+        <TourFacts tour={tour} />
+
+        <div className="detail-grid tp-grid">
+          <div className="tp-col">
+            <div className="tp-section">
+              <h2>{t('aboutTour')}</h2>
               <div className="flex flex-col gap-3 journey-steps">
                 {paragraphs.map((p) => (
                   <p key={p} style={{ color: 'var(--stone-600)', fontSize: 14 }}>{p}</p>
@@ -72,13 +82,13 @@ export default function TourDetail({ tour, booking, related = [] }: { tour: Tour
             </div>
 
             {highlights.length > 0 && (
-              <div className="panel">
-                <h2 className="section-title" style={{ fontSize: 20, marginBottom: 12 }}>{t('highlights')}</h2>
-                <div className="flex flex-col gap-3">
+              <div className="tp-section">
+                <h2>{t('highlights')}</h2>
+                <div className="tp-highlights">
                   {highlights.map((h, i) => (
-                    <div key={h} style={{ borderLeft: '3px solid var(--primary)', paddingLeft: 12, fontSize: 14 }}>
-                      <span style={{ fontWeight: 800, color: 'var(--primary)', marginRight: 8 }}>{String(i + 1).padStart(2, '0')}</span>
-                      {h}
+                    <div key={h} className="tp-highlight">
+                      <strong>{String(i + 1).padStart(2, '0')}</strong>
+                      <span>{h}</span>
                     </div>
                   ))}
                 </div>
@@ -88,8 +98,8 @@ export default function TourDetail({ tour, booking, related = [] }: { tour: Tour
             <PracticalDetails tour={tour} />
 
             {tour.tastings.length > 0 && (
-              <div className="panel">
-                <h2 className="section-title" style={{ fontSize: 20, marginBottom: 4 }}>{t('tasteTitle')}</h2>
+              <div className="tp-section">
+                <h2>{t('tasteTitle')}</h2>
                 <p style={{ color: 'var(--stone-600)', fontSize: 13, marginBottom: 14 }}>{t('tasteBlurb')}</p>
                 <div className="tasting-grid">
                   {tour.tastings.map((f) => {
@@ -117,21 +127,21 @@ export default function TourDetail({ tour, booking, related = [] }: { tour: Tour
             <RatingsBlock tour={tour} />
             <PoliciesBlock tour={tour} />
 
-            <Link href={href('/tours')} style={{ fontSize: 13, fontWeight: 700, color: 'var(--primary)' }}>{t('backToTours')}</Link>
+            <Link href={href('/tours')} style={{ fontSize: 13, fontWeight: 700, color: 'var(--primary)', display: 'inline-block', marginTop: 20 }}>{t('backToTours')}</Link>
           </div>
 
           <div>
-            <div className="panel" id="book" style={{ position: 'sticky', top: 90, boxShadow: 'var(--shadow-lg)' }}>
+            <div className="panel tp-book" id="book" style={{ position: 'sticky', top: 90 }}>
               <span style={{ fontSize: 11, color: 'var(--stone-400)' }}>{t('pricePerPerson')}</span>
               {booking ? (
                 <div style={{ fontSize: 28, fontWeight: 900, color: 'var(--primary)', marginBottom: 16 }}>
                   {booking.price === 0 ? t('free') : formatMoney(booking.price, booking.currency)}{' '}
-                  {booking.price && booking.currency === 'USD' ? <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--stone-600)' }}>USD</span> : null}
+                  {booking.price ? <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--stone-600)' }}>{booking.currency}</span> : null}
                 </div>
               ) : (
                 <div style={{ fontSize: 28, fontWeight: 900, color: 'var(--primary)', marginBottom: 16 }}>
-                  {tour.price === 0 ? t('free') : tour.price == null ? <span style={{ fontSize: 20 }}>{t('priceOnRequest')}</span> : formatPrice(tour.price, currencyOf(tour))}{' '}
-                  {tour.price && currencyOf(tour) === 'USD' ? <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--stone-600)' }}>USD</span> : null}
+                  {tour.price === 0 ? t('free') : tour.price == null ? <span style={{ fontSize: 20 }}>{t('priceOnRequest')}</span> : formatPrice(tour.price)}{' '}
+                  {tour.price ? <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--stone-600)' }}>{CURRENCY}</span> : null}
                 </div>
               )}
               {tour.freeCancellation && (
@@ -159,7 +169,7 @@ export default function TourDetail({ tour, booking, related = [] }: { tour: Tour
                   {t('soonAskWhatsApp')}
                 </a>
               ) : (
-                <BookingForm tourTitle={tour.title.EN} price={tour.price} currency={currencyOf(tour)} maxGuests={maxGuests} />
+                <BookingForm tourTitle={tour.title.EN} price={tour.price} maxGuests={maxGuests} />
               )}
               <Link href={href(`/inquire?item=tours:${tour.slug}`)} className="btn btn-outline" style={{ width: '100%', padding: 12, marginTop: 10 }}>
                 {t('preferEmail')}
@@ -167,7 +177,7 @@ export default function TourDetail({ tour, booking, related = [] }: { tour: Tour
             </div>
           </div>
         </div>
-      </section>
+      </div>
 
       <RelatedTours tours={related} />
       <StickyBookBar tour={tour} booking={booking} />

@@ -37,8 +37,9 @@ const FACT_ICONS: Record<string, LucideIcon> = {
 }
 
 /**
- * The essentials strip under the hero: meeting point, start time and duration,
- * plus the tour's key facts from the CMS (group size, language, …).
+ * The facts row under the photo mosaic: meeting point, start time and duration,
+ * plus the tour's key facts from the CMS (group size, language, …) — each one a
+ * circled icon with its value and label, shown only when the data exists.
  */
 export default function TourFacts({ tour }: { tour: Tour }) {
   const { lang, t } = useSite()
@@ -53,19 +54,26 @@ export default function TourFacts({ tour }: { tour: Tour }) {
   if (facts.length === 0 && extra.length === 0) return null
 
   return (
-    <ul className="tour-facts">
+    <ul className="tp-facts">
       {facts.map(({ Icon, label, value }) => (
         <li key={label}>
-          <Icon size={16} />
-          <span>
-            <strong>{label}:</strong> {value}
+          <span className="tp-fact-ico">
+            <Icon size={15} />
+          </span>
+          <span className="tp-fact-text">
+            <strong>{value}</strong>
+            <small>{label}</small>
           </span>
         </li>
       ))}
       {extra.map(({ Icon, value }, i) => (
         <li key={`${value}-${i}`}>
-          <Icon size={16} />
-          <span>{value}</span>
+          <span className="tp-fact-ico">
+            <Icon size={15} />
+          </span>
+          <span className="tp-fact-text">
+            <strong>{value}</strong>
+          </span>
         </li>
       ))}
     </ul>

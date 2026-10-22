@@ -78,10 +78,8 @@ export function RatingsBlock({ tour }: { tour: Tour }) {
   const { t } = useSite()
   if (tour.ratings.length === 0) return null
   return (
-    <div className="panel">
-      <h2 className="section-title" style={{ fontSize: 20, marginBottom: 12 }}>
-        {t('ratingsTitle')}
-      </h2>
+    <div className="tp-section">
+      <h2>{t('ratingsTitle')}</h2>
       <div className="flex flex-col gap-3">
         {tour.ratings.map((r) => (
           <div key={r.source} className="rating-row">
@@ -128,10 +126,8 @@ export function PracticalDetails({ tour }: { tour: Tour }) {
   }
 
   return (
-    <div className="panel">
-      <h2 className="section-title" style={{ fontSize: 20, marginBottom: 12 }}>
-        {t('detailsTitle')}
-      </h2>
+    <div className="tp-section">
+      <h2>{t('detailsTitle')}</h2>
 
       {showMeeting && (
         <p style={{ fontSize: 14, color: 'var(--stone-600)', marginBottom: 14 }}>
@@ -249,10 +245,8 @@ export function PoliciesBlock({ tour }: { tour: Tour }) {
   const { lang, t, href } = useSite()
   if (!tour.freeCancellation && !tour.cancellationPolicy) return null
   return (
-    <div className="panel">
-      <h2 className="section-title" style={{ fontSize: 20, marginBottom: 12 }}>
-        {t('cancellationTitle')}
-      </h2>
+    <div className="tp-section">
+      <h2>{t('cancellationTitle')}</h2>
       {tour.freeCancellation && (
         <p className="cancel-note" style={{ marginBottom: tour.cancellationPolicy ? 10 : 0 }}>
           <BadgeCheck size={16} />
