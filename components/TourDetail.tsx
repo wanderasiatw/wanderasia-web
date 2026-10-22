@@ -54,20 +54,24 @@ export default function TourDetail({ tour, booking }: { tour: Tour; booking?: To
                 <h2 className="section-title" style={{ fontSize: 20, marginBottom: 4 }}>{t('tasteTitle')}</h2>
                 <p style={{ color: 'var(--stone-600)', fontSize: 13, marginBottom: 14 }}>{t('tasteBlurb')}</p>
                 <div className="tasting-grid">
-                  {tour.tastings.map((f) => (
+                  {tour.tastings.map((f) => {
+                    // The tasting's name in the page's language, when there is one
+                    const localName = lang === 'ZH' ? f.zh : lang === 'ZH_HANS' ? (f.zhHans ?? f.zh) : lang === 'JA' ? f.ja : lang === 'KO' ? f.ko : undefined
+                    return (
                     <figure key={f.name} className="tasting-card">
                       {f.image ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={f.image} alt={lang === 'ZH' && f.zh ? f.zh : f.name} />
+                        <img src={f.image} alt={localName || f.name} />
                       ) : (
-                        <div className="tasting-tile" lang="zh-Hant">{f.zh}</div>
+                        <div className="tasting-tile" lang={lang === 'ZH_HANS' ? 'zh-Hans' : 'zh-Hant'}>{lang === 'ZH_HANS' ? (f.zhHans ?? f.zh) : f.zh}</div>
                       )}
                       <figcaption>
                         {f.name}
                         <span lang="zh-Hant">{f.zh}</span>
                       </figcaption>
                     </figure>
-                  ))}
+                    )
+                  })}
                 </div>
               </div>
             )}

@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { POST_KINDS, type Post, type PostKind } from '@/lib/blog'
+import { POST_KINDS, type PostKind } from '@/lib/blog-kinds'
+import type { Post } from '@/lib/blog'
 import { useSite } from '../SiteProvider'
 import PostCard from './PostCard'
 import ShareStory from './ShareStory'

@@ -1,3 +1,4 @@
+import OpenCC from 'opencc-js'
 import {
   CATEGORIES,
   SERVICES,
@@ -11,6 +12,17 @@ import {
   type TourCategory,
 } from './tours'
 
+// CMS content fields the website reads, for one text field (shown here for `title`; the same pattern
+// applies to every text field — description, location, summary, body, highlights, included, blurb, …):
+//   title        English
+//   titleZh      Traditional Chinese
+//   titleZhHans  Simplified Chinese — optional; when the CMS doesn't send it, the Traditional Chinese
+//                text is converted automatically (opencc-js, Traditional → Simplified)
+//   titleJa      Japanese — optional; falls back to English when the CMS doesn't send it
+//   titleKo      Korean — optional; falls back to English when the CMS doesn't send it
+// Tastings use the same pattern on `name` (name, nameZh, nameZhHans, nameJa, nameKo).
+// Form labels (lib/cms.ts, FormLabel) are objects: { en, zh, zhHans, ja, ko } with the same fallbacks.
+//
 // The Plyndi CMS, e.g. https://wanderasia-cms.<account>.workers.dev
 // Until CMS_API_URL is set, or whenever the CMS can't be reached, the built-in content in lib/tours.ts is shown.
 // Read on each request: on Cloudflare, environment variables are only available while handling one.
@@ -35,23 +47,44 @@ async function cmsBinding(): Promise<{ fetch: typeof fetch } | undefined> {
 
 type Raw = Record<string, any>
 
+/** Traditional → Simplified Chinese, for CMS text that has no Simplified version yet */
+export const toSimplified = OpenCC.Converter({ from: 'tw', to: 'cn' })
+
 const str = (v: unknown) => (typeof v === 'string' && v.trim() ? v : undefined)
 const list = (v: unknown) => (Array.isArray(v) ? v.filter((s): s is string => typeof s === 'string') : [])
 const paragraphs = (v: unknown) => (str(v) ? (v as string).split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean) : [])
 
-/** English and Chinese versions of a field; the Chinese falls back to the English */
+/** All five languages of a field: Traditional Chinese falls back to English, Simplified Chinese is
+ * converted from the Traditional text when the CMS sends none, Japanese and Korean fall back to English */
 function text(doc: Raw, key: string, fallback = ''): Text {
   const en = str(doc[key]) ?? fallback
-  return { EN: en, ZH: str(doc[`${key}Zh`]) ?? en }
+  const zh = str(doc[`${key}Zh`])
+  return {
+    EN: en,
+    ZH: zh ?? en,
+    ZH_HANS: str(doc[`${key}ZhHans`]) ?? (zh ? toSimplified(zh) : en),
+    JA: str(doc[`${key}Ja`]) ?? en,
+    KO: str(doc[`${key}Ko`]) ?? en,
+  }
 }
 function optionalText(doc: Raw, key: string): Text | undefined {
   return str(doc[key]) ? text(doc, key) : undefined
 }
-/** Lists fall back as a whole: an empty Chinese list shows the English one */
+/** Lists fall back as a whole: an empty list in one language shows the English one (Simplified Chinese
+ * is converted from the Traditional list when the CMS sends none) */
 function textList(doc: Raw, key: string, split = list): TextList {
   const en = split(doc[key])
   const zh = split(doc[`${key}Zh`])
-  return { EN: en, ZH: zh.length ? zh : en }
+  const zhHans = split(doc[`${key}ZhHans`])
+  const ja = split(doc[`${key}Ja`])
+  const ko = split(doc[`${key}Ko`])
+  return {
+    EN: en,
+    ZH: zh.length ? zh : en,
+    ZH_HANS: zhHans.length ? zhHans : zh.length ? zh.map((item) => toSimplified(item)) : en,
+    JA: ja.length ? ja : en,
+    KO: ko.length ? ko : en,
+  }
 }
 
 const isCategory = (c: unknown): c is TourCategory => CATEGORIES.some((cat) => cat.key === c)
@@ -71,7 +104,17 @@ function toTour(doc: Raw): Tour {
     desc: text(doc, 'description'),
     body: textList(doc, 'body', paragraphs),
     highlights: textList(doc, 'highlights'),
-    tastings: (Array.isArray(doc.tastings) ? doc.tastings : []).map((t: Raw) => ({ name: t.name ?? '', zh: t.nameZh ?? '', image: str(t.image) })),
+    tastings: (Array.isArray(doc.tastings) ? doc.tastings : []).map((t: Raw) => {
+      const zh = str(t.nameZh) ?? ''
+      return {
+        name: t.name ?? '',
+        zh,
+        zhHans: str(t.nameZhHans) ?? (zh ? toSimplified(zh) : ''),
+        ja: str(t.nameJa) ?? '',
+        ko: str(t.nameKo) ?? '',
+        image: str(t.image),
+      }
+    }),
     note: optionalText(doc, 'note'),
     comingSoon: Boolean(doc.comingSoon),
     seoTitle: str(doc.seoTitle),
@@ -172,6 +215,34 @@ export async function getServiceBySlug(slug: string): Promise<Service | null> {
 export interface FormLabel {
   en: string
   zh?: string
+  /** Simplified Chinese; filled in from `zh` by conversion in getForm() when the CMS doesn't send it */
+  zhHans?: string
+  ja?: string
+  ko?: string
+}
+
+/** A form label with its Simplified Chinese filled in from the Traditional text when missing */
+function fillLabel(l: FormLabel | null | undefined): FormLabel | null {
+  if (!l) return null
+  return !l.zhHans && l.zh ? { ...l, zhHans: toSimplified(l.zh) } : l
+}
+
+/** The same form with every label's Simplified Chinese filled in (title, fields, options, messages) */
+function fillFormLabels(form: PublicForm): PublicForm {
+  return {
+    ...form,
+    title: fillLabel(form.title) ?? form.title,
+    intro: fillLabel(form.intro),
+    thanks: fillLabel(form.thanks) ?? form.thanks,
+    privacy: fillLabel(form.privacy),
+    fields: form.fields.map((f) => ({
+      ...f,
+      label: fillLabel(f.label) ?? f.label,
+      hint: fillLabel(f.hint) ?? undefined,
+      options: f.options?.map((o) => ({ ...o, label: fillLabel(o.label) ?? o.label })),
+    })),
+    oneOf: form.oneOf.map((g) => ({ ...g, message: fillLabel(g.message) ?? g.message })),
+  }
 }
 
 export interface FormField {
@@ -197,7 +268,8 @@ export interface PublicForm {
 
 /** A form's definition from the CMS, or null when there is no CMS or it can't be reached */
 export async function getForm(id: string): Promise<PublicForm | null> {
-  return (await cmsFetch<{ form: PublicForm }>(`/api/v1/forms/${encodeURIComponent(id)}`))?.form ?? null
+  const form = (await cmsFetch<{ form: PublicForm }>(`/api/v1/forms/${encodeURIComponent(id)}`))?.form ?? null
+  return form ? fillFormLabels(form) : null
 }
 
 /**

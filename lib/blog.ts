@@ -4,16 +4,18 @@
 //   GET /api/v1/posts/:slug   → 200 { post: RawPost }      404 when missing or unpublished
 // RawPost fields: slug, kind ('story' | 'guest' | 'tips'), title, titleZh, excerpt, excerptZh, body, bodyZh
 // (paragraphs separated by a blank line), mainImage, gallery (image URLs), publishedAt (ISO date),
+// plus optional titleZhHans / excerptZhHans / bodyZhHans (Simplified Chinese; converted from the
+// Traditional text when missing) and titleJa / titleKo etc. (Japanese and Korean; English when missing),
 // author, authorCountry, tourSlug (related tour), rating (1–5, guest stories), seoTitle, seoDescription.
 //
 // Until the CMS has posts, BLOG_DEMO=1 (in .env.local) shows sample posts so the pages can be shown on localhost.
 // Without it, the blog shows a "stories coming soon" message instead of samples.
 
-import { cmsRequest } from './cms'
+import { cmsRequest, toSimplified } from './cms'
 import type { Text, TextList } from './tours'
 
-export type PostKind = 'story' | 'guest' | 'tips'
-export const POST_KINDS: PostKind[] = ['story', 'guest', 'tips']
+import { POST_KINDS, type PostKind } from './blog-kinds'
+export { POST_KINDS, type PostKind }
 
 export interface Post {
   slug: string
@@ -44,16 +46,37 @@ const paragraphs = (v: unknown) => (str(v) ? (v as string).split(/\n\s*\n/).map(
 
 function toPost(d: Raw): Post {
   const en = (k: string) => str(d[k]) ?? ''
-  const both = (k: string): Text => ({ EN: en(k), ZH: str(d[`${k}Zh`]) ?? en(k) })
+  // All five languages, with the same fallbacks as lib/cms.ts: Simplified Chinese is converted from
+  // the Traditional text when the CMS sends none; Japanese and Korean fall back to English
+  const both = (k: string): Text => {
+    const enVal = en(k)
+    const zh = str(d[`${k}Zh`])
+    return {
+      EN: enVal,
+      ZH: zh ?? enVal,
+      ZH_HANS: str(d[`${k}ZhHans`]) ?? (zh ? toSimplified(zh) : enVal),
+      JA: str(d[`${k}Ja`]) ?? enVal,
+      KO: str(d[`${k}Ko`]) ?? enVal,
+    }
+  }
   const bodyEn = paragraphs(d.body)
   const bodyZh = paragraphs(d.bodyZh)
+  const bodyZhHans = paragraphs(d.bodyZhHans)
+  const bodyJa = paragraphs(d.bodyJa)
+  const bodyKo = paragraphs(d.bodyKo)
   const rating = Number(d.rating)
   return {
     slug: d.slug,
     kind: POST_KINDS.includes(d.kind) ? d.kind : 'story',
     title: both('title'),
     excerpt: both('excerpt'),
-    body: { EN: bodyEn, ZH: bodyZh.length ? bodyZh : bodyEn },
+    body: {
+      EN: bodyEn,
+      ZH: bodyZh.length ? bodyZh : bodyEn,
+      ZH_HANS: bodyZhHans.length ? bodyZhHans : bodyZh.length ? bodyZh.map((para) => toSimplified(para)) : bodyEn,
+      JA: bodyJa.length ? bodyJa : bodyEn,
+      KO: bodyKo.length ? bodyKo : bodyEn,
+    },
     image: str(d.mainImage),
     gallery: Array.isArray(d.gallery) ? d.gallery.filter((g: unknown): g is string => typeof g === 'string') : [],
     date: (str(d.publishedAt) ?? str(d.createdAt) ?? '').slice(0, 10),
@@ -103,7 +126,12 @@ const IMG = {
   balls: `${MEDIA}/e85e3b2e-3e23-452b-a9ad-f2da83dde9ee.jpg`,
 }
 
-const SAMPLE_POSTS: Post[] = [
+type SampleText = { EN: string; ZH: string }
+type SamplePost = Omit<Post, 'title' | 'excerpt' | 'body'> & { title: SampleText; excerpt: SampleText; body: { EN: string[]; ZH: string[] } }
+
+const expandSample = (t: SampleText) => ({ EN: t.EN, ZH: t.ZH, ZH_HANS: toSimplified(t.ZH), JA: t.EN, KO: t.EN })
+
+const RAW_SAMPLE_POSTS: SamplePost[] = [
   {
     sample: true,
     slug: 'a-night-of-street-food-at-dongmen',
@@ -219,3 +247,16 @@ const SAMPLE_POSTS: Post[] = [
     author: 'Wander Asia',
   },
 ]
+
+const SAMPLE_POSTS: Post[] = RAW_SAMPLE_POSTS.map((p) => ({
+  ...p,
+  title: expandSample(p.title),
+  excerpt: expandSample(p.excerpt),
+  body: {
+    EN: p.body.EN,
+    ZH: p.body.ZH,
+    ZH_HANS: p.body.ZH.map((para) => toSimplified(para)),
+    JA: p.body.EN,
+    KO: p.body.EN,
+  },
+}))

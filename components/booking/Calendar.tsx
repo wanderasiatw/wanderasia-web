@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { fill } from '@/lib/i18n'
+import { INTL_LOCALE, fill } from '@/lib/i18n'
 import { formatDate, monthTitle, type Departure } from '@/lib/booking/types'
 import { useSite } from '../SiteProvider'
 
@@ -40,7 +40,7 @@ export default function Calendar({ departures, selected, onSelect }: { departure
   const daysInMonth = new Date(Date.UTC(view.year, view.month + 1, 0)).getUTCDate()
   const blanks = first.getUTCDay()
   const weekdays = Array.from({ length: 7 }, (_, i) =>
-    new Intl.DateTimeFormat(lang === 'ZH' ? 'zh-TW' : 'en-US', { weekday: lang === 'ZH' ? 'narrow' : 'short', timeZone: 'UTC' }).format(new Date(Date.UTC(2026, 0, 4 + i, 12))),
+    new Intl.DateTimeFormat(INTL_LOCALE[lang], { weekday: lang === 'EN' ? 'short' : 'narrow', timeZone: 'UTC' }).format(new Date(Date.UTC(2026, 0, 4 + i, 12))),
   )
 
   return (

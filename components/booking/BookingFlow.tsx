@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { fill, type DictKey } from '@/lib/i18n'
+import { LANG_CODE, fill, type DictKey } from '@/lib/i18n'
 import { whatsappLink } from '@/lib/contact'
 import type { Tour } from '@/lib/tours'
 import {
@@ -171,7 +171,7 @@ export default function BookingFlow({
           children,
           ...details,
           agree,
-          lang: lang === 'ZH' ? 'zh' : 'en',
+          lang: LANG_CODE[lang],
           _hp: honeypot,
           _t: shownAt,
           turnstile: turnstile || undefined,

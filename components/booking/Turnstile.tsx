@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
+import type { Lang } from '@/lib/i18n'
 
 type TurnstileApi = {
   render: (el: HTMLElement, opts: Record<string, unknown>) => string
@@ -8,7 +9,9 @@ type TurnstileApi = {
 }
 
 /** Cloudflare Turnstile spam check (free). Calls onToken with the token, or '' when it expires. */
-export default function Turnstile({ siteKey, lang, onToken }: { siteKey: string; lang: 'EN' | 'ZH'; onToken: (token: string) => void }) {
+const TURNSTILE_LANG: Record<Lang, string> = { EN: 'en', ZH: 'zh-tw', ZH_HANS: 'zh-cn', JA: 'ja', KO: 'ko' }
+
+export default function Turnstile({ siteKey, lang, onToken }: { siteKey: string; lang: Lang; onToken: (token: string) => void }) {
   const box = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -19,7 +22,7 @@ export default function Turnstile({ siteKey, lang, onToken }: { siteKey: string;
       if (cancelled || !box.current || !w.turnstile) return
       id = w.turnstile.render(box.current, {
         sitekey: siteKey,
-        language: lang === 'ZH' ? 'zh-tw' : 'en',
+        language: TURNSTILE_LANG[lang],
         callback: onToken,
         'expired-callback': () => onToken(''),
       })

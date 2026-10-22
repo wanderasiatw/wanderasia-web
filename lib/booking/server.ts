@@ -15,9 +15,10 @@
 // Until that exists, BOOKING_DEMO=1 runs the same flow with sample data (lib/booking/demo.ts) so it can be shown on localhost.
 
 import { cmsRequest } from '@/lib/cms'
+import { langFromCode, localePath } from '@/lib/i18n'
 import type { Tour } from '@/lib/tours'
 import { demoCheckout, demoCreateBooking, demoDepartures, demoGetBooking } from './demo'
-import { taiwanToday, type Booking, type BookingRequest, type Checkout, type Departure, type PaymentMethod } from './types'
+import { taiwanToday, type Booking, type BookingLang, type BookingRequest, type Checkout, type Departure, type PaymentMethod } from './types'
 
 export const isBookingDemo = () => process.env.BOOKING_DEMO === '1'
 
@@ -79,11 +80,11 @@ export async function startCheckout(
   ref: string,
   token: string,
   method: PaymentMethod,
-  lang: 'en' | 'zh',
+  lang: BookingLang,
   origin: string,
 ): Promise<Checkout | null> {
   if (isBookingDemo()) return demoCheckout(ref, token, method, lang)
-  const page = `${origin}${lang === 'zh' ? '/zh' : ''}/booking/${encodeURIComponent(ref)}?t=${encodeURIComponent(token)}`
+  const page = `${origin}${localePath(langFromCode(lang), `/booking/${encodeURIComponent(ref)}`)}?t=${encodeURIComponent(token)}`
   const res = await cmsRequest(`/api/v1/bookings/${encodeURIComponent(ref)}/checkout`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },

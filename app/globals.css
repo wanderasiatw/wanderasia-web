@@ -32,8 +32,10 @@
     --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
     --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
     --shadow-lg: 0 10px 25px rgba(0,0,0,0.15);
-    --font-main: var(--font-montserrat), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-    --font-display: var(--font-playfair), Georgia, "Times New Roman", serif;
+    /* Montserrat and Playfair Display have no CJK characters, so Chinese, Japanese and Korean text
+       falls back to the system CJK fonts below (downloaded fonts would be far too heavy) */
+    --font-main: var(--font-montserrat), "Noto Sans TC", "Noto Sans SC", "Noto Sans JP", "Noto Sans KR", "PingFang TC", "PingFang SC", "Hiragino Sans", "Microsoft JhengHei", "Microsoft YaHei", "Yu Gothic", "Malgun Gothic", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --font-display: var(--font-playfair), Georgia, "Noto Serif TC", "Noto Serif SC", "Noto Serif JP", "Noto Serif KR", "Songti TC", "SimSun", "Hiragino Mincho ProN", "Yu Mincho", "Malgun Gothic", serif;
 }
 
 * {
@@ -214,6 +216,63 @@ header {
     background: var(--white);
     color: var(--dark);
     box-shadow: var(--shadow-sm);
+}
+/* Language switch: a compact dropdown, since five languages no longer fit as buttons */
+.lang-menu {
+    position: relative;
+}
+.lang-current {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--stone-100);
+    border: 1px solid var(--stone-200);
+    padding: 6px 10px;
+    border-radius: var(--radius-md);
+    color: var(--dark);
+}
+.lang-dropdown {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 6px);
+    min-width: 128px;
+    list-style: none;
+    background: var(--white);
+    border: 1px solid var(--stone-200);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    padding: 4px;
+    z-index: 120;
+}
+.lang-dropdown a {
+    display: block;
+    padding: 7px 10px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--stone-600);
+    border-radius: var(--radius-sm);
+    white-space: nowrap;
+}
+.lang-dropdown a:hover {
+    background: var(--stone-100);
+    color: var(--primary);
+}
+.lang-dropdown a.active {
+    color: var(--primary);
+    font-weight: 800;
+}
+/* The phone menu button only shows on small screens; the open menu drops down under the header */
+.menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    color: var(--dark);
+    align-items: center;
+}
+.header-inner {
+    position: relative;
 }
 
 /* Hero Banner */
@@ -752,7 +811,23 @@ footer {
 }
 
 @media (max-width: 768px) {
+    .menu-toggle { display: inline-flex; }
     .nav-links { display: none; } /* Simplified for mobile self-contained viewer */
+    .nav-links.open {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 100%;
+        background: var(--white);
+        border-bottom: 1px solid var(--stone-200);
+        box-shadow: var(--shadow-md);
+        padding: 10px 16px 14px;
+        z-index: 110;
+    }
+    .nav-links.open a { display: block; padding: 8px 4px; }
     .search-grid { grid-template-columns: 1fr; }
     .trust-grid { grid-template-columns: 1fr; }
     .tour-grid { grid-template-columns: 1fr; }

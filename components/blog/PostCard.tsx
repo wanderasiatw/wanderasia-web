@@ -3,13 +3,13 @@
 import Link from 'next/link'
 import { Star } from 'lucide-react'
 import type { Post } from '@/lib/blog'
-import { fill } from '@/lib/i18n'
+import { INTL_LOCALE, fill, type Lang } from '@/lib/i18n'
 import { useSite } from '../SiteProvider'
 import PostCover from './PostCover'
 
-export function postDate(date: string, lang: 'EN' | 'ZH') {
+export function postDate(date: string, lang: Lang) {
   if (!date) return ''
-  return new Intl.DateTimeFormat(lang === 'ZH' ? 'zh-TW' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' }).format(
+  return new Intl.DateTimeFormat(INTL_LOCALE[lang], { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' }).format(
     new Date(`${date}T12:00:00Z`),
   )
 }

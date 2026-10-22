@@ -16,9 +16,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const lang = langFromParam(param) ?? 'EN'
   const post = await getPost(slug)
   if (!post) return {}
-  // The CMS SEO fields are in English, so Chinese pages use the Chinese title and summary
-  const title = lang === 'EN' ? (post.seoTitle ?? `${post.title.EN} | Wander Asia`) : `${post.title.ZH} | ${translate('ZH', 'siteName')}`
-  const description = lang === 'EN' ? (post.seoDescription ?? post.excerpt.EN) : post.excerpt.ZH
+  // The CMS SEO fields are in English, so the other languages use their own title and summary
+  const title = lang === 'EN' ? (post.seoTitle ?? `${post.title.EN} | Wander Asia`) : `${post.title[lang]} | ${translate(lang, 'siteName')}`
+  const description = lang === 'EN' ? (post.seoDescription ?? post.excerpt.EN) : post.excerpt[lang]
   // Sample posts are for the demo only and stay out of search results
   return pageMetadata(lang, `/blog/${post.slug}`, { title, description, image: post.image, noindex: post.sample })
 }

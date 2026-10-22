@@ -2,7 +2,12 @@
 // The CMS (plyndi-cms) owns bookings, seats and payments; the website shows them and passes requests on.
 // See lib/booking/server.ts for the CMS API the website expects.
 
+import { INTL_LOCALE, type Lang, type LangCode } from '@/lib/i18n'
+
 export type BookingStatus = 'confirmed' | 'pending_payment' | 'paid' | 'expired' | 'cancelled'
+
+/** The language a booking was made in, as a code the CMS understands ('en', 'zh', 'zh-cn', 'ja', 'ko') */
+export type BookingLang = LangCode
 
 /** Stripe: cards, Apple Pay and Google Pay for travelers from abroad. ECPay: Taiwan cards, ATM transfer and convenience stores, in TWD. */
 export type PaymentMethod = 'stripe' | 'ecpay'
@@ -44,7 +49,7 @@ export interface Booking {
   phone: string
   country?: string
   notes?: string
-  lang: 'en' | 'zh'
+  lang: BookingLang
   /** When unpaid seats are released (pending_payment only) */
   holdExpiresAt: string | null
   /** The ways this booking can be paid, as set up in the CMS */
@@ -65,7 +70,7 @@ export interface BookingRequest {
   country: string
   notes: string
   agree: boolean
-  lang: 'en' | 'zh'
+  lang: BookingLang
   /** Spam checks: hidden field, time the form was shown, Cloudflare Turnstile token */
   _hp?: string
   _t?: number
@@ -95,14 +100,13 @@ export function formatMoney(amount: number, currency: string) {
   }
 }
 
-const LOCALE = { EN: 'en-US', ZH: 'zh-TW' } as const
 
 /** A YYYY-MM-DD date as a Date at noon UTC, so it shows as the same day everywhere */
 export const dateOf = (ymd: string) => new Date(`${ymd}T12:00:00Z`)
 
 /** e.g. "Sat, 24 Oct 2026" or "2026年10月24日 週六" */
-export function formatDate(ymd: string, lang: 'EN' | 'ZH', withYear = true) {
-  return new Intl.DateTimeFormat(LOCALE[lang], {
+export function formatDate(ymd: string, lang: Lang, withYear = true) {
+  return new Intl.DateTimeFormat(INTL_LOCALE[lang], {
     weekday: 'short',
     day: 'numeric',
     month: lang === 'EN' ? 'short' : 'long',
@@ -111,15 +115,15 @@ export function formatDate(ymd: string, lang: 'EN' | 'ZH', withYear = true) {
   }).format(dateOf(ymd))
 }
 
-/** "19:00" → "7:00 PM" (English) or "19:00" (Chinese) */
-export function formatTime(hhmm: string, lang: 'EN' | 'ZH') {
-  if (lang === 'ZH') return hhmm
+/** "19:00" → "7:00 PM" (English) or "19:00" (the other languages, which use the 24-hour clock here) */
+export function formatTime(hhmm: string, lang: Lang) {
+  if (lang !== 'EN') return hhmm
   const [h, m] = hhmm.split(':').map(Number)
   return `${((h + 11) % 12) + 1}:${String(m).padStart(2, '0')} ${h < 12 ? 'AM' : 'PM'}`
 }
 
-export function monthTitle(year: number, month: number, lang: 'EN' | 'ZH') {
-  return new Intl.DateTimeFormat(LOCALE[lang], { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(Date.UTC(year, month, 1, 12)))
+export function monthTitle(year: number, month: number, lang: Lang) {
+  return new Intl.DateTimeFormat(INTL_LOCALE[lang], { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(Date.UTC(year, month, 1, 12)))
 }
 
 /** Today's date in Taiwan, YYYY-MM-DD */

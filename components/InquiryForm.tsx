@@ -3,6 +3,7 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import type { FormField, FormLabel, PublicForm } from '@/lib/cms'
 import { CONTACT } from '@/lib/contact'
+import { LANG_CODE, type Lang } from '@/lib/i18n'
 import { WhatsAppIcon } from './Icons'
 import { useSite } from './SiteProvider'
 
@@ -13,9 +14,18 @@ type Values = Record<string, string>
  * The inquiry form. Its fields come from the CMS, so adding or changing a field there needs no change here.
  * Submissions go to /api/inquire on this site, which passes them to the CMS inbox.
  */
-export default function InquiryForm({ form, item, title }: { form: PublicForm | null; item?: string; title: string }) {
+export default function InquiryForm({ form, item, title, embedded }: { form: PublicForm | null; item?: string; title: string; embedded?: boolean }) {
   const { lang, t } = useSite()
-  const text = (l: FormLabel | null | undefined) => (l ? (lang === 'ZH' && l.zh ? l.zh : l.en) : '')
+  // The label in the page's language: CMS labels carry en/zh/zhHans/ja/ko; Simplified Chinese was
+  // filled in from the Traditional text in getForm(), and anything missing falls back to English
+  const text = (l: FormLabel | null | undefined) => {
+    if (!l) return ''
+    if (lang === 'ZH') return l.zh ?? l.en
+    if (lang === 'ZH_HANS') return l.zhHans ?? l.en
+    if (lang === 'JA') return l.ja ?? l.en
+    if (lang === 'KO') return l.ko ?? l.en
+    return l.en
+  }
 
   const initial = (): Values => {
     const v: Values = {}
@@ -57,7 +67,7 @@ export default function InquiryForm({ form, item, title }: { form: PublicForm | 
           ...values,
           _hp: honeypot,
           _t: shownAt,
-          _lang: lang === 'ZH' ? 'zh' : 'en',
+          _lang: LANG_CODE[lang],
           _page: window.location.pathname + window.location.search,
         }),
       })
@@ -99,16 +109,8 @@ export default function InquiryForm({ form, item, title }: { form: PublicForm | 
     </a>
   )
 
-  return (
-    <main>
-      <div className="hero" style={{ padding: '60px 0' }}>
-        <div className="hero-bg" />
-        <div className="wa-container hero-content">
-          <h1>{form ? text(form.title) : title}</h1>
-          {form?.intro && status !== 'sent' && <p style={{ marginBottom: 0 }}>{text(form.intro)}</p>}
-        </div>
-      </div>
-
+  // On the contact page the form sits under the page's own banner, so only the form section is shown
+  const formSection = (
       <section className="section">
         <div className="wa-container" style={{ maxWidth: 720 }}>
           {!form ? (
@@ -143,12 +145,33 @@ export default function InquiryForm({ form, item, title }: { form: PublicForm | 
           )}
         </div>
       </section>
+  )
+
+  if (embedded) return formSection
+
+  return (
+    <main>
+      <div className="hero" style={{ padding: '60px 0' }}>
+        <div className="hero-bg" />
+        <div className="wa-container hero-content">
+          <h1>{form ? text(form.title) : title}</h1>
+          {form?.intro && status !== 'sent' && <p style={{ marginBottom: 0 }}>{text(form.intro)}</p>}
+        </div>
+      </div>
+
+      {formSection}
     </main>
   )
 }
 
-/** The CMS names option groups in English */
-const GROUP_ZH: Record<string, string> = { Tours: '行程', Services: '服務' }
+/** The CMS names option groups in English; the headings in each site language */
+const GROUP_LABELS: Record<Lang, Record<string, string>> = {
+  EN: {},
+  ZH: { Tours: '行程', Services: '服務' },
+  ZH_HANS: { Tours: '行程', Services: '服务' },
+  JA: { Tours: 'ツアー', Services: 'サービス' },
+  KO: { Tours: '투어', Services: '서비스' },
+}
 
 function Field({
   field: f,
@@ -168,7 +191,7 @@ function Field({
   choose: string
 }) {
   const { lang } = useSite()
-  const groupName = (name: string) => (lang === 'ZH' ? (GROUP_ZH[name] ?? name) : name)
+  const groupName = (name: string) => GROUP_LABELS[lang][name] ?? name
   const id = `inq-${f.name}`
   const common = {
     id,

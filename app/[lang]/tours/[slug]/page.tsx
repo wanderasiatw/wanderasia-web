@@ -18,9 +18,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const lang = langFromParam(param) ?? 'EN'
   const tour = await getTourBySlug(slug)
   if (!tour) return {}
-  // The CMS SEO fields are in English, so Chinese pages use the Chinese title and summary
-  const title = lang === 'EN' ? (tour.seoTitle ?? `${tour.title.EN} | Wander Asia`) : `${tour.title.ZH} | ${translate('ZH', 'siteName')}`
-  const description = lang === 'EN' ? (tour.seoDescription ?? tour.desc.EN) : tour.desc.ZH
+  // The CMS SEO fields are in English, so the other languages use their own title and summary
+  const title = lang === 'EN' ? (tour.seoTitle ?? `${tour.title.EN} | Wander Asia`) : `${tour.title[lang]} | ${translate(lang, 'siteName')}`
+  const description = lang === 'EN' ? (tour.seoDescription ?? tour.desc.EN) : tour.desc[lang]
   // Tours whose details aren't out yet stay out of search results until they are
   return pageMetadata(lang, `/tours/${tour.slug}`, { title, description, image: tour.image, noindex: tour.comingSoon })
 }

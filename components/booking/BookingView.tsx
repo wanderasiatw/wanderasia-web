@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { AlertTriangle, CalendarPlus, Check, CreditCard, Landmark } from 'lucide-react'
-import { fill } from '@/lib/i18n'
+import { LANG_CODE, fill } from '@/lib/i18n'
 import { whatsappLink } from '@/lib/contact'
 import type { Tour } from '@/lib/tours'
 import { formatDate, formatMoney, formatTime, type Booking, type Checkout, type PaymentMethod } from '@/lib/booking/types'
@@ -103,7 +103,7 @@ export default function BookingView({ initial, tour, demo, returned }: { initial
       const res = await fetch(`/api/bookings/${encodeURIComponent(booking.ref)}/checkout`, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ t: booking.token, method, lang: lang === 'ZH' ? 'zh' : 'en' }),
+        body: JSON.stringify({ t: booking.token, method, lang: LANG_CODE[lang] }),
       })
       const body = (await res.json().catch(() => ({}))) as { checkout?: Checkout }
       if (res.ok && body.checkout) {
@@ -197,7 +197,7 @@ export default function BookingView({ initial, tour, demo, returned }: { initial
                             <strong>{t('payTaiwan')}</strong>
                             <small>{t('payTaiwanText')}</small>
                             <span className="pay-brands" aria-hidden="true">
-                              <span>綠界 ECPay</span><span>{lang === 'ZH' ? '信用卡' : 'Card'}</span><span>ATM</span><span>{lang === 'ZH' ? '超商' : '7-ELEVEN / FamilyMart'}</span>
+                              <span>綠界 ECPay</span><span>{lang === 'ZH' || lang === 'ZH_HANS' ? '信用卡' : 'Card'}</span><span>ATM</span><span>{lang === 'ZH' || lang === 'ZH_HANS' ? '超商' : '7-ELEVEN / FamilyMart'}</span>
                             </span>
                           </span>
                         </label>

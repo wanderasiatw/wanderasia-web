@@ -2,6 +2,7 @@
 // Only used when BOOKING_DEMO=1 (see .env.local). Dates, seats and prices are samples; bookings live in memory
 // until the dev server restarts, and nothing is charged or emailed.
 
+import { LANG_PREFIX, langFromCode } from '@/lib/i18n'
 import type { Tour } from '@/lib/tours'
 import { CURRENCY } from '@/lib/tours'
 import {
@@ -16,6 +17,7 @@ import {
   type Checkout,
   type Departure,
   type PaymentMethod,
+  type BookingLang,
 } from './types'
 
 const DAYS_AHEAD = 90
@@ -139,7 +141,7 @@ export function demoCreateBooking(tour: Tour, req: BookingRequest): Result {
     phone: req.phone.trim(),
     country: req.country?.trim() || undefined,
     notes: req.notes?.trim() || undefined,
-    lang: req.lang === 'zh' ? 'zh' : 'en',
+    lang: (['en', 'zh', 'zh-cn', 'ja', 'ko'] as const).includes(req.lang) ? req.lang : 'en',
     holdExpiresAt: total === 0 ? null : new Date(Date.now() + HOLD_MINUTES * 60_000).toISOString(),
     paymentMethods: PAYMENT_METHODS,
     createdAt: new Date().toISOString(),
@@ -156,10 +158,10 @@ export function demoGetBooking(ref: string, token: string): Booking | null {
 }
 
 /** Instead of Stripe or ECPay, the demo checkout page on this site */
-export function demoCheckout(ref: string, token: string, method: PaymentMethod, lang: 'en' | 'zh'): Checkout | null {
+export function demoCheckout(ref: string, token: string, method: PaymentMethod, lang: BookingLang): Checkout | null {
   const b = demoGetBooking(ref, token)
   if (!b || b.status !== 'pending_payment') return null
-  const prefix = lang === 'zh' ? '/zh' : ''
+  const prefix = LANG_PREFIX[langFromCode(lang)]
   return { url: `${prefix}/booking/${encodeURIComponent(ref)}/demo-pay?t=${encodeURIComponent(token)}&method=${method}` }
 }
 
