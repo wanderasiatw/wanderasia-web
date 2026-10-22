@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { getServices } from '@/lib/cms'
-import { formatPrice, fromPrice } from '@/lib/tours'
+import { currencyOf, formatPrice, fromPrice } from '@/lib/tours'
 import { fill, langFromParam, localePath, translate } from '@/lib/i18n'
 import { breadcrumbJsonLd, pageMetadata } from '@/lib/seo'
 import ServiceCover from '@/components/ServiceCover'
@@ -52,7 +52,7 @@ export default async function ServicesPage({ params }: Props) {
                     </div>
                     <div className="tour-footer">
                       <span className={`tour-price ${price == null ? 'tour-price-ask' : ''}`}>
-                        {price == null ? t('priceOnRequest') : fill(t('fromPrice'), { price: formatPrice(price) })}
+                        {price == null ? t('priceOnRequest') : fill(t('fromPrice'), { price: formatPrice(price, currencyOf(s)) })}
                       </span>
                       <Link href={localePath(lang, `/services/${s.slug}`)} className="btn btn-primary" style={{ padding: '6px 12px', fontSize: 11 }}>
                         {t('learnMore')}

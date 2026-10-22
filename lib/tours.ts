@@ -68,6 +68,8 @@ export interface TourHiking {
 export interface Tour {
   id: string
   slug: string
+  /** Currency the price is in, set by the CMS (Payments → Currency); built-in content uses CURRENCY */
+  currency?: string
   category: TourCategory
   title: Text
   /** One-line value proposition under the title */
@@ -129,6 +131,8 @@ export interface PriceOption {
 export interface Service {
   id: string
   slug: string
+  /** Currency the prices are in, set by the CMS */
+  currency?: string
   /** private-tour, transfer, car or planning */
   kind: string
   title: Text
@@ -146,11 +150,19 @@ export interface Service {
   seoDescription?: string
 }
 
+/** Fallback when the CMS can't be reached; the CMS normally says which currency prices are in */
 export const CURRENCY = 'USD'
 
-export function formatPrice(n: number) {
-  return `$${n.toLocaleString('en-US')}`
+/** e.g. NT$699 or $19, in the currency the CMS set */
+export function formatPrice(n: number, currency: string = CURRENCY) {
+  try {
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency, maximumFractionDigits: n % 1 ? 2 : 0 }).format(n)
+  } catch {
+    return `${currency} ${n.toLocaleString('en-US')}`
+  }
 }
+
+export const currencyOf = (item: { currency?: string }) => item.currency || CURRENCY
 
 /** Lowest price among a service's options, or null when all are on request */
 export function fromPrice(service: Service): number | null {

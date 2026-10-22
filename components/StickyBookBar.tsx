@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { formatPrice, type Tour } from '@/lib/tours'
+import { currencyOf, formatPrice, type Tour } from '@/lib/tours'
 import { formatMoney } from '@/lib/booking/types'
 import { useSite } from './SiteProvider'
 import type { TourBooking } from './TourDetail'
@@ -47,7 +47,7 @@ export default function StickyBookBar({ tour, booking }: { tour: Tour; booking?:
       ? t('free')
       : tour.price == null
         ? t('priceOnRequest')
-        : formatPrice(tour.price)
+        : formatPrice(tour.price, currencyOf(tour))
 
   return (
     <div className={`sticky-book-bar${show ? ' show' : ''}`} aria-hidden={!show}>

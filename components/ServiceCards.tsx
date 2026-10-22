@@ -1,14 +1,14 @@
 'use client'
 
 import Link from 'next/link'
-import { formatPrice, fromPrice, type Service } from '@/lib/tours'
+import { currencyOf, formatPrice, fromPrice, type Service } from '@/lib/tours'
 import { useSite, type DictKey } from './SiteProvider'
 import ServiceCover from './ServiceCover'
 
 /** "From $45" / "$45 起", or "Price on request" */
 export function fromLabel(service: Service, t: (key: DictKey) => string) {
   const price = fromPrice(service)
-  return price == null ? t('priceOnRequest') : t('fromPrice').replace('{price}', formatPrice(price))
+  return price == null ? t('priceOnRequest') : t('fromPrice').replace('{price}', formatPrice(price, currencyOf(service)))
 }
 
 /** The home page's services section: featured services as cards */

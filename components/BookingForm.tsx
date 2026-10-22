@@ -13,7 +13,7 @@ import { useSite } from './SiteProvider'
  * the running total and includes it in the message; the guest stepper stops at the
  * tour's group-size cap when one is known (30 otherwise).
  */
-export default function BookingForm({ tourTitle, price, maxGuests }: { tourTitle: string; price?: number | null; maxGuests?: number }) {
+export default function BookingForm({ tourTitle, price, currency, maxGuests }: { tourTitle: string; price?: number | null; currency?: string; maxGuests?: number }) {
   const { t } = useSite()
   const [name, setName] = useState('')
   const [date, setDate] = useState('')
@@ -30,7 +30,7 @@ export default function BookingForm({ tourTitle, price, maxGuests }: { tourTitle
       `Name: ${name.trim()}`,
       `Date: ${date || 'flexible'}`,
       `Guests: ${guests}`,
-      ...(total != null ? [`Total: ${formatPrice(total)}`] : []),
+      ...(total != null ? [`Total: ${formatPrice(total, currency)}`] : []),
     ].join('\n')
     window.open(whatsappLink(msg), '_blank', 'noopener,noreferrer')
     setSent(true)
@@ -59,7 +59,7 @@ export default function BookingForm({ tourTitle, price, maxGuests }: { tourTitle
       {total != null && (
         <div className="booking-total">
           <span>{fill(t('totalForGuests'), { n: guests })}</span>
-          <strong>{formatPrice(total)}</strong>
+          <strong>{formatPrice(total, currency)}</strong>
         </div>
       )}
       <button type="submit" className="btn btn-whatsapp" style={{ width: '100%', padding: 12 }}>

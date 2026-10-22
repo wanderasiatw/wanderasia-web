@@ -91,7 +91,7 @@ export function demoDepartures(tour: Tour): Departure[] {
       seatsLeft: Math.max(0, CAPACITY - sample - seatsTaken(id)),
       price,
       childPrice: price,
-      currency: CURRENCY,
+      currency: tour.currency || CURRENCY,
     })
   }
   return out

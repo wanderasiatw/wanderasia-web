@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getAllTours, getTourBySlug } from '@/lib/cms'
-import { CURRENCY, type Tour } from '@/lib/tours'
+import { currencyOf, type Tour } from '@/lib/tours'
 import { HTML_LANG, langFromParam, translate } from '@/lib/i18n'
 import { absoluteUrl, breadcrumbJsonLd, pageMetadata, providerJsonLd, tourAggregateRating } from '@/lib/seo'
 import TourDetail from '@/components/TourDetail'
@@ -54,7 +54,7 @@ export default async function TourDetailPage({ params }: Props) {
     offers:
       tour.price == null
         ? undefined
-        : { '@type': 'Offer', price: tour.price, priceCurrency: CURRENCY, url: absoluteUrl(lang, path), availability: 'https://schema.org/InStock' },
+        : { '@type': 'Offer', price: tour.price, priceCurrency: currencyOf(tour), url: absoluteUrl(lang, path), availability: 'https://schema.org/InStock' },
   }
   const crumbs = breadcrumbJsonLd(lang, [
     { name: translate(lang, 'home'), path: '/' },

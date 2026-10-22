@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { Check } from 'lucide-react'
-import { CURRENCY, formatPrice, type Service } from '@/lib/tours'
+import { currencyOf, formatPrice, type Service } from '@/lib/tours'
 import { whatsappLink } from '@/lib/contact'
 import { WhatsAppIcon } from './Icons'
 import { fromLabel } from './ServiceCards'
@@ -71,7 +71,7 @@ export default function ServiceDetail({ service }: { service: Service }) {
                       <tr key={o.label.EN}>
                         <td>{o.label[lang]}</td>
                         <td>
-                          {o.price == null ? t('priceOnRequest') : `${formatPrice(o.price)} ${CURRENCY}`}
+                          {o.price == null ? t('priceOnRequest') : formatPrice(o.price, currencyOf(service))}
                           {o.price != null && o.unit && <small> {unit(o.unit)}</small>}
                         </td>
                       </tr>

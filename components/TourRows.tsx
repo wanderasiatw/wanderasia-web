@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { ArrowRight, Star } from 'lucide-react'
-import { formatPrice, privateTourService, type Tour, type TourCategory } from '@/lib/tours'
+import { currencyOf, formatPrice, privateTourService, type Tour, type TourCategory } from '@/lib/tours'
 import { askAboutLink } from '@/lib/contact'
 import { scrollToTours, useSite, type DictKey, type Lang } from './SiteProvider'
 import TourCover, { CATEGORY_ICONS } from './TourCover'
@@ -13,7 +13,7 @@ type T = (key: DictKey) => string
 export function priceLabel(tour: Tour, t: T) {
   if (tour.price === 0) return t('free')
   if (tour.price == null) return t('priceOnRequest')
-  return formatPrice(tour.price)
+  return formatPrice(tour.price, currencyOf(tour))
 }
 
 /**

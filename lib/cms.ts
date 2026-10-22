@@ -125,6 +125,7 @@ function toTour(doc: Raw): Tour {
   return {
     id: doc.id,
     slug: doc.slug,
+    currency: str(doc.currency),
     category: doc.category,
     title: text(doc, 'title', 'Untitled Tour'),
     subtitle: optionalText(doc, 'subtitle'),
@@ -187,6 +188,7 @@ function toService(doc: Raw): Service {
   return {
     id: doc.id,
     slug: doc.slug,
+    currency: str(doc.currency),
     kind: doc.kind,
     title: text(doc, 'title', 'Untitled'),
     summary: text(doc, 'summary'),

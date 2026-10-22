@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getServiceBySlug } from '@/lib/cms'
-import { CURRENCY, fromPrice } from '@/lib/tours'
+import { currencyOf, fromPrice } from '@/lib/tours'
 import { HTML_LANG, langFromParam, translate } from '@/lib/i18n'
 import { absoluteUrl, breadcrumbJsonLd, pageMetadata, providerJsonLd } from '@/lib/seo'
 import ServiceDetail from '@/components/ServiceDetail'
@@ -41,7 +41,7 @@ export default async function ServicePage({ params }: Props) {
     inLanguage: HTML_LANG[lang],
     provider: providerJsonLd(),
     areaServed: { '@type': 'Country', name: 'Taiwan' },
-    offers: price == null ? undefined : { '@type': 'Offer', price, priceCurrency: CURRENCY, url: absoluteUrl(lang, path) },
+    offers: price == null ? undefined : { '@type': 'Offer', price, priceCurrency: currencyOf(service), url: absoluteUrl(lang, path) },
   }
   const crumbs = breadcrumbJsonLd(lang, [
     { name: translate(lang, 'home'), path: '/' },

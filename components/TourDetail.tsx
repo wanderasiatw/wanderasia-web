@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { BadgeCheck } from 'lucide-react'
-import { CURRENCY, categoryOf, formatPrice, type Tour } from '@/lib/tours'
+import { categoryOf, currencyOf, formatPrice, type Tour } from '@/lib/tours'
 import { askAboutLink, whatsappLink } from '@/lib/contact'
 import { fill } from '@/lib/i18n'
 import { formatDate, formatMoney } from '@/lib/booking/types'
@@ -126,12 +126,12 @@ export default function TourDetail({ tour, booking, related = [] }: { tour: Tour
               {booking ? (
                 <div style={{ fontSize: 28, fontWeight: 900, color: 'var(--primary)', marginBottom: 16 }}>
                   {booking.price === 0 ? t('free') : formatMoney(booking.price, booking.currency)}{' '}
-                  {booking.price ? <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--stone-600)' }}>{booking.currency}</span> : null}
+                  {booking.price && booking.currency === 'USD' ? <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--stone-600)' }}>USD</span> : null}
                 </div>
               ) : (
                 <div style={{ fontSize: 28, fontWeight: 900, color: 'var(--primary)', marginBottom: 16 }}>
-                  {tour.price === 0 ? t('free') : tour.price == null ? <span style={{ fontSize: 20 }}>{t('priceOnRequest')}</span> : formatPrice(tour.price)}{' '}
-                  {tour.price ? <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--stone-600)' }}>{CURRENCY}</span> : null}
+                  {tour.price === 0 ? t('free') : tour.price == null ? <span style={{ fontSize: 20 }}>{t('priceOnRequest')}</span> : formatPrice(tour.price, currencyOf(tour))}{' '}
+                  {tour.price && currencyOf(tour) === 'USD' ? <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--stone-600)' }}>USD</span> : null}
                 </div>
               )}
               {tour.freeCancellation && (
@@ -159,7 +159,7 @@ export default function TourDetail({ tour, booking, related = [] }: { tour: Tour
                   {t('soonAskWhatsApp')}
                 </a>
               ) : (
-                <BookingForm tourTitle={tour.title.EN} price={tour.price} maxGuests={maxGuests} />
+                <BookingForm tourTitle={tour.title.EN} price={tour.price} currency={currencyOf(tour)} maxGuests={maxGuests} />
               )}
               <Link href={href(`/inquire?item=tours:${tour.slug}`)} className="btn btn-outline" style={{ width: '100%', padding: 12, marginTop: 10 }}>
                 {t('preferEmail')}
