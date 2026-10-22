@@ -22,8 +22,8 @@ export default function ServiceDetail({ service }: { service: Service }) {
 
   return (
     <main>
-      <div className="hero" style={{ padding: '60px 0' }}>
-        <div className="hero-bg" style={service.image ? { backgroundImage: `url(${service.image})`, opacity: 0.35 } : undefined} />
+      <div className={service.image ? 'hero hero-photo' : 'hero'} style={{ padding: '60px 0' }}>
+        <div className="hero-bg" style={service.image ? { backgroundImage: `url(${service.image})` } : undefined} />
         <div className="wa-container hero-content">
           <div className="badge-hero">{t('navServices')}</div>
           <h1>{service.title[lang]}</h1>

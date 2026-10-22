@@ -300,6 +300,14 @@ header {
     z-index: 1;
     background: linear-gradient(180deg, rgba(19,38,31,0.55) 0%, rgba(19,38,31,0.35) 45%, rgba(19,38,31,0.8) 100%);
 }
+/* Tour, service and blog pages with their own photo: show the photo clearly, with just enough shade for the text */
+.hero.hero-photo { background: var(--dark); }
+.hero.hero-photo .hero-bg { opacity: 1; }
+.hero.hero-photo::before {
+    background: linear-gradient(180deg, rgba(19,38,31,0.45) 0%, rgba(19,38,31,0.2) 40%, rgba(19,38,31,0.65) 100%);
+}
+.hero.hero-photo .hero-content h1,
+.hero.hero-photo .hero-content p { text-shadow: 0 2px 12px rgba(0, 0, 0, 0.45); }
 .hero-content {
     position: relative;
     z-index: 2;

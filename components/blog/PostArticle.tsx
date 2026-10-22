@@ -19,8 +19,8 @@ export default function PostArticle({ post, tour, more, demo }: { post: Post; to
 
   return (
     <main>
-      <div className="hero" style={{ padding: '60px 0' }}>
-        <div className="hero-bg" style={post.image ? { backgroundImage: `url(${post.image})`, opacity: 0.35 } : undefined} />
+      <div className={post.image ? 'hero hero-photo' : 'hero'} style={{ padding: '60px 0' }}>
+        <div className="hero-bg" style={post.image ? { backgroundImage: `url(${post.image})` } : undefined} />
         <div className="wa-container hero-content">
           <div className="badge-hero">{t(`kind_${post.kind}`)}</div>
           <h1 style={{ fontSize: 34 }}>{post.title[lang]}</h1>

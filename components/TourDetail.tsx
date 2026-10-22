@@ -26,8 +26,8 @@ export default function TourDetail({ tour, booking }: { tour: Tour; booking?: To
 
   return (
     <main>
-      <div className="hero" style={{ padding: '60px 0' }}>
-        <div className="hero-bg" style={tour.image ? { backgroundImage: `url(${tour.image})`, opacity: 0.35 } : undefined} />
+      <div className={tour.image ? 'hero hero-photo' : 'hero'} style={{ padding: '60px 0' }}>
+        <div className="hero-bg" style={tour.image ? { backgroundImage: `url(${tour.image})` } : undefined} />
         <div className="wa-container hero-content">
           <div className="badge-hero">{category?.title[lang]} • {tour.location[lang]}</div>
           <h1>{tour.title[lang]}</h1>

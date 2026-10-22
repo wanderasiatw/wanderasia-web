@@ -261,8 +261,8 @@ export default function BookingFlow({
 
   return (
     <main>
-      <div className="hero" style={{ padding: '44px 0' }}>
-        <div className="hero-bg" style={tour.image ? { backgroundImage: `url(${tour.image})`, opacity: 0.3 } : undefined} />
+      <div className={tour.image ? 'hero hero-photo' : 'hero'} style={{ padding: '44px 0' }}>
+        <div className="hero-bg" style={tour.image ? { backgroundImage: `url(${tour.image})` } : undefined} />
         <div className="wa-container hero-content">
           <div className="badge-hero">{t('bookingTitle')}</div>
           <h1 style={{ fontSize: 30 }}>{tour.title[lang]}</h1>
