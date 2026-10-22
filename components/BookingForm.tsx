@@ -3,15 +3,25 @@
 import { useState, type FormEvent } from 'react'
 import { WhatsAppIcon } from './Icons'
 import { whatsappLink } from '@/lib/contact'
+import { formatPrice } from '@/lib/tours'
+import { fill } from '@/lib/i18n'
 import { useSite } from './SiteProvider'
 
-/** Collects the booking details and hands them to WhatsApp, where our team confirms them. The message is always in English. */
-export default function BookingForm({ tourTitle }: { tourTitle: string }) {
+/**
+ * Collects the booking details and hands them to WhatsApp, where our team confirms them.
+ * The message is always in English. When the tour has a per-person price, the form shows
+ * the running total and includes it in the message; the guest stepper stops at the
+ * tour's group-size cap when one is known (30 otherwise).
+ */
+export default function BookingForm({ tourTitle, price, maxGuests }: { tourTitle: string; price?: number | null; maxGuests?: number }) {
   const { t } = useSite()
   const [name, setName] = useState('')
   const [date, setDate] = useState('')
   const [guests, setGuests] = useState(1)
   const [sent, setSent] = useState(false)
+  const [today] = useState(() => new Date().toISOString().slice(0, 10))
+  const cap = maxGuests && maxGuests > 0 ? maxGuests : 30
+  const total = price != null && price > 0 ? price * guests : null
 
   function submit(e: FormEvent) {
     e.preventDefault()
@@ -20,6 +30,7 @@ export default function BookingForm({ tourTitle }: { tourTitle: string }) {
       `Name: ${name.trim()}`,
       `Date: ${date || 'flexible'}`,
       `Guests: ${guests}`,
+      ...(total != null ? [`Total: ${formatPrice(total)}`] : []),
     ].join('\n')
     window.open(whatsappLink(msg), '_blank', 'noopener,noreferrer')
     setSent(true)
@@ -34,17 +45,23 @@ export default function BookingForm({ tourTitle }: { tourTitle: string }) {
       <div className="booking-row">
         <div className="form-group">
           <label htmlFor="book-date">{t('date')}</label>
-          <input id="book-date" type="date" className="form-control" value={date} onChange={(e) => setDate(e.target.value)} />
+          <input id="book-date" type="date" className="form-control" value={date} min={today} onChange={(e) => setDate(e.target.value)} />
         </div>
         <div className="form-group">
           <label>{t('guests')}</label>
           <div className="stepper">
             <button type="button" onClick={() => setGuests((g) => Math.max(1, g - 1))} aria-label={t('fewerGuests')}>−</button>
             <span>{guests}</span>
-            <button type="button" onClick={() => setGuests((g) => g + 1)} aria-label={t('moreGuests')}>+</button>
+            <button type="button" onClick={() => setGuests((g) => Math.min(cap, g + 1))} aria-label={t('moreGuests')}>+</button>
           </div>
         </div>
       </div>
+      {total != null && (
+        <div className="booking-total">
+          <span>{fill(t('totalForGuests'), { n: guests })}</span>
+          <strong>{formatPrice(total)}</strong>
+        </div>
+      )}
       <button type="submit" className="btn btn-whatsapp" style={{ width: '100%', padding: 12 }}>
         <WhatsAppIcon />
         <span>{t('bookWhatsApp')}</span>

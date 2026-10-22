@@ -14,7 +14,7 @@ export const CATEGORY_ICONS: Record<TourCategory | 'private', LucideIcon> = {
 export default function TourCover({ category, image, alt }: { category: TourCategory; image?: string; alt: string }) {
   if (image) {
     // eslint-disable-next-line @next/next/no-img-element
-    return <img src={image} alt={alt} className="tour-img" />
+    return <img src={image} alt={alt} className="tour-img" loading="lazy" decoding="async" />
   }
   const Icon = CATEGORY_ICONS[category]
   return (

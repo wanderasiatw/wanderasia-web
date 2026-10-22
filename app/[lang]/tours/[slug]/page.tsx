@@ -1,9 +1,9 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { getTourBySlug } from '@/lib/cms'
-import { CURRENCY } from '@/lib/tours'
+import { getAllTours, getTourBySlug } from '@/lib/cms'
+import { CURRENCY, type Tour } from '@/lib/tours'
 import { HTML_LANG, langFromParam, translate } from '@/lib/i18n'
-import { absoluteUrl, breadcrumbJsonLd, pageMetadata, providerJsonLd } from '@/lib/seo'
+import { absoluteUrl, breadcrumbJsonLd, pageMetadata, providerJsonLd, tourAggregateRating } from '@/lib/seo'
 import TourDetail from '@/components/TourDetail'
 import JsonLd from '@/components/JsonLd'
 import { getDepartures, nextAvailable } from '@/lib/booking/server'
@@ -31,6 +31,10 @@ export default async function TourDetailPage({ params }: Props) {
   const tour = await getTourBySlug(slug)
   if (!tour) notFound()
 
+  // Tours this one suggests at the end of its page, resolved from the CMS related list
+  const allTours = tour.relatedTours.length > 0 ? await getAllTours() : []
+  const related = tour.relatedTours.map((slug) => allTours.find((x) => x.slug === slug)).filter((x): x is Tour => Boolean(x))
+
   // Online booking shows when the CMS has dates for this tour; otherwise the WhatsApp booking form does
   const departures = await getDepartures(tour)
   const first = departures?.[0]
@@ -46,6 +50,7 @@ export default async function TourDetailPage({ params }: Props) {
     image: tour.image ? [tour.image] : undefined,
     inLanguage: HTML_LANG[lang],
     provider: providerJsonLd(),
+    aggregateRating: tourAggregateRating(tour),
     offers:
       tour.price == null
         ? undefined
@@ -60,7 +65,7 @@ export default async function TourDetailPage({ params }: Props) {
   return (
     <>
       {!tour.comingSoon && <JsonLd data={[trip, crumbs]} />}
-      <TourDetail tour={tour} booking={booking} />
+      <TourDetail tour={tour} booking={booking} related={related} />
     </>
   )
 }

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { CONTACT } from './contact'
 import { HTML_LANG, LANGS, OG_LOCALE, localePath, translate, type Lang } from './i18n'
+import type { Tour } from './tours'
 
 /** The site's public address. Read on each request: on Cloudflare, environment variables are only available while handling one. */
 export function siteUrl() {
@@ -60,6 +61,18 @@ export function organizationJsonLd(lang: Lang) {
     email: CONTACT.email,
     areaServed: { '@type': 'City', name: 'Taipei' },
   }
+}
+
+/**
+ * Schema.org aggregate rating for a tour, from its real CMS platform scores only:
+ * the row with the most reviews represents the tour. Missing when no row has
+ * both a score and a review count — never estimated or invented.
+ */
+export function tourAggregateRating(tour: Tour): object | undefined {
+  const rows = tour.ratings.filter((r) => r.rating != null && r.count != null)
+  if (rows.length === 0) return undefined
+  const best = rows.reduce((a, b) => ((b.count ?? 0) > (a.count ?? 0) ? b : a))
+  return { '@type': 'AggregateRating', ratingValue: best.rating, reviewCount: best.count }
 }
 
 /** The provider block used inside tour and service data */

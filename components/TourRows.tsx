@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, Star } from 'lucide-react'
 import { formatPrice, privateTourService, type Tour, type TourCategory } from '@/lib/tours'
 import { askAboutLink } from '@/lib/contact'
 import { scrollToTours, useSite, type DictKey, type Lang } from './SiteProvider'
@@ -110,14 +110,17 @@ export default function TourRows({ tours, upcoming, title }: { tours: Tour[]; up
 }
 
 /** A tour card; the whole card links to the tour's page */
-function TourCard({ tour, t, lang, href }: { tour: Tour; t: T; lang: Lang; href: string }) {
+export function TourCard({ tour, t, lang, href }: { tour: Tour; t: T; lang: Lang; href: string }) {
   const facts = [tour.startTime?.[lang], tour.duration?.[lang]].filter(Boolean).join(' • ')
+  // The first platform score with a number, shown as the card's rating line
+  const topRating = tour.ratings.find((r) => r.rating != null)
 
   return (
     <article className="tour-card">
       <div className="tour-img-wrap">
         <TourCover category={tour.category} image={tour.image} alt={tour.title[lang]} />
         <div className="tour-loc">{tour.location[lang]}</div>
+        {tour.badge && <span className="tour-badge-chip">{tour.badge[lang]}</span>}
       </div>
       <div className="tour-body">
         <div>
@@ -125,6 +128,15 @@ function TourCard({ tour, t, lang, href }: { tour: Tour; t: T; lang: Lang; href:
             <Link href={href} className="tour-card-link">{tour.title[lang]}</Link>
           </h3>
           {facts && <p className="tour-meta">{facts}</p>}
+          {topRating && (
+            <p className="tour-card-rating">
+              <Star size={12} fill="currentColor" strokeWidth={0} />
+              <span>
+                {topRating.rating}
+                {topRating.count != null ? ` (${topRating.count})` : ''}
+              </span>
+            </p>
+          )}
           <p className="tour-desc">{tour.desc[lang]}</p>
         </div>
         <div className="tour-footer">

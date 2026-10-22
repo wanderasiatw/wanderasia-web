@@ -10,6 +10,9 @@ import {
   type TextList,
   type Tour,
   type TourCategory,
+  type TourFact,
+  type TourHiking,
+  type TourRating,
 } from './tours'
 
 // CMS content fields the website reads, for one text field (shown here for `title`; the same pattern
@@ -22,6 +25,10 @@ import {
 //   titleKo      Korean — optional; falls back to English when the CMS doesn't send it
 // Tastings use the same pattern on `name` (name, nameZh, nameZhHans, nameJa, nameKo), and gallery
 // photos (the `photos` repeater on a tour) use it on `caption`.
+// The tour mapper reads the full CMS tour form: subtitle, badge, mapUrl, the `facts` rows (icon + text),
+// included / notIncluded / bring lists, importantInfo, the cancellation fields, the `ratings` rows
+// (source, rating, count, url), `relatedTours` slugs and the hiking pack (difficulty, distanceKm,
+// climbM, trailArea, fitness, gear, amenities, safety).
 // Form labels (lib/cms.ts, FormLabel) are objects: { en, zh, zhHans, ja, ko } with the same fallbacks.
 //
 // The Plyndi CMS, e.g. https://wanderasia-cms.<account>.workers.dev
@@ -90,17 +97,44 @@ function textList(doc: Raw, key: string, split = list): TextList {
 
 const isCategory = (c: unknown): c is TourCategory => CATEGORIES.some((cat) => cat.key === c)
 
+/** The hiking details, when the CMS has any of them (hiking tours only) */
+function toHiking(doc: Raw): TourHiking | undefined {
+  const hiking: TourHiking = {
+    difficulty: str(doc.difficulty),
+    distanceKm: typeof doc.distanceKm === 'number' ? doc.distanceKm : undefined,
+    climbM: typeof doc.climbM === 'number' ? doc.climbM : undefined,
+    trailArea: optionalText(doc, 'trailArea'),
+    fitness: optionalText(doc, 'fitness'),
+    gear: textList(doc, 'gear'),
+    amenities: textList(doc, 'amenities'),
+    safety: optionalText(doc, 'safety'),
+  }
+  const hasAny =
+    hiking.difficulty ||
+    hiking.distanceKm != null ||
+    hiking.climbM != null ||
+    hiking.trailArea ||
+    hiking.fitness ||
+    hiking.safety ||
+    hiking.gear.EN.length > 0 ||
+    hiking.amenities.EN.length > 0
+  return hasAny ? hiking : undefined
+}
+
 function toTour(doc: Raw): Tour {
   return {
     id: doc.id,
     slug: doc.slug,
     category: doc.category,
     title: text(doc, 'title', 'Untitled Tour'),
+    subtitle: optionalText(doc, 'subtitle'),
+    badge: optionalText(doc, 'badge'),
     location: text(doc, 'location', 'Taipei'),
     price: typeof doc.price === 'number' ? doc.price : null,
     duration: optionalText(doc, 'duration'),
     meetingPoint: optionalText(doc, 'meetingPoint'),
     startTime: optionalText(doc, 'startTime'),
+    mapUrl: str(doc.mapUrl),
     image: str(doc.mainImage),
     photos: (Array.isArray(doc.photos) ? doc.photos : [])
       .map((p: Raw) => ({ image: str(p.image) ?? '', caption: text(p, 'caption') }))
@@ -109,6 +143,9 @@ function toTour(doc: Raw): Tour {
     desc: text(doc, 'description'),
     body: textList(doc, 'body', paragraphs),
     highlights: textList(doc, 'highlights'),
+    facts: (Array.isArray(doc.facts) ? doc.facts : [])
+      .map((f: Raw): TourFact => ({ icon: str(f.icon), text: text(f, 'text') }))
+      .filter((f) => f.text.EN),
     tastings: (Array.isArray(doc.tastings) ? doc.tastings : []).map((t: Raw) => {
       const zh = str(t.nameZh) ?? ''
       return {
@@ -121,6 +158,25 @@ function toTour(doc: Raw): Tour {
       }
     }),
     note: optionalText(doc, 'note'),
+    included: textList(doc, 'included'),
+    notIncluded: textList(doc, 'notIncluded'),
+    bring: textList(doc, 'bring'),
+    importantInfo: optionalText(doc, 'importantInfo'),
+    freeCancellation: Boolean(doc.freeCancellation),
+    cancelHours: typeof doc.cancelHours === 'number' ? doc.cancelHours : undefined,
+    cancellationPolicy: optionalText(doc, 'cancellationPolicy'),
+    ratings: (Array.isArray(doc.ratings) ? doc.ratings : [])
+      .map(
+        (r: Raw): TourRating => ({
+          source: str(r.source) ?? '',
+          rating: typeof r.rating === 'number' ? r.rating : undefined,
+          count: typeof r.count === 'number' ? r.count : undefined,
+          url: str(r.url),
+        }),
+      )
+      .filter((r) => r.source),
+    relatedTours: list(doc.relatedTours),
+    hiking: toHiking(doc),
     comingSoon: Boolean(doc.comingSoon),
     seoTitle: str(doc.seoTitle),
     seoDescription: str(doc.seoDescription),

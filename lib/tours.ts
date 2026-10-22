@@ -38,16 +38,49 @@ export interface TourPhoto {
   caption: Text
 }
 
+/** One key fact from the CMS (icon name + text), e.g. group size or tour language */
+export interface TourFact {
+  icon?: string
+  text: Text
+}
+
+/** One review-platform score from the CMS; only ever filled with real ratings */
+export interface TourRating {
+  source: string
+  rating?: number
+  count?: number
+  url?: string
+}
+
+/** Extra details the CMS collects for hiking tours; present only when the tour has any of them */
+export interface TourHiking {
+  /** CMS difficulty value, e.g. easy, moderate or hard (turning it into labels is a display concern) */
+  difficulty?: string
+  distanceKm?: number
+  climbM?: number
+  trailArea?: Text
+  fitness?: Text
+  gear: TextList
+  amenities: TextList
+  safety?: Text
+}
+
 export interface Tour {
   id: string
   slug: string
   category: TourCategory
   title: Text
+  /** One-line value proposition under the title */
+  subtitle?: Text
+  /** Short label shown on cards and near the price, e.g. Best seller */
+  badge?: Text
   location: Text
   /** 0 = free, null = price on request */
   price: number | null
   duration?: Text
   meetingPoint?: Text
+  /** Map link for the meeting point */
+  mapUrl?: string
   startTime?: Text
   /** Cover photo; the category cover is shown when missing */
   image?: string
@@ -60,8 +93,25 @@ export interface Tour {
   /** Full description paragraphs for the tour page */
   body: TextList
   highlights: TextList
+  /** Key facts from the CMS (group size, language, …) */
+  facts: TourFact[]
   tastings: Tasting[]
   note?: Text
+  included: TextList
+  notIncluded: TextList
+  bring: TextList
+  /** "Good to know" notes from the CMS */
+  importantInfo?: Text
+  freeCancellation: boolean
+  /** Free cancellation is possible until this many hours before the tour */
+  cancelHours?: number
+  cancellationPolicy?: Text
+  /** Real review-platform scores from the CMS; empty until genuine ratings are entered */
+  ratings: TourRating[]
+  /** Slugs of other tours to suggest at the end of the page */
+  relatedTours: string[]
+  /** Hiking-only details; missing for other tours */
+  hiking?: TourHiking
   /** Listed, but details are not published yet */
   comingSoon?: boolean
   seoTitle?: string
@@ -186,6 +236,13 @@ export const TOURS: Tour[] = [
     highlights: enList([]),
     photos: [],
     tastings: [],
+    facts: [],
+    included: enList([]),
+    notIncluded: enList([]),
+    bring: enList([]),
+    freeCancellation: false,
+    ratings: [],
+    relatedTours: [],
     comingSoon: true,
   },
   {
@@ -200,6 +257,13 @@ export const TOURS: Tour[] = [
     highlights: enList([]),
     photos: [],
     tastings: [],
+    facts: [],
+    included: enList([]),
+    notIncluded: enList([]),
+    bring: enList([]),
+    freeCancellation: false,
+    ratings: [],
+    relatedTours: [],
     comingSoon: true,
   },
   {
@@ -232,6 +296,13 @@ export const TOURS: Tour[] = [
       { name: 'Sweet potato balls', zh: '地瓜球' },
     ],
     photos: [],
+    facts: [],
+    included: enList([]),
+    notIncluded: enList([]),
+    bring: enList([]),
+    freeCancellation: false,
+    ratings: [],
+    relatedTours: [],
     note: en('Tips are welcome. Give whatever you feel we’ve earned.'),
   },
   {
@@ -246,6 +317,13 @@ export const TOURS: Tour[] = [
     highlights: enList([]),
     photos: [],
     tastings: [],
+    facts: [],
+    included: enList([]),
+    notIncluded: enList([]),
+    bring: enList([]),
+    freeCancellation: false,
+    ratings: [],
+    relatedTours: [],
     comingSoon: true,
   },
 ]

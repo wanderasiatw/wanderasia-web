@@ -996,7 +996,7 @@ section[id], .tour-row[id] { scroll-margin-top: 90px; }
 .private-bubble small { display: block; font-size: 11px; color: var(--stone-600); }
 
 /* Tour details */
-.tour-facts { list-style: none; display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: var(--dark); }
+.tour-facts { list-style: none; display: flex; flex-direction: row; flex-wrap: wrap; gap: 8px 26px; font-size: 13.5px; color: var(--dark); }
 .tour-facts li { display: flex; align-items: center; gap: 8px; }
 .tour-facts svg { color: var(--gold-text); flex-shrink: 0; }
 .tour-note {
@@ -1389,3 +1389,54 @@ section[id], .tour-row[id] { scroll-margin-top: 90px; }
 /* The floating WhatsApp button would cover the booking buttons on phones; each booking page has its own WhatsApp link */
 @media (max-width: 768px) { body:has(.book-grid) .floating-whatsapp-wrap { display: none; } }
 .link-quiet { display: block; text-align: center; font-size: 12px; font-weight: 700; color: var(--whatsapp-green-hover); margin-top: 10px; }
+
+/* Premium tour page: hero badges, essentials band, practical details, ratings, sticky booking bar */
+.hero-badges { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+.hero-badges .badge-hero { margin: 0; }
+.badge-chip { background: var(--brand-gold); color: #231a08; font-size: 11px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; padding: 5px 11px; border-radius: 999px; }
+.hero-subtitle { font-size: 17px; line-height: 1.5; color: rgba(255, 255, 255, .92); max-width: 620px; margin: 6px 0 10px; }
+.essentials-band { background: var(--white); border-bottom: 1px solid var(--stone-200); }
+.essentials-inner { display: flex; align-items: center; gap: 10px 30px; flex-wrap: wrap; padding-top: 13px; padding-bottom: 13px; }
+.rating-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-left: auto; }
+.rating-chip { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--stone-200); border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 600; color: var(--dark); text-decoration: none; background: var(--white); }
+.rating-chip svg { color: var(--brand-gold); }
+a.rating-chip:hover { border-color: var(--brand-gold); }
+.stars { display: inline-flex; gap: 1px; color: var(--brand-gold); flex-shrink: 0; }
+.rating-row { display: flex; align-items: center; gap: 10px; }
+.journey-steps { counter-reset: journey-step; }
+.journey-steps > p { position: relative; padding-left: 36px; }
+.journey-steps > p::before { counter-increment: journey-step; content: counter(journey-step, decimal-leading-zero); position: absolute; left: 0; top: 0; font-size: 12px; font-weight: 800; color: var(--primary); }
+.details-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 24px; }
+@media (max-width: 640px) { .details-cols { grid-template-columns: 1fr; } }
+.detail-list-title { font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: var(--dark); margin-bottom: 8px; }
+.detail-list { list-style: none; display: flex; flex-direction: column; gap: 6px; font-size: 14px; color: var(--stone-600); }
+.detail-list li { display: flex; gap: 8px; align-items: flex-start; }
+.detail-list svg { flex-shrink: 0; margin-top: 2px; }
+.detail-icon-ok { color: var(--primary); }
+.detail-icon-no { color: var(--stone-400); }
+.fact-rows { display: flex; flex-direction: column; }
+.fact-row { display: flex; justify-content: space-between; gap: 16px; padding: 8px 0; border-bottom: 1px dashed var(--stone-200); font-size: 14px; }
+.fact-row:last-child { border-bottom: none; }
+.fact-row-label { color: var(--stone-500); flex-shrink: 0; }
+.fact-row-value { font-weight: 600; color: var(--dark); text-align: right; }
+.cancel-note { display: flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 700; color: var(--primary); }
+.cancel-note svg { flex-shrink: 0; }
+.booking-total { display: flex; justify-content: space-between; align-items: center; font-size: 14px; color: var(--stone-600); border-top: 1px dashed var(--stone-200); padding-top: 10px; }
+.booking-total strong { font-size: 17px; color: var(--primary); }
+#book { scroll-margin-top: 96px; }
+.sticky-book-bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 150; display: none; align-items: center; gap: 14px; background: var(--white); border-top: 1px solid var(--stone-200); box-shadow: 0 -6px 24px rgba(20, 24, 20, .12); padding: 10px 16px calc(10px + env(safe-area-inset-bottom)); transform: translateY(110%); transition: transform .25s ease; }
+.sticky-book-bar.show { transform: translateY(0); }
+.sticky-book-info { display: flex; flex-direction: column; line-height: 1.25; }
+.sticky-book-info span { font-size: 11px; color: var(--stone-500); }
+.sticky-book-info strong { font-size: 19px; color: var(--primary); font-weight: 900; }
+.sticky-book-bar .btn { flex: 1; padding: 13px; font-size: 15px; text-align: center; }
+@media (max-width: 860px) {
+  .sticky-book-bar { display: flex; }
+  body:has(.sticky-book-bar.show) .floating-whatsapp-wrap { bottom: 96px; }
+}
+@media (prefers-reduced-motion: reduce) { .sticky-book-bar { transition: none; } }
+
+/* Tour cards everywhere (listings, home, related): CMS badge chip + rating line */
+.tour-badge-chip { position: absolute; top: 10px; left: 10px; z-index: 1; background: var(--brand-gold); color: #231a08; font-size: 10.5px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; padding: 4px 9px; border-radius: 999px; }
+.tour-card-rating { display: inline-flex; align-items: center; gap: 5px; font-size: 12.5px; font-weight: 700; color: var(--dark); margin-top: 2px; }
+.tour-card-rating svg { color: var(--brand-gold); }
