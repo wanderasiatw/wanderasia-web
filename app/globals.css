@@ -1510,8 +1510,9 @@ a.rating-chip:hover { border-color: var(--brand-gold); }
 /* The hero form's quiet WhatsApp fallback, under the primary booking button.
    Kept tight, and the card's bottom padding shrinks to match, so the hero
    keeps the compact height the original design had. */
-.hero-prefer { margin: 8px 2px 0; font-size: 13px; line-height: 1.3; }
-.search-card:has(.hero-prefer) { padding-bottom: 10px; }
+/* ".hero .hero-prefer" so the big hero subtitle style (.hero p: 17px, 600px wide, centred, 32px gap below)
+   doesn't apply to this small link line inside the search card */
+.hero .hero-prefer { margin: 12px 2px 0; max-width: none; font-size: 13px; line-height: 1.3; color: var(--dark); text-align: left; }
 .hero-prefer a { display: inline-flex; align-items: center; gap: 6px; color: var(--dark); opacity: .72; text-decoration: none; }
 .hero-prefer a:hover { opacity: 1; text-decoration: underline; }
 
