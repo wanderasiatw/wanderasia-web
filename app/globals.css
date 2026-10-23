@@ -1496,3 +1496,28 @@ a.rating-chip:hover { border-color: var(--brand-gold); }
   .tp-cell img { transition: none; }
   .tp-cell:hover img { transform: none; }
 }
+
+/* Home hero crossfade: photos from the featured CMS gallery album, under the usual shade.
+   The headline and search form never move; dots are the only control. */
+.hero-slides { position: absolute; inset: 0; }
+.hero-slide { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 1.4s ease; }
+.hero-slide.active { opacity: 1; }
+.hero-dots { position: absolute; left: 50%; transform: translateX(-50%); bottom: 26px; z-index: 3; display: flex; gap: 8px; }
+.hero-dot { width: 8px; height: 8px; border-radius: 50%; border: 0; padding: 0; background: rgba(255, 255, 255, .45); cursor: pointer; }
+.hero-dot.active { background: var(--white); }
+@media (prefers-reduced-motion: reduce) { .hero-slide { transition: none; } }
+
+/* Trust bar with a third item: the tours' strongest real rating */
+.trust-bar-proof .trust-grid { grid-template-columns: repeat(3, minmax(0, 380px)); }
+@media (max-width: 900px) { .trust-bar-proof .trust-grid { grid-template-columns: minmax(0, 380px); } }
+.trust-proof { text-decoration: none; color: inherit; }
+.trust-proof .stars { margin-right: 6px; vertical-align: -2px; }
+
+/* Home page guest ratings, one row per platform score */
+.review-rows { display: flex; flex-direction: column; max-width: 760px; }
+.review-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 13px 0; border-bottom: 1px solid var(--stone-200); }
+.review-row-main { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.review-tour { font-weight: 700; color: var(--dark); font-size: 15px; }
+.review-text { font-size: 13px; color: var(--stone-600); }
+.review-row-side { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.review-row-side a { color: var(--primary); display: inline-flex; }

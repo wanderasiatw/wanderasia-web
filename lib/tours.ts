@@ -52,6 +52,25 @@ export interface TourRating {
   url?: string
 }
 
+/** Display names for the review platforms a ratings row can name */
+const RATING_SOURCE_LABELS: Record<string, string> = {
+  google: 'Google',
+  tripadvisor: 'Tripadvisor',
+  'trip-advisor': 'Tripadvisor',
+  viator: 'Viator',
+  getyourguide: 'GetYourGuide',
+  'get-your-guide': 'GetYourGuide',
+  klook: 'Klook',
+  airbnb: 'Airbnb',
+  facebook: 'Facebook',
+  expedia: 'Expedia',
+}
+
+/** The platform's display name, for a ratings row's source value */
+export function ratingSourceLabel(raw: string): string {
+  return RATING_SOURCE_LABELS[raw.toLowerCase()] ?? raw.charAt(0).toUpperCase() + raw.slice(1)
+}
+
 /** Extra details the CMS collects for hiking tours; present only when the tour has any of them */
 export interface TourHiking {
   /** CMS difficulty value, e.g. easy, moderate or hard (turning it into labels is a display concern) */

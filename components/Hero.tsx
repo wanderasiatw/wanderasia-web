@@ -1,57 +1,98 @@
 'use client'
 
-import { useState, type FormEvent } from 'react'
-import { useRouter } from 'next/navigation'
-import { CalendarCheck } from 'lucide-react'
-import { scrollToTours, useSite } from './SiteProvider'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { useSite } from './SiteProvider'
 import { PinIcon, WhatsAppIcon } from './Icons'
-import { privateTourService, type Tour } from '@/lib/tours'
+import { privateTourService } from '@/lib/tours'
 import { whatsappLink } from '@/lib/contact'
 import { HERO } from '@/lib/home-content'
+import type { HeroSlide } from '@/lib/cms'
 
-/** Today in Taipei as YYYY-MM-DD, so past dates can't be picked */
-const taipeiToday = () => new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Taipei' })
+/** How long each hero photo stays before the slow crossfade to the next (ms) */
+const SLIDE_MS = 6500
 
-export default function Hero({ tours = [] }: { tours?: Tour[] }) {
-  const { t, lang, href, services } = useSite()
-  const router = useRouter()
+export default function Hero({ slides = [] }: { slides?: HeroSlide[] }) {
+  const { t, lang, categories, services } = useSite()
   const [type, setType] = useState('')
   const [date, setDate] = useState('')
   const [guests, setGuests] = useState(2)
+  const [index, setIndex] = useState(0)
+  const [paused, setPaused] = useState(false)
+  const [tabHidden, setTabHidden] = useState(false)
+  const [reducedMotion, setReducedMotion] = useState(false)
+  const resumeTimer = useRef<number | null>(null)
 
-  const privateTour = privateTourService(services)
-  const options = [
-    ...tours.map((tour) => ({ key: `tour:${tour.slug}`, title: tour.title })),
-    { key: 'private', title: privateTour.title },
-  ]
-  const chosen = options.find((o) => o.key === type)
+  const options = [...categories.map((c) => ({ key: c.key, title: c.title })), { key: 'private', title: privateTourService(services).title }]
 
-  // Same details, sent as a WhatsApp message for people who'd rather chat
-  const chatMsg = [
-    "Hi Wander Asia! I'd like to check availability.",
-    `Tour: ${chosen?.title.EN ?? 'Not sure yet'}`,
-    `Date: ${date || 'flexible'}`,
-    `Guests: ${guests === 10 ? '10+' : guests}`,
-  ].join('\n')
-
-  /** Opens the tour's booking page (live dates and seats) with the date and guests filled in */
-  function checkAvailability(e: FormEvent) {
-    e.preventDefault()
-    if (type.startsWith('tour:')) {
-      const q = new URLSearchParams()
-      if (date) q.set('date', date)
-      q.set('a', String(guests))
-      router.push(`${href(`/tours/${type.slice(5)}/book`)}?${q}`)
-    } else if (type === 'private') {
-      router.push(href(`/services/${privateTour.slug}`))
-    } else {
-      scrollToTours('tours', lang)
+  // Visitors who ask for reduced motion get a still hero; a hidden tab pauses the rotation too
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
+    setReducedMotion(mq.matches)
+    const onMq = (e: MediaQueryListEvent) => setReducedMotion(e.matches)
+    mq.addEventListener('change', onMq)
+    const onVis = () => setTabHidden(document.hidden)
+    document.addEventListener('visibilitychange', onVis)
+    return () => {
+      mq.removeEventListener('change', onMq)
+      document.removeEventListener('visibilitychange', onVis)
     }
+  }, [])
+
+  useEffect(() => {
+    if (slides.length < 2 || paused || tabHidden || reducedMotion) return
+    const id = window.setInterval(() => setIndex((i) => (i + 1) % slides.length), SLIDE_MS)
+    return () => window.clearInterval(id)
+  }, [slides.length, paused, tabHidden, reducedMotion])
+
+  // A touch pauses the rotation; it resumes on its own after a while
+  const pauseForTouch = () => {
+    setPaused(true)
+    if (resumeTimer.current) window.clearTimeout(resumeTimer.current)
+    resumeTimer.current = window.setTimeout(() => setPaused(false), 10000)
   }
 
+  function checkAvailability(e: FormEvent) {
+    e.preventDefault()
+    const tour = options.find((o) => o.key === type)?.title.EN ?? 'Not sure yet'
+    const msg = [
+      "Hi Wander Asia! I'd like to check availability.",
+      `Tour: ${tour}`,
+      `Date: ${date || 'flexible'}`,
+      `Guests: ${guests === 10 ? '10+' : guests}`,
+    ].join('\n')
+    window.open(whatsappLink(msg), '_blank', 'noopener,noreferrer')
+  }
+
+  const active = slides.length > 0 ? Math.min(index, slides.length - 1) : 0
+  const caption = slides.length > 0 ? slides[active].caption[lang] : ''
+
   return (
-    <section className="hero">
-      <div className="hero-bg" />
+    <section
+      className="hero"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      onFocus={() => setPaused(true)}
+      onBlur={() => setPaused(false)}
+      onTouchStart={pauseForTouch}
+    >
+      {slides.length > 0 ? (
+        <div className="hero-slides">
+          {slides.map((s, i) => (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              key={s.image}
+              src={s.image}
+              alt=""
+              className={i === active ? 'hero-slide active' : 'hero-slide'}
+              loading={i === 0 ? 'eager' : 'lazy'}
+              fetchPriority={i === 0 ? 'high' : undefined}
+              aria-hidden={i !== active}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="hero-bg" />
+      )}
       <div className="wa-container hero-content">
         <div className="badge-hero">
           <PinIcon size={14} color="var(--gold-light)" />
@@ -74,7 +115,7 @@ export default function Hero({ tours = [] }: { tours?: Tour[] }) {
 
             <div className="form-group">
               <label htmlFor="search-date">{t('lblDate')}</label>
-              <input id="search-date" type="date" className="form-control" min={taipeiToday()} value={date} onChange={(e) => setDate(e.target.value)} />
+              <input id="search-date" type="date" className="form-control" value={date} onChange={(e) => setDate(e.target.value)} />
             </div>
 
             <div className="form-group">
@@ -87,22 +128,35 @@ export default function Hero({ tours = [] }: { tours?: Tour[] }) {
             </div>
 
             <div className="form-group">
-              <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: 11 }}>
-                <CalendarCheck size={18} aria-hidden="true" />
+              <button type="submit" className="btn btn-whatsapp" style={{ width: '100%', padding: 11 }}>
+                <WhatsAppIcon />
                 <span>{t('checkAvail')}</span>
               </button>
             </div>
           </form>
-          <a className="hero-chat" href={whatsappLink(chatMsg)} target="_blank" rel="noopener noreferrer">
-            <WhatsAppIcon size={14} />
-            <span>{t('preferChat')}</span>
-          </a>
         </div>
       </div>
-      <p className="hero-credit">
-        {HERO.photo.place[lang]} · <a href={HERO.photo.source} target="_blank" rel="noreferrer">{HERO.photo.author}</a>,{' '}
-        <a href={HERO.photo.licenseUrl} target="_blank" rel="noreferrer license">{HERO.photo.license}</a>
-      </p>
+      {slides.length > 1 && (
+        <div className="hero-dots">
+          {slides.map((s, i) => (
+            <button
+              key={s.image}
+              type="button"
+              className={i === active ? 'hero-dot active' : 'hero-dot'}
+              aria-label={s.caption[lang] || `${i + 1} / ${slides.length}`}
+              onClick={() => setIndex(i)}
+            />
+          ))}
+        </div>
+      )}
+      {slides.length > 0 ? (
+        caption ? <p className="hero-credit">{caption}</p> : null
+      ) : (
+        <p className="hero-credit">
+          {HERO.photo.place[lang]} · <a href={HERO.photo.source} target="_blank" rel="noreferrer">{HERO.photo.author}</a>,{' '}
+          <a href={HERO.photo.licenseUrl} target="_blank" rel="noreferrer license">{HERO.photo.license}</a>
+        </p>
+      )}
     </section>
   )
 }

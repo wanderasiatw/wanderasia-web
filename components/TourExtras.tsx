@@ -2,28 +2,13 @@
 
 import Link from 'next/link'
 import { BadgeCheck, Check, ExternalLink, Star, X } from 'lucide-react'
-import type { Tour } from '@/lib/tours'
+import { ratingSourceLabel, type Tour } from '@/lib/tours'
 import { fill, type DictKey } from '@/lib/i18n'
 import { useSite } from './SiteProvider'
 import { TourCard } from './TourRows'
 
-/** Display names for the review platforms the CMS ratings rows can name */
-const SOURCE_LABELS: Record<string, string> = {
-  google: 'Google',
-  tripadvisor: 'Tripadvisor',
-  'trip-advisor': 'Tripadvisor',
-  viator: 'Viator',
-  getyourguide: 'GetYourGuide',
-  'get-your-guide': 'GetYourGuide',
-  klook: 'Klook',
-  airbnb: 'Airbnb',
-  facebook: 'Facebook',
-  expedia: 'Expedia',
-}
-
-function sourceLabel(raw: string): string {
-  return SOURCE_LABELS[raw.toLowerCase()] ?? raw.charAt(0).toUpperCase() + raw.slice(1)
-}
+/** Display names for the review platforms the CMS ratings rows can name (shared with the home page) */
+const sourceLabel = ratingSourceLabel
 
 /** Five stars with the filled ones matching the score, rounded to the nearest star */
 export function RatingStars({ value, size = 14 }: { value: number; size?: number }) {
@@ -38,7 +23,7 @@ export function RatingStars({ value, size = 14 }: { value: number; size?: number
 }
 
 /** One-line summary of a ratings row, using whichever of score / count the CMS has */
-function ratingText(t: (key: DictKey) => string, r: Tour['ratings'][number]): string {
+export function ratingText(t: (key: DictKey) => string, r: Tour['ratings'][number]): string {
   const source = sourceLabel(r.source)
   if (r.rating != null && r.count != null) return fill(t('ratingSummary'), { rating: r.rating, count: r.count, source })
   if (r.rating != null) return `${r.rating} · ${source}`
