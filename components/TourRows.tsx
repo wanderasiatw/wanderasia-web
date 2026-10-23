@@ -74,7 +74,7 @@ export default function TourRows({ tours, upcoming, title }: { tours: Tour[]; up
 
         {rows.map((row) => (
           <div key={row.id} id={row.id} className="tour-row">
-            {freeAlias === row.id && <span id="tours-free" aria-hidden="true" />}
+            {freeAlias === row.id && <span id="tours-free" className="tour-row-anchor" aria-hidden="true" />}
             <div className="tour-row-head">
               <h3 className="tour-row-title">{row.title}</h3>
               {row.subtitle && <span className="tour-row-subtitle">{row.subtitle}</span>}

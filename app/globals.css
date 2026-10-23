@@ -897,6 +897,9 @@ section[id], .tour-row[id] { scroll-margin-top: 90px; }
   border-top: 1px solid var(--stone-200);
 }
 .tour-row:first-of-type { border-top: none; padding-top: 0; }
+/* Extra jump target inside a row (e.g. #tours-free): taken out of the grid so it doesn't use up the heading's column */
+.tour-row { position: relative; }
+.tour-row-anchor { position: absolute; top: 0; left: 0; width: 1px; height: 1px; scroll-margin-top: 90px; }
 .tour-row .tour-grid { grid-template-columns: repeat(3, 1fr); }
 .tour-row-title {
   font-family: var(--font-display);
