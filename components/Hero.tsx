@@ -1,7 +1,9 @@
 'use client'
 
 import { useEffect, useRef, useState, type FormEvent } from 'react'
-import { useSite } from './SiteProvider'
+import { useRouter } from 'next/navigation'
+import { CalendarCheck } from 'lucide-react'
+import { scrollToTours, useSite } from './SiteProvider'
 import { PinIcon, WhatsAppIcon } from './Icons'
 import { privateTourService } from '@/lib/tours'
 import { whatsappLink } from '@/lib/contact'
@@ -11,8 +13,12 @@ import type { HeroSlide } from '@/lib/cms'
 /** How long each hero photo stays before the slow crossfade to the next (ms) */
 const SLIDE_MS = 6500
 
-export default function Hero({ slides = [] }: { slides?: HeroSlide[] }) {
-  const { t, lang, categories, services } = useSite()
+/** The bookable tours the hero can route to, by category */
+export type HeroTour = { slug: string; category: string }
+
+export default function Hero({ slides = [], tours = [] }: { slides?: HeroSlide[]; tours?: HeroTour[] }) {
+  const { t, lang, categories, services, href } = useSite()
+  const router = useRouter()
   const [type, setType] = useState('')
   const [date, setDate] = useState('')
   const [guests, setGuests] = useState(2)
@@ -51,16 +57,34 @@ export default function Hero({ slides = [] }: { slides?: HeroSlide[] }) {
     resumeTimer.current = window.setTimeout(() => setPaused(false), 10000)
   }
 
+  // The WhatsApp fallback under the form keeps the chat option: the same
+  // picks, sent as a message instead of a booking-page visit
+  const waMsg = [
+    "Hi Wander Asia! I'd like to check availability.",
+    `Tour: ${options.find((o) => o.key === type)?.title.EN ?? 'Not sure yet'}`,
+    `Date: ${date || 'flexible'}`,
+    `Guests: ${guests === 10 ? '10+' : guests}`,
+  ].join('\n')
+
   function checkAvailability(e: FormEvent) {
     e.preventDefault()
-    const tour = options.find((o) => o.key === type)?.title.EN ?? 'Not sure yet'
-    const msg = [
-      "Hi Wander Asia! I'd like to check availability.",
-      `Tour: ${tour}`,
-      `Date: ${date || 'flexible'}`,
-      `Guests: ${guests === 10 ? '10+' : guests}`,
-    ].join('\n')
-    window.open(whatsappLink(msg), '_blank', 'noopener,noreferrer')
+    // Private tours are arranged from their own service page
+    if (type === 'private') {
+      router.push(href(`/services/${privateTourService(services).slug}`))
+      return
+    }
+    // A category holding exactly one bookable tour goes straight to that tour's
+    // booking page, carrying the picked date and group size (?date and ?a)
+    const matches = type ? tours.filter((tour) => tour.category === type) : []
+    if (matches.length === 1) {
+      const q = new URLSearchParams()
+      if (date) q.set('date', date)
+      q.set('a', String(guests))
+      router.push(`${href(`/tours/${matches[0].slug}/book`)}?${q.toString()}`)
+      return
+    }
+    // Anything else: show the matching tours further down this page
+    scrollToTours(type ? `tours-${type}` : 'tours', lang)
   }
 
   const active = slides.length > 0 ? Math.min(index, slides.length - 1) : 0
@@ -128,12 +152,18 @@ export default function Hero({ slides = [] }: { slides?: HeroSlide[] }) {
             </div>
 
             <div className="form-group">
-              <button type="submit" className="btn btn-whatsapp" style={{ width: '100%', padding: 11 }}>
-                <WhatsAppIcon />
+              <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: 11 }}>
+                <CalendarCheck size={18} />
                 <span>{t('checkAvail')}</span>
               </button>
             </div>
           </form>
+          <p className="hero-prefer">
+            <a href={whatsappLink(waMsg)} target="_blank" rel="noreferrer">
+              <WhatsAppIcon size={14} />
+              <span>{t('preferChat')}</span>
+            </a>
+          </p>
         </div>
       </div>
       {slides.length > 1 && (

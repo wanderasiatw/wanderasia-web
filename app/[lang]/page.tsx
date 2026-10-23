@@ -28,6 +28,9 @@ export default async function HomePage({ params }: Props) {
   const lang = langFromParam((await params).lang) ?? 'EN'
   const [tours, posts, allTours, heroSlides] = await Promise.all([getFeaturedTours(), getPosts(), getAllTours(), getHeroSlides()])
   const { ready, upcoming } = splitComingSoon(tours)
+  // The hero routes a picked tour type to a booking page when the category holds
+  // exactly one ready tour, so it only needs each ready tour's slug and category
+  const heroTours = ready.map((tour) => ({ slug: tour.slug, category: tour.category }))
 
   // Real ratings only: the proof strip shows the row with the most reviews (the tour pages' rule),
   // and the reviews section lists every row. Both stay hidden while the CMS holds no ratings.
@@ -43,7 +46,7 @@ export default async function HomePage({ params }: Props) {
   return (
     <main>
       <JsonLd data={organizationJsonLd(lang)} />
-      <Hero slides={heroSlides} />
+      <Hero slides={heroSlides} tours={heroTours} />
       <TrustBar lang={lang} proof={proof} />
       <TourRows tours={ready} upcoming={upcoming} />
       <HowItWorks />

@@ -1507,6 +1507,11 @@ a.rating-chip:hover { border-color: var(--brand-gold); }
 .hero-dot.active { background: var(--white); }
 @media (prefers-reduced-motion: reduce) { .hero-slide { transition: none; } }
 
+/* The hero form's quiet WhatsApp fallback, under the primary booking button */
+.hero-prefer { margin: 14px 2px 0; font-size: 13px; }
+.hero-prefer a { display: inline-flex; align-items: center; gap: 6px; color: var(--dark); opacity: .72; text-decoration: none; }
+.hero-prefer a:hover { opacity: 1; text-decoration: underline; }
+
 /* Trust bar with a third item: the tours' strongest real rating */
 .trust-bar-proof .trust-grid { grid-template-columns: repeat(3, minmax(0, 380px)); }
 @media (max-width: 900px) { .trust-bar-proof .trust-grid { grid-template-columns: minmax(0, 380px); } }
