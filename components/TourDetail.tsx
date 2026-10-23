@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { BadgeCheck } from 'lucide-react'
-import { CURRENCY, categoryOf, formatPrice, type Tour } from '@/lib/tours'
+import { categoryOf, currencyOf, formatPrice, type Tour } from '@/lib/tours'
 import { askAboutLink, whatsappLink } from '@/lib/contact'
 import { fill } from '@/lib/i18n'
 import { formatDate, formatMoney } from '@/lib/booking/types'
@@ -140,8 +140,8 @@ export default function TourDetail({ tour, booking, related = [] }: { tour: Tour
                 </div>
               ) : (
                 <div style={{ fontSize: 28, fontWeight: 900, color: 'var(--primary)', marginBottom: 16 }}>
-                  {tour.price === 0 ? t('free') : tour.price == null ? <span style={{ fontSize: 20 }}>{t('priceOnRequest')}</span> : formatPrice(tour.price)}{' '}
-                  {tour.price ? <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--stone-600)' }}>{CURRENCY}</span> : null}
+                  {tour.price === 0 ? t('free') : tour.price == null ? <span style={{ fontSize: 20 }}>{t('priceOnRequest')}</span> : formatPrice(tour.price, currencyOf(tour))}{' '}
+                  {tour.price ? <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--stone-600)' }}>{currencyOf(tour)}</span> : null}
                 </div>
               )}
               {tour.freeCancellation && (
