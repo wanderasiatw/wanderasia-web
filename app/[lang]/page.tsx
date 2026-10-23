@@ -22,7 +22,7 @@ type Props = { params: Promise<{ lang: string }> }
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const lang = langFromParam((await params).lang) ?? 'EN'
   const [slides, tours] = await Promise.all([getHeroSlides(), getFeaturedTours()])
-  const image = slides[0]?.image ?? tours.find((tour) => tour.image)?.image
+  const image = slides.find((s) => s.kind === 'image')?.src ?? tours.find((tour) => tour.image)?.image
   return pageMetadata(lang, '/', { title: translate(lang, 'metaTitle'), description: translate(lang, 'metaDesc'), image })
 }
 
