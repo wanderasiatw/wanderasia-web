@@ -33,7 +33,13 @@ export default async function BookTourPage({ params, searchParams }: Props) {
 
   // Tours that can't be booked online yet go back to their page, where the WhatsApp form is
   const departures = await getDepartures(tour)
-  if (!departures) redirect(localePath(lang, `/tours/${tour.slug}`))
+  if (!departures) {
+    const keep = new URLSearchParams()
+    if (one(q.date)) keep.set('date', one(q.date)!)
+    if (one(q.a)) keep.set('a', one(q.a)!)
+    const qs = keep.toString()
+    redirect(localePath(lang, `/tours/${tour.slug}`) + (qs ? `?${qs}` : ''))
+  }
 
   return (
     <BookingFlow

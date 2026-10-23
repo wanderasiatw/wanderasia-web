@@ -38,6 +38,8 @@ export default function TourRows({ tours, upcoming, title }: { tours: Tour[]; up
   const soon = categories.filter(
     (c) => !tours.some((p) => p.category === c.key) && (c.comingSoon || upcoming.includes(c.key)),
   )
+  const freeTour = tours.find((p) => p.price === 0)
+  const freeAlias = freeTour && !rows.some((r) => r.id === 'tours-free') && !soon.some((c) => c.key === 'free') ? `tours-${freeTour.category}` : null
   const tabs = [...rows.map((r) => ({ id: r.id, title: r.title })), ...(soon.length > 0 ? [{ id: 'tours-soon', title: t('comingSoon') }] : [])]
   const PrivateIcon = CATEGORY_ICONS.private
 
@@ -72,6 +74,7 @@ export default function TourRows({ tours, upcoming, title }: { tours: Tour[]; up
 
         {rows.map((row) => (
           <div key={row.id} id={row.id} className="tour-row">
+            {freeAlias === row.id && <span id="tours-free" aria-hidden="true" />}
             <div className="tour-row-head">
               <h3 className="tour-row-title">{row.title}</h3>
               {row.subtitle && <span className="tour-row-subtitle">{row.subtitle}</span>}

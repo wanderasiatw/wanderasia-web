@@ -21,7 +21,9 @@ type Props = { params: Promise<{ lang: string }> }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const lang = langFromParam((await params).lang) ?? 'EN'
-  return pageMetadata(lang, '/', { title: translate(lang, 'metaTitle'), description: translate(lang, 'metaDesc') })
+  const [slides, tours] = await Promise.all([getHeroSlides(), getFeaturedTours()])
+  const image = slides[0]?.image ?? tours.find((tour) => tour.image)?.image
+  return pageMetadata(lang, '/', { title: translate(lang, 'metaTitle'), description: translate(lang, 'metaDesc'), image })
 }
 
 export default async function HomePage({ params }: Props) {
@@ -30,7 +32,7 @@ export default async function HomePage({ params }: Props) {
   const { ready, upcoming } = splitComingSoon(tours)
   // The hero routes a picked tour type to a booking page when the category holds
   // exactly one ready tour, so it only needs each ready tour's slug and category
-  const heroTours = ready.map((tour) => ({ slug: tour.slug, category: tour.category }))
+  const heroTours = ready.map((tour) => ({ slug: tour.slug, category: tour.category, free: tour.price === 0 }))
 
   // Real ratings only: the proof strip shows the row with the most reviews (the tour pages' rule),
   // and the reviews section lists every row. Both stay hidden while the CMS holds no ratings.
@@ -46,7 +48,7 @@ export default async function HomePage({ params }: Props) {
   return (
     <main>
       <JsonLd data={organizationJsonLd(lang)} />
-      <Hero slides={heroSlides} tours={heroTours} />
+      <Hero slides={heroSlides} tours={heroTours} upcoming={upcoming} />
       <TrustBar lang={lang} proof={proof} />
       <TourRows tours={ready} upcoming={upcoming} />
       <HowItWorks />

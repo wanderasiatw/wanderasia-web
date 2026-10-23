@@ -13,14 +13,14 @@ import { useSite } from './SiteProvider'
  * the running total and includes it in the message; the guest stepper stops at the
  * tour's group-size cap when one is known (30 otherwise).
  */
-export default function BookingForm({ tourTitle, price, currency, maxGuests }: { tourTitle: string; price?: number | null; currency?: string; maxGuests?: number }) {
+export default function BookingForm({ tourTitle, price, currency, maxGuests, initialDate, initialGuests }: { tourTitle: string; price?: number | null; currency?: string; maxGuests?: number; initialDate?: string; initialGuests?: number }) {
   const { t } = useSite()
   const [name, setName] = useState('')
-  const [date, setDate] = useState('')
-  const [guests, setGuests] = useState(1)
-  const [sent, setSent] = useState(false)
   const [today] = useState(() => new Date().toISOString().slice(0, 10))
   const cap = maxGuests && maxGuests > 0 ? maxGuests : 30
+  const [date, setDate] = useState(initialDate && /^\d{4}-\d{2}-\d{2}$/.test(initialDate) && initialDate >= today ? initialDate : '')
+  const [guests, setGuests] = useState(initialGuests && initialGuests > 0 ? Math.min(Math.floor(initialGuests), cap) : 1)
+  const [sent, setSent] = useState(false)
   const total = price != null && price > 0 ? price * guests : null
 
   function submit(e: FormEvent) {
@@ -58,7 +58,7 @@ export default function BookingForm({ tourTitle, price, currency, maxGuests }: {
       </div>
       {total != null && (
         <div className="booking-total">
-          <span>{fill(t('totalForGuests'), { n: guests })}</span>
+          <span>{guests === 1 ? t('totalForOneGuest') : fill(t('totalForGuests'), { n: guests })}</span>
           <strong>{formatPrice(total, currency)}</strong>
         </div>
       )}

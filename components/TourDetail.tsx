@@ -21,7 +21,7 @@ export interface TourBooking {
 }
 
 /** The tour page's content, in the visitor's chosen language */
-export default function TourDetail({ tour, booking, related = [] }: { tour: Tour; booking?: TourBooking | null; related?: Tour[] }) {
+export default function TourDetail({ tour, booking, related = [], start }: { tour: Tour; booking?: TourBooking | null; related?: Tour[]; start?: { date?: string; guests?: number } }) {
   const { lang, t, href, categories } = useSite()
   const category = categoryOf(categories, tour.category)
   const paragraphs = tour.body[lang].length > 0 ? tour.body[lang] : [tour.desc[lang]]
@@ -169,7 +169,7 @@ export default function TourDetail({ tour, booking, related = [] }: { tour: Tour
                   {t('soonAskWhatsApp')}
                 </a>
               ) : (
-                <BookingForm tourTitle={tour.title.EN} price={tour.price} maxGuests={maxGuests} />
+                <BookingForm tourTitle={tour.title.EN} price={tour.price} currency={currencyOf(tour)} maxGuests={maxGuests} initialDate={start?.date} initialGuests={start?.guests} />
               )}
               <Link href={href(`/inquire?item=tours:${tour.slug}`)} className="btn btn-outline" style={{ width: '100%', padding: 12, marginTop: 10 }}>
                 {t('preferEmail')}

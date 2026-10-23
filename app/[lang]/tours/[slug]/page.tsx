@@ -11,7 +11,10 @@ import { getDepartures, nextAvailable } from '@/lib/booking/server'
 // Pages are rendered on each request so CMS changes show up without a rebuild
 export const dynamic = 'force-dynamic'
 
-type Props = { params: Promise<{ lang: string; slug: string }> }
+type Props = {
+  params: Promise<{ lang: string; slug: string }>
+  searchParams: Promise<Record<string, string | string[] | undefined>>
+}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { lang: param, slug } = await params
@@ -25,8 +28,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return pageMetadata(lang, `/tours/${tour.slug}`, { title, description, image: tour.image, noindex: tour.comingSoon })
 }
 
-export default async function TourDetailPage({ params }: Props) {
-  const { lang: param, slug } = await params
+export default async function TourDetailPage({ params, searchParams }: Props) {
+  const [{ lang: param, slug }, q] = await Promise.all([params, searchParams])
+  // Date and group size picked on the homepage, passed on when this tour is booked on WhatsApp
+  const start = { date: typeof q.date === 'string' ? q.date : undefined, guests: typeof q.a === 'string' ? Number(q.a) || undefined : undefined }
   const lang = langFromParam(param) ?? 'EN'
   const tour = await getTourBySlug(slug)
   if (!tour) notFound()
@@ -65,7 +70,7 @@ export default async function TourDetailPage({ params }: Props) {
   return (
     <>
       {!tour.comingSoon && <JsonLd data={[trip, crumbs]} />}
-      <TourDetail tour={tour} booking={booking} related={related} />
+      <TourDetail tour={tour} booking={booking} related={related} start={start} />
     </>
   )
 }

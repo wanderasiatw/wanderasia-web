@@ -2,14 +2,14 @@ import type { Text } from '@/lib/tours'
 
 /** Home page copy in all five languages (kept here so the home page reads as one piece) */
 export const HERO = {
-  tag: { EN: 'Local guides in Taipei', ZH: '台北在地導遊帶路', ZH_HANS: '台北在地导游带路', JA: '台北の地元ガイド', KO: '타이베이 현지 가이드' } as Text,
-  title: { EN: 'Taipei, the way locals live it', ZH: '用在地人的方式，認識台北', ZH_HANS: '用在地人的方式，认识台北', JA: '台北を、地元の人と同じように', KO: '현지인처럼 살아보는 타이베이' } as Text,
+  tag: { EN: 'Local guides across Taiwan', ZH: '台灣在地導遊帶路', ZH_HANS: '台湾在地导游带路', JA: '台湾各地の地元ガイド', KO: '대만 현지 가이드' } as Text,
+  title: { EN: 'Taiwan, the way locals live it', ZH: '用在地人的方式，認識台灣', ZH_HANS: '用在地人的方式，认识台湾', JA: '台湾を、地元の人と同じように', KO: '현지인처럼 살아보는 대만' } as Text,
   sub: {
-    EN: 'Food, culture and city walks led by people who call Taipei home. Pick a date and book in one WhatsApp message.',
-    ZH: '由住在台北的在地導遊帶你吃美食、看文化、走街區。選好日期，一則 WhatsApp 訊息就能預約。',
-    ZH_HANS: '由住在台北的在地导游带你吃美食、看文化、走街区。选好日期，一则 WhatsApp 信息就能预约。',
-    JA: '台北に暮らす地元ガイドがご案内するグルメ、文化、街歩き。日付を選んで、WhatsAppメッセージ1通で予約できます。',
-    KO: '타이베이에 사는 현지 가이드가 안내하는 음식, 문화, 도보 투어. 날짜를 정해 WhatsApp 메시지 하나로 예약하세요.',
+    EN: 'Food, culture and city walks led by people who call Taiwan home. Pick a date and book in one WhatsApp message.',
+    ZH: '由住在台灣的在地導遊帶你吃美食、看文化、走街區。選好日期，一則 WhatsApp 訊息就能預約。',
+    ZH_HANS: '由住在台湾的在地导游带你吃美食、看文化、走街区。选好日期，一则 WhatsApp 信息就能预约。',
+    JA: '台湾に暮らす地元ガイドがご案内するグルメ、文化、街歩き。日付を選んで、WhatsAppメッセージ1通で予約できます。',
+    KO: '대만에 사는 현지 가이드가 안내하는 음식, 문화, 도보 투어. 날짜를 정해 WhatsApp 메시지 하나로 예약하세요.',
   } as Text,
   /** Credit required by the photo's CC BY 3.0 license */
   photo: {
@@ -48,11 +48,11 @@ export const HOW_IT_WORKS = {
     {
       title: { EN: 'Meet your local guide', ZH: '與在地導遊會合', ZH_HANS: '与在地导游会合', JA: '地元ガイドと合流', KO: '현지 가이드와 만나기' },
       text: {
-        EN: 'Your guide meets you at the starting point, ready to show you their Taipei.',
-        ZH: '導遊會在集合地點等你，帶你認識他們眼中的台北。',
-        ZH_HANS: '导游会在集合地点等你，带你认识他们眼中的台北。',
-        JA: 'ガイドが集合場所でお待ちし、自分の台北をご案内します。',
-        KO: '가이드가 만남 장소에서 기다리며 자신만의 타이베이를 안내합니다.',
+        EN: 'Your guide meets you at the starting point, ready to show you their Taiwan.',
+        ZH: '導遊會在集合地點等你，帶你認識他們眼中的台灣。',
+        ZH_HANS: '导游会在集合地点等你，带你认识他们眼中的台湾。',
+        JA: 'ガイドが集合場所でお待ちし、自分の台湾をご案内します。',
+        KO: '가이드가 만남 장소에서 기다리며 자신만의 대만을 안내합니다.',
       },
     },
   ] as { title: Text; text: Text }[],

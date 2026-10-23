@@ -59,7 +59,7 @@ export function organizationJsonLd(lang: Lang) {
     image: `${siteUrl()}/logo.svg`,
     description: translate(lang, 'metaDesc'),
     email: CONTACT.email,
-    areaServed: { '@type': 'City', name: 'Taipei' },
+    areaServed: { '@type': 'Country', name: 'Taiwan' },
   }
 }
 

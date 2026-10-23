@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, type FormEvent } from 'react'
+import { Fragment, useEffect, useState, type FormEvent } from 'react'
 import type { FormField, FormLabel, PublicForm } from '@/lib/cms'
 import { CONTACT } from '@/lib/contact'
 import { LANG_CODE, type Lang } from '@/lib/i18n'
@@ -125,9 +125,16 @@ export default function InquiryForm({ form, item, title, embedded }: { form: Pub
             </div>
           ) : (
             <form onSubmit={submit} noValidate className="panel flex flex-col gap-4">
-              {form.fields.map((f) => (
-                <Field key={f.name} field={f} value={values[f.name] ?? ''} error={errors[f.name] ? errorText(f.name, errors[f.name]) : ''} onChange={(v) => set(f.name, v)} text={text} optional={t('formOptional')} choose={t('formChoose')} />
-              ))}
+              {form.fields.map((f) => {
+                // Fields where one of a group is needed (email or WhatsApp): the group's note shows above the first, and neither says "optional"
+                const group = form.oneOf.find((g) => g.fields.includes(f.name))
+                return (
+                  <Fragment key={f.name}>
+                    {group && group.fields[0] === f.name && <p className="book-hint" style={{ margin: 0 }}>{text(group.message)}</p>}
+                    <Field field={f} value={values[f.name] ?? ''} error={errors[f.name] ? errorText(f.name, errors[f.name]) : ''} onChange={(v) => set(f.name, v)} text={text} optional={group ? '' : t('formOptional')} choose={t('formChoose')} />
+                  </Fragment>
+                )
+              })}
 
               {/* Hidden from people; bots that fill in every field get caught */}
               <div aria-hidden="true" style={{ position: 'absolute', left: '-10000px', width: 1, height: 1, overflow: 'hidden' }}>
@@ -216,7 +223,7 @@ function Field({
     <div className="form-group">
       <label htmlFor={id}>
         {text(f.label)}
-        {!f.required && <span style={{ fontWeight: 600, textTransform: 'none', color: 'var(--stone-400)' }}> ({optional})</span>}
+        {!f.required && optional && <span style={{ fontWeight: 600, textTransform: 'none', color: 'var(--stone-400)' }}> ({optional})</span>}
       </label>
       {f.type === 'textarea' ? (
         <textarea {...common} rows={5} maxLength={f.max ?? 3000} style={{ height: 'auto', lineHeight: 1.5 }} />

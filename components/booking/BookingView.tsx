@@ -140,6 +140,16 @@ export default function BookingView({ initial, tour, demo, returned }: { initial
       <span>{t('questionsWhatsApp')}</span>
     </a>
   )
+  // Free stand-in for a confirmation email: the guest sends their booking to us, which keeps a copy in
+  // their chat and alerts the team on WhatsApp. Always in English, for the team.
+  const bookingMessage = [
+    'Hi Wander Asia! I just booked:',
+    `Tour: ${tour?.title.EN ?? booking.tourTitle}`,
+    `Date: ${formatDate(booking.date, 'EN')} · ${formatTime(booking.time, 'EN')}`,
+    `Guests: ${booking.adults} adult${booking.adults === 1 ? '' : 's'}${booking.children ? `, ${booking.children} child${booking.children === 1 ? '' : 'ren'}` : ''}`,
+    `Name: ${booking.name}`,
+    `Booking reference: ${booking.ref}`,
+  ].join('\n')
   const summary = tour && (
     <BookingSummary
       tour={tour}
@@ -231,10 +241,14 @@ export default function BookingView({ initial, tour, demo, returned }: { initial
                     <li><span>{t('total')}</span><span>{money(booking.total)}{booking.paidWith ? ` · ${t(`paidWith_${booking.paidWith}`)}` : ''}</span></li>
                   </ul>
                   <div className="booked-actions">
+                    <a href={whatsappLink(bookingMessage)} target="_blank" rel="noreferrer" className="btn btn-whatsapp">
+                      <WhatsAppIcon />
+                      <span>{t('sendBookingWhatsApp')}</span>
+                    </a>
                     <button type="button" className="btn btn-primary" onClick={downloadIcs}><CalendarPlus size={16} /> {t('addCalendar')}</button>
                     <a className="btn btn-outline" href={googleCalendarUrl(booking, event)} target="_blank" rel="noreferrer">{t('googleCalendar')}</a>
-                    {whatsapp}
                   </div>
+                  <p className="book-hint" style={{ marginTop: 8 }}>{t('sendBookingHint')}</p>
                 </>
               ) : (
                 <div className="booked-head">

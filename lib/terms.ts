@@ -13,7 +13,7 @@ export const TERMS: Record<Lang, TermsSection[]> = {
     {
       title: 'Booking',
       points: [
-        'Your booking is confirmed when you see your booking reference on screen and receive our confirmation email.',
+        'Your booking is confirmed when you see your booking reference on screen. Please save the page or take a screenshot.',
         'For paid tours, your seats are held for 30 minutes while you pay. If payment isn’t completed in that time, the seats are released.',
         'Please give a phone or WhatsApp number we can reach you on during the tour day.',
       ],
@@ -31,7 +31,7 @@ export const TERMS: Record<Lang, TermsSection[]> = {
         'Free tours: you can cancel at any time. Please let us know so we can give your seat to someone else.',
         'Paid tours: cancel at least 48 hours before the start time for a full refund.',
         'Cancellations less than 48 hours before the start time, and no-shows, are not refunded.',
-        'To cancel or change your date, reply to your confirmation email or message us on WhatsApp with your booking reference.',
+        'To cancel or change your date, message us on WhatsApp or email tourwithus@wanderasia.tw with your booking reference.',
       ],
     },
     {
@@ -60,7 +60,7 @@ export const TERMS: Record<Lang, TermsSection[]> = {
     {
       title: '預訂',
       points: [
-        '當您在畫面上看到預訂編號並收到確認信時，即表示預訂成立。',
+        '當您在畫面上看到預訂編號時，即表示預訂成立。請儲存頁面或截圖保留。',
         '付費行程在您付款期間會保留名額 30 分鐘；若未在時限內完成付款，名額將自動釋出。',
         '請留下行程當天可聯絡到您的電話或 WhatsApp 號碼。',
       ],
@@ -78,7 +78,7 @@ export const TERMS: Record<Lang, TermsSection[]> = {
         '免費行程：可隨時取消，請通知我們，以便將名額讓給其他旅客。',
         '付費行程：於出發前 48 小時以上取消，可全額退款。',
         '出發前 48 小時內取消或未到場，恕不退款。',
-        '如需取消或改期，請回覆確認信，或透過 WhatsApp 提供預訂編號與我們聯繫。',
+        '如需取消或改期，請透過 WhatsApp 或寄信至 tourwithus@wanderasia.tw，並提供預訂編號。',
       ],
     },
     {
@@ -105,7 +105,7 @@ export const TERMS: Record<Lang, TermsSection[]> = {
     {
       title: '预订',
       points: [
-        '当您在画面上看到预订编号并收到确认信时，即表示预订成立。',
+        '当您在画面上看到预订编号时，即表示预订成立。请保存页面或截图保留。',
         '付费行程在您付款期间会保留名额 30 分钟；若未在时限内完成付款，名额将自动释出。',
         '请留下行程当天可联络到您的电话或 WhatsApp 号码。',
       ],
@@ -123,7 +123,7 @@ export const TERMS: Record<Lang, TermsSection[]> = {
         '免费行程：可随时取消，请通知我们，以便将名额让给其他旅客。',
         '付费行程：于出发前 48 小时以上取消，可全额退款。',
         '出发前 48 小时内取消或未到场，恕不退款。',
-        '如需取消或改期，请回复确认信，或通过 WhatsApp 提供预订编号与我们联系。',
+        '如需取消或改期，请通过 WhatsApp 或发送邮件至 tourwithus@wanderasia.tw，并提供预订编号。',
       ],
     },
     {
@@ -150,7 +150,7 @@ export const TERMS: Record<Lang, TermsSection[]> = {
     {
       title: 'ご予約',
       points: [
-        '画面に予約番号が表示され、確認メールが届いた時点でご予約が確定します。',
+        '画面に予約番号が表示された時点でご予約が確定します。ページの保存またはスクリーンショットをお願いします。',
         '有料ツアーは、お支払いの間30分間お席を確保します。その時間内にお支払いが完了しない場合、お席は解放されます。',
         'ツアー当日に連絡のつく電話番号またはWhatsApp番号をお知らせください。',
       ],
@@ -168,7 +168,7 @@ export const TERMS: Record<Lang, TermsSection[]> = {
         '無料ツアー：いつでもキャンセルできます。お席を他のお客様に譲るため、ご連絡ください。',
         '有料ツアー：開始時刻の48時間前までのキャンセルで全額返金します。',
         '開始時刻の48時間以内のキャンセルおよび無断不参加は返金できません。',
-        'キャンセルや日程変更は、確認メールへの返信、または予約番号を添えてWhatsAppでご連絡ください。',
+        'キャンセルや日程変更は、予約番号を添えてWhatsApp、またはtourwithus@wanderasia.tw までメールでご連絡ください。',
       ],
     },
     {
@@ -195,7 +195,7 @@ export const TERMS: Record<Lang, TermsSection[]> = {
     {
       title: '예약',
       points: [
-        '화면에 예약 번호가 표시되고 확인 이메일을 받으시면 예약이 확정됩니다.',
+        '화면에 예약 번호가 표시되면 예약이 확정됩니다. 페이지를 저장하거나 스크린샷으로 보관해 주세요.',
         '유료 투어는 결제하시는 동안 30분간 자리를 확보합니다. 그 시간 안에 결제가 완료되지 않으면 자리가 해제됩니다.',
         '투어 당일 연락 가능한 전화 또는 WhatsApp 번호를 알려 주세요.',
       ],
@@ -213,7 +213,7 @@ export const TERMS: Record<Lang, TermsSection[]> = {
         '무료 투어: 언제든 취소할 수 있습니다. 다른 분께 자리를 양보할 수 있도록 알려 주세요.',
         '유료 투어: 시작 시간 48시간 전까지 취소하면 전액 환불합니다.',
         '시작 시간 48시간 이내 취소와 노쇼는 환불되지 않습니다.',
-        '취소나 날짜 변경은 확인 이메일에 답장하거나 예약 번호와 함께 WhatsApp으로 연락해 주세요.',
+        '취소나 날짜 변경은 예약 번호와 함께 WhatsApp 또는 tourwithus@wanderasia.tw 이메일로 연락해 주세요.',
       ],
     },
     {

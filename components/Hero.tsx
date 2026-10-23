@@ -14,9 +14,9 @@ import type { HeroSlide } from '@/lib/cms'
 const SLIDE_MS = 6500
 
 /** The bookable tours the hero can route to, by category */
-export type HeroTour = { slug: string; category: string }
+export type HeroTour = { slug: string; category: string; free?: boolean }
 
-export default function Hero({ slides = [], tours = [] }: { slides?: HeroSlide[]; tours?: HeroTour[] }) {
+export default function Hero({ slides = [], tours = [], upcoming = [] }: { slides?: HeroSlide[]; tours?: HeroTour[]; upcoming?: string[] }) {
   const { t, lang, categories, services, href } = useSite()
   const router = useRouter()
   const [type, setType] = useState('')
@@ -27,8 +27,14 @@ export default function Hero({ slides = [], tours = [] }: { slides?: HeroSlide[]
   const [tabHidden, setTabHidden] = useState(false)
   const [reducedMotion, setReducedMotion] = useState(false)
   const resumeTimer = useRef<number | null>(null)
+  const active = slides.length > 0 ? Math.min(index, slides.length - 1) : 0
 
-  const options = [...categories.map((c) => ({ key: c.key, title: c.title })), { key: 'private', title: privateTourService(services).title }]
+  // A tour type is offered only when the page has somewhere to send it: a ready tour, or the "coming soon" strip
+  const toursOf = (key: string) => tours.filter((tour) => (key === 'free' ? tour.free : tour.category === key))
+  const options = [
+    ...categories.filter((c) => toursOf(c.key).length > 0 || c.comingSoon || upcoming.includes(c.key)).map((c) => ({ key: c.key, title: c.title })),
+    { key: 'private', title: privateTourService(services).title },
+  ]
 
   // Visitors who ask for reduced motion get a still hero; a hidden tab pauses the rotation too
   useEffect(() => {
@@ -49,6 +55,23 @@ export default function Hero({ slides = [], tours = [] }: { slides?: HeroSlide[]
     const id = window.setInterval(() => setIndex((i) => (i + 1) % slides.length), SLIDE_MS)
     return () => window.clearInterval(id)
   }, [slides.length, paused, tabHidden, reducedMotion])
+
+  const videoRefs = useRef<(HTMLVideoElement | null)[]>([])
+
+  // A video slide starts from the beginning each time its turn comes
+  useEffect(() => {
+    const el = videoRefs.current[active]
+    if (el && slides[active]?.kind === 'video') el.currentTime = 0
+  }, [active, slides])
+
+  // Videos play only while their slide is showing and nothing has paused the hero
+  useEffect(() => {
+    videoRefs.current.forEach((el, i) => {
+      if (!el) return
+      if (i === active && !paused && !tabHidden && !reducedMotion) void el.play().catch(() => {})
+      else el.pause()
+    })
+  }, [active, paused, tabHidden, reducedMotion, slides])
 
   // A touch pauses the rotation; it resumes on its own after a while
   const pauseForTouch = () => {
@@ -75,7 +98,7 @@ export default function Hero({ slides = [], tours = [] }: { slides?: HeroSlide[]
     }
     // A category holding exactly one bookable tour goes straight to that tour's
     // booking page, carrying the picked date and group size (?date and ?a)
-    const matches = type ? tours.filter((tour) => tour.category === type) : []
+    const matches = type ? toursOf(type) : []
     if (matches.length === 1) {
       const q = new URLSearchParams()
       if (date) q.set('date', date)
@@ -87,8 +110,9 @@ export default function Hero({ slides = [], tours = [] }: { slides?: HeroSlide[]
     scrollToTours(type ? `tours-${type}` : 'tours', lang)
   }
 
-  const active = slides.length > 0 ? Math.min(index, slides.length - 1) : 0
   const caption = slides.length > 0 ? slides[active].caption[lang] : ''
+  // A video slide waits on the first photo's frame until it can play
+  const poster = slides.find((s) => s.kind === 'image')?.src
 
   return (
     <section
@@ -101,18 +125,34 @@ export default function Hero({ slides = [], tours = [] }: { slides?: HeroSlide[]
     >
       {slides.length > 0 ? (
         <div className="hero-slides">
-          {slides.map((s, i) => (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              key={s.image}
-              src={s.image}
-              alt=""
-              className={i === active ? 'hero-slide active' : 'hero-slide'}
-              loading={i === 0 ? 'eager' : 'lazy'}
-              fetchPriority={i === 0 ? 'high' : undefined}
-              aria-hidden={i !== active}
-            />
-          ))}
+          {slides.map((s, i) =>
+            s.kind === 'video' ? (
+              <video
+                key={s.src}
+                ref={(el) => {
+                  videoRefs.current[i] = el
+                }}
+                className={i === active ? 'hero-slide active' : 'hero-slide'}
+                src={s.src}
+                poster={poster}
+                muted
+                playsInline
+                preload="metadata"
+                aria-hidden={i !== active}
+              />
+            ) : (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                key={s.src}
+                src={s.src}
+                alt=""
+                className={i === active ? 'hero-slide active' : 'hero-slide'}
+                loading={i === 0 ? 'eager' : 'lazy'}
+                fetchPriority={i === 0 ? 'high' : undefined}
+                aria-hidden={i !== active}
+              />
+            ),
+          )}
         </div>
       ) : (
         <div className="hero-bg" />
@@ -170,7 +210,7 @@ export default function Hero({ slides = [], tours = [] }: { slides?: HeroSlide[]
         <div className="hero-dots">
           {slides.map((s, i) => (
             <button
-              key={s.image}
+              key={s.src}
               type="button"
               className={i === active ? 'hero-dot active' : 'hero-dot'}
               aria-label={s.caption[lang] || `${i + 1} / ${slides.length}`}

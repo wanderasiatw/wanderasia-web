@@ -242,29 +242,36 @@ export async function getAllTours(): Promise<Tour[]> {
   return toTours((await cmsFetch<{ tours: Raw[] }>('/api/v1/tours'))?.tours)
 }
 
-/** One home-page hero photo from the CMS gallery, with its caption in every language (blank when it has none) */
+/** One home-page hero slide from the CMS gallery: a photo, or a short video clip, with its caption */
 export interface HeroSlide {
-  image: string
+  kind: 'image' | 'video'
+  src: string
   caption: Text
 }
 
 /**
- * The home hero's photos: the cover and photos of the gallery album the CMS marks "featured"
- * (its hint reads "Shown on the home page"), in album order, at most three. Empty when no album
- * is featured or it has no photos — the hero then keeps its built-in photo.
+ * The home hero's slides: the cover and photos of the gallery album the CMS marks "featured"
+ * (its hint reads "Shown on the home page"), in album order, at most three. When the album also
+ * carries a video link, the clip takes the last slot (cover + first photo + video). Empty when
+ * no album is featured or it holds nothing — the hero then keeps its built-in photo.
  */
 export async function getHeroSlides(): Promise<HeroSlide[]> {
   const albums = (await cmsFetch<{ gallery: Raw[] }>('/api/v1/gallery'))?.gallery ?? []
   const album = albums.find((a) => Boolean(a.featured))
   if (!album) return []
-  const slides: HeroSlide[] = []
+  const blank: Text = { EN: '', ZH: '', ZH_HANS: '', JA: '', KO: '' }
+  const images: HeroSlide[] = []
   const cover = str(album.coverImage)
-  if (cover) slides.push({ image: cover, caption: { EN: '', ZH: '', ZH_HANS: '', JA: '', KO: '' } })
+  if (cover) images.push({ kind: 'image', src: cover, caption: blank })
   for (const p of Array.isArray(album.photos) ? album.photos : []) {
     const image = str((p as Raw).image)
-    if (image) slides.push({ image, caption: text(p as Raw, 'caption') })
+    if (image) images.push({ kind: 'image', src: image, caption: text(p as Raw, 'caption') })
   }
-  return slides.filter((s, i) => slides.findIndex((x) => x.image === s.image) === i).slice(0, 3)
+  const unique = images.filter((s, i) => images.findIndex((x) => x.src === s.src) === i)
+  const video = str(album.videoUrl)
+  if (!video) return unique.slice(0, 3)
+  const videoSlide: HeroSlide = { kind: 'video', src: video, caption: blank }
+  return [...unique.slice(0, 2), videoSlide].slice(0, 3)
 }
 
 export async function getTourBySlug(slug: string): Promise<Tour | null> {
