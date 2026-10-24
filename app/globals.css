@@ -1533,3 +1533,20 @@ a.rating-chip:hover { border-color: var(--brand-gold); }
 .review-text { font-size: 13px; color: var(--stone-600); }
 .review-row-side { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
 .review-row-side a { color: var(--primary); display: inline-flex; }
+
+/* Booking: choose the app we contact you on */
+.app-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.app-chip {
+  border: 1px solid var(--stone-200);
+  background: var(--white);
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--stone-600);
+  cursor: pointer;
+}
+.app-chip:hover { border-color: var(--primary); color: var(--primary); }
+.app-chip.selected { background: var(--primary); border-color: var(--primary); color: var(--white); }
+.app-chip:focus-visible { outline: 3px solid var(--brand-gold); outline-offset: 2px; }

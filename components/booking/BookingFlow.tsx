@@ -31,6 +31,12 @@ type Errors = Partial<Record<keyof Details | 'agree' | 'turnstile' | 'adults', s
 
 const EMPTY: Details = { name: '', email: '', phone: '', country: '', notes: '' }
 
+/** Messaging apps a guest can choose to be contacted on; 'call' means a normal phone call or SMS */
+const CONTACT_APPS = ['WhatsApp', 'LINE', 'Telegram', 'Signal', 'WeChat', 'KakaoTalk', 'call'] as const
+type ContactApp = (typeof CONTACT_APPS)[number]
+/** The app most people use where each language is spoken; the guest can pick another */
+const DEFAULT_APP: Record<string, ContactApp> = { EN: 'WhatsApp', ZH: 'LINE', ZH_HANS: 'WeChat', JA: 'LINE', KO: 'KakaoTalk' }
+
 export interface BookingStart {
   step?: number
   date?: string
@@ -81,6 +87,7 @@ export default function BookingFlow({
   const [children, setChildren] = useState(Math.max(0, start.children ?? 0))
   const [details, setDetails] = useState<Details>(EMPTY)
   const [agree, setAgree] = useState(false)
+  const [contactApp, setContactApp] = useState<ContactApp>(DEFAULT_APP[lang] ?? 'WhatsApp')
   const [errors, setErrors] = useState<Errors>({})
   const [message, setMessage] = useState('')
   const [sending, setSending] = useState(false)
@@ -170,6 +177,9 @@ export default function BookingFlow({
           adults,
           children,
           ...details,
+          // The CMS has no field for the app yet, so it also goes at the top of the notes, where the team sees it
+          contactApp: contactApp === 'call' ? 'Phone call / SMS' : contactApp,
+          notes: [`Contact via ${contactApp === 'call' ? 'phone call / SMS' : contactApp}`, details.notes.trim()].filter(Boolean).join('\n\n'),
           agree,
           lang: LANG_CODE[lang],
           _hp: honeypot,
@@ -345,6 +355,24 @@ export default function BookingFlow({
                     {field('email', 'email', { type: 'email', auto: 'email', max: 200 })}
                     {field('phone', 'phone', { type: 'tel', auto: 'tel', hint: 'phoneHint', max: 40 })}
                   </div>
+                  <div className="form-group">
+                    <label id="bk-app-label">{t('contactApp')}</label>
+                    <div className="app-chips" role="radiogroup" aria-labelledby="bk-app-label">
+                      {CONTACT_APPS.map((app) => (
+                        <button
+                          key={app}
+                          type="button"
+                          role="radio"
+                          aria-checked={contactApp === app}
+                          className={`app-chip${contactApp === app ? ' selected' : ''}`}
+                          onClick={() => setContactApp(app)}
+                        >
+                          {app === 'call' ? t('contactCall') : app}
+                        </button>
+                      ))}
+                    </div>
+                    <p style={{ fontSize: 12, marginTop: 6, color: 'var(--stone-600)' }}>{t('contactAppHint')}</p>
+                  </div>
                   {field('country', 'country', { auto: 'country-name', optional: true, max: 80 })}
                   {field('notes', 'notes', { hint: 'notesHint', optional: true })}
 
@@ -408,7 +436,7 @@ export default function BookingFlow({
                       <p>
                         {details.name}
                         <br />
-                        {details.email} · {details.phone}
+                        {details.email} · {details.phone} ({contactApp === 'call' ? t('contactCall') : contactApp})
                         {details.country && <><br />{details.country}</>}
                       </p>
                       {details.notes && <p style={{ color: 'var(--stone-600)', fontSize: 13, marginTop: 4 }}>{details.notes}</p>}
