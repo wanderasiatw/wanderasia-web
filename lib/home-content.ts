@@ -5,11 +5,11 @@ export const HERO = {
   tag: { EN: 'Local guides across Taiwan', ZH: '台灣在地導遊帶路', ZH_HANS: '台湾在地导游带路', JA: '台湾各地の地元ガイド', KO: '대만 현지 가이드' } as Text,
   title: { EN: 'Taiwan, the way locals live it', ZH: '用在地人的方式，認識台灣', ZH_HANS: '用在地人的方式，认识台湾', JA: '台湾を、地元の人と同じように', KO: '현지인처럼 살아보는 대만' } as Text,
   sub: {
-    EN: 'Food, culture and city walks led by people who call Taiwan home. Pick a date and book in one WhatsApp message.',
-    ZH: '由住在台灣的在地導遊帶你吃美食、看文化、走街區。選好日期，一則 WhatsApp 訊息就能預約。',
-    ZH_HANS: '由住在台湾的在地导游带你吃美食、看文化、走街区。选好日期，一则 WhatsApp 信息就能预约。',
-    JA: '台湾に暮らす地元ガイドがご案内するグルメ、文化、街歩き。日付を選んで、WhatsAppメッセージ1通で予約できます。',
-    KO: '대만에 사는 현지 가이드가 안내하는 음식, 문화, 도보 투어. 날짜를 정해 WhatsApp 메시지 하나로 예약하세요.',
+    EN: 'Food, culture and city walks led by people who call Taiwan home. Pick a date and book online in a minute, or ask us on WhatsApp.',
+    ZH: '由住在台灣的在地導遊帶你吃美食、看文化、走街區。選好日期即可線上預約，也可以用 WhatsApp 問我們。',
+    ZH_HANS: '由住在台湾的在地导游带你吃美食、看文化、走街区。选好日期即可在线预约，也可以用 WhatsApp 问我们。',
+    JA: '台湾に暮らす地元ガイドがご案内するグルメ、文化、街歩き。日付を選んでオンラインですぐ予約、またはWhatsAppでお気軽にご相談ください。',
+    KO: '대만에 사는 현지 가이드가 안내하는 음식, 문화, 도보 투어. 날짜를 고르고 온라인으로 바로 예약하거나 WhatsApp으로 문의하세요.',
   } as Text,
   /** Credit required by the photo's CC BY 3.0 license */
   photo: {
@@ -36,13 +36,13 @@ export const HOW_IT_WORKS = {
       },
     },
     {
-      title: { EN: 'Message us on WhatsApp', ZH: '用 WhatsApp 聯絡我們', ZH_HANS: '用 WhatsApp 联络我们', JA: 'WhatsAppで連絡する', KO: 'WhatsApp으로 연락하기' },
+      title: { EN: 'Pick a date and book', ZH: '選日期並預約', ZH_HANS: '选日期并预约', JA: '日付を選んで予約', KO: '날짜 선택 후 예약' },
       text: {
-        EN: 'Send your date and group size. We reply with availability and the price for your group.',
-        ZH: '告訴我們日期和人數，我們會回覆可預約時段與團體價格。',
-        ZH_HANS: '告诉我们日期和人数，我们会回复可预约时段与团体价格。',
-        JA: '日付と人数をお知らせください。空き状況とグループ料金をお返事します。',
-        KO: '날짜와 인원을 알려 주시면 예약 가능 여부와 그룹 요금을 답변드립니다.',
+        EN: 'Choose a date and the number of guests and book online. You see the total before you confirm. Prefer to chat? Message us on WhatsApp.',
+        ZH: '選擇日期與人數即可線上預約，確認前就能看到總金額。想直接聊聊？用 WhatsApp 問我們。',
+        ZH_HANS: '选择日期与人数即可在线预约，确认前就能看到总金额。想直接聊聊？用 WhatsApp 问我们。',
+        JA: '日付と人数を選んでオンラインで予約。確定前に合計金額が表示されます。チャットがよければWhatsAppでどうぞ。',
+        KO: '날짜와 인원을 선택해 온라인으로 예약하세요. 확정 전에 총 금액을 확인할 수 있습니다. 채팅을 원하시면 WhatsApp으로 연락 주세요.',
       },
     },
     {

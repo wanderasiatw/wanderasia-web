@@ -19,6 +19,8 @@ export interface Category {
   blurb: Text
   /** Shown as a "coming soon" card until real tours are added */
   comingSoon?: boolean
+  /** Set by the layout: at least one bookable tour is in this category (free = any tour priced 0). Drives the footer links. */
+  hasTours?: boolean
 }
 
 export interface Tasting {

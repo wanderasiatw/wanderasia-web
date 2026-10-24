@@ -6,7 +6,7 @@ import { CONTACT } from '@/lib/contact'
 
 export default function Footer() {
   const { toggleQr, lang, t, href, categories, services } = useSite()
-  const open = categories.filter((c) => !c.comingSoon)
+  const open = categories.filter((c) => c.hasTours)
   return (
     <footer id="contact">
       <div className="wa-container">
