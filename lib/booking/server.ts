@@ -8,7 +8,7 @@
 //        → 409 { error: 'sold-out', seatsLeft }   422 { fields: { name: 'required' | 'invalid', … } }   429 too many
 //   GET  /api/v1/bookings/:ref?t=token     → 200 { booking: Booking }   404 unknown ref or wrong token
 //   POST /api/v1/bookings/:ref/checkout    { t, method, lang, returnUrl, cancelUrl }
-//        → 200 { checkout: { url } }  (Stripe Checkout)   or   { checkout: { form: { action, fields } } }  (ECPay)
+//        → 200 { checkout: { url } }  (Stripe Checkout or PayPal)   or   { checkout: { form: { action, fields } } }  (form-post providers; none now)
 //        The provider's webhook goes straight to the CMS, which marks the booking 'paid' and sends the emails.
 //   (Types: lib/booking/types.ts)
 //
@@ -75,7 +75,7 @@ export async function getBooking(ref: string, token: string): Promise<Booking | 
   }
 }
 
-/** Asks the CMS to start a Stripe or ECPay payment, and returns where to send the customer */
+/** Asks the CMS to start a Stripe or PayPal payment, and returns where to send the customer */
 export async function startCheckout(
   ref: string,
   token: string,

@@ -4,7 +4,7 @@ import { PAYMENT_METHODS, type PaymentMethod } from '@/lib/booking/types'
 
 type Ctx = { params: Promise<{ ref: string }> }
 
-/** Starts paying for a booking with Stripe or ECPay; answers with where to send the customer */
+/** Starts paying for a booking with Stripe or PayPal; answers with where to send the customer */
 export async function POST(req: Request, { params }: Ctx) {
   const { ref } = await params
   const body = (await req.json().catch(() => ({}))) as { t?: string; method?: string; lang?: string }

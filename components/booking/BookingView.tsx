@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { AlertTriangle, CalendarPlus, Check, CreditCard, Landmark } from 'lucide-react'
+import { AlertTriangle, CalendarPlus, Check, CreditCard, Wallet } from 'lucide-react'
 import { LANG_CODE, fill } from '@/lib/i18n'
 import { whatsappLink } from '@/lib/contact'
 import type { Tour } from '@/lib/tours'
@@ -17,11 +17,11 @@ import StepBar from './StepBar'
 
 type TourInfo = Pick<Tour, 'slug' | 'title' | 'image' | 'category' | 'meetingPoint' | 'duration'>
 
-/** How often, and how many times, to check for the payment after the customer comes back from Stripe or ECPay */
+/** How often, and how many times, to check for the payment after the customer comes back from Stripe or PayPal */
 const POLL_MS = 3000
 const POLL_TRIES = 10
 
-/** Sends the customer to Stripe (an address) or ECPay (a form posted to its payment page) */
+/** Sends the customer to Stripe or PayPal (an address), or to a provider that needs a form posted to its payment page */
 function goToCheckout(checkout: Checkout) {
   if ('url' in checkout) {
     window.location.assign(checkout.url)
@@ -199,15 +199,15 @@ export default function BookingView({ initial, tour, demo, returned }: { initial
                           </span>
                         </label>
                       )}
-                      {booking.paymentMethods.includes('ecpay') && (
-                        <label className={`pay-option${method === 'ecpay' ? ' selected' : ''}`}>
-                          <input type="radio" name="method" value="ecpay" checked={method === 'ecpay'} onChange={() => setMethod('ecpay')} />
-                          <Landmark size={22} style={{ color: 'var(--primary)', flexShrink: 0 }} />
+                      {booking.paymentMethods.includes('paypal') && (
+                        <label className={`pay-option${method === 'paypal' ? ' selected' : ''}`}>
+                          <input type="radio" name="method" value="paypal" checked={method === 'paypal'} onChange={() => setMethod('paypal')} />
+                          <Wallet size={22} style={{ color: 'var(--primary)', flexShrink: 0 }} />
                           <span>
-                            <strong>{t('payTaiwan')}</strong>
-                            <small>{t('payTaiwanText')}</small>
+                            <strong>{t('payPayPal')}</strong>
+                            <small>{t('payPayPalText')}</small>
                             <span className="pay-brands" aria-hidden="true">
-                              <span>綠界 ECPay</span><span>{lang === 'ZH' || lang === 'ZH_HANS' ? '信用卡' : 'Card'}</span><span>ATM</span><span>{lang === 'ZH' || lang === 'ZH_HANS' ? '超商' : '7-ELEVEN / FamilyMart'}</span>
+                              <span>PayPal</span>
                             </span>
                           </span>
                         </label>

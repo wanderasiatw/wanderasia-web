@@ -157,7 +157,7 @@ export function demoGetBooking(ref: string, token: string): Booking | null {
   return { ...b }
 }
 
-/** Instead of Stripe or ECPay, the demo checkout page on this site */
+/** Instead of Stripe or PayPal, the demo checkout page on this site */
 export function demoCheckout(ref: string, token: string, method: PaymentMethod, lang: BookingLang): Checkout | null {
   const b = demoGetBooking(ref, token)
   if (!b || b.status !== 'pending_payment') return null

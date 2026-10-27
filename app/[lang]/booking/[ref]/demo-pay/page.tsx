@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return { title: translate(lang, 'demoPayTitle'), robots: { index: false, follow: false } }
 }
 
-/** Demo mode only: where "Pay" goes instead of Stripe or ECPay */
+/** Demo mode only: where "Pay" goes instead of Stripe or PayPal */
 export default async function DemoPayPage({ params, searchParams }: Props) {
   if (!isBookingDemo()) notFound()
   const [{ lang: param, ref }, q] = await Promise.all([params, searchParams])

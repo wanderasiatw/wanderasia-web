@@ -8,13 +8,13 @@ import { fill } from '@/lib/i18n'
 import { formatMoney, type Booking, type PaymentMethod } from '@/lib/booking/types'
 import { useSite } from '../SiteProvider'
 
-/** Demo mode only: a stand-in for the Stripe or ECPay payment page. Nothing is charged. */
+/** Demo mode only: a stand-in for the Stripe or PayPal payment page. Nothing is charged. */
 export default function DemoCheckout({ booking, method }: { booking: Booking; method: PaymentMethod }) {
   const { t, href } = useSite()
   const router = useRouter()
   const [paying, setPaying] = useState(false)
   const back = href(`/booking/${encodeURIComponent(booking.ref)}?t=${encodeURIComponent(booking.token)}`)
-  const provider = method === 'stripe' ? 'Stripe Checkout' : 'ECPay 綠界科技'
+  const provider = method === 'stripe' ? 'Stripe Checkout' : method === 'paypal' ? 'PayPal' : 'ECPay 綠界科技'
   const amount = formatMoney(booking.total, booking.currency)
   const Icon = method === 'stripe' ? CreditCard : Landmark
 

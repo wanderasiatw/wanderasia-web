@@ -9,9 +9,13 @@ export type BookingStatus = 'confirmed' | 'pending_payment' | 'paid' | 'expired'
 /** The language a booking was made in, as a code the CMS understands ('en', 'zh', 'zh-cn', 'ja', 'ko') */
 export type BookingLang = LangCode
 
-/** Stripe: cards, Apple Pay and Google Pay for travelers from abroad. ECPay: Taiwan cards, ATM transfer and convenience stores, in TWD. */
-export type PaymentMethod = 'stripe' | 'ecpay'
-export const PAYMENT_METHODS: PaymentMethod[] = ['stripe', 'ecpay']
+/**
+ * Stripe: cards, Apple Pay and Google Pay. PayPal: a PayPal account or a card saved in it.
+ * 'ecpay' only appears on old bookings: Wander Asia removed it (Oct 2026); it can come back if they ask.
+ */
+export type PaymentMethod = 'stripe' | 'paypal' | 'ecpay'
+/** Methods a customer can choose */
+export const PAYMENT_METHODS: PaymentMethod[] = ['stripe', 'paypal']
 
 /** One date and start time of a tour, with its seats and prices */
 export interface Departure {
@@ -77,7 +81,7 @@ export interface BookingRequest {
   turnstile?: string
 }
 
-/** Where to send the customer to pay: a page address (Stripe Checkout) or a form to post (ECPay) */
+/** Where to send the customer to pay: a page address (Stripe Checkout, PayPal) or a form to post (a provider like ECPay, not used now) */
 export type Checkout = { url: string } | { form: { action: string; fields: Record<string, string> } }
 
 /** Most guests one booking can hold, whatever the seats left */

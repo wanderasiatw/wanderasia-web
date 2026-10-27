@@ -21,7 +21,7 @@ export const TERMS: Record<Lang, TermsSection[]> = {
     {
       title: 'Prices and payment',
       points: [
-        'Prices are per person and shown before you pay. Card payments are handled by Stripe and Taiwan payments by ECPay; we never see or store your card details.',
+        'Prices are per person and shown before you pay. Payments are handled by Stripe (cards) and PayPal; we never see or store your card details.',
         'Free tours are free to join. Tips for your guide are welcome but never required.',
       ],
     },
@@ -68,7 +68,7 @@ export const TERMS: Record<Lang, TermsSection[]> = {
     {
       title: '價格與付款',
       points: [
-        '價格以每人計算，並於付款前清楚顯示。信用卡付款由 Stripe 處理，台灣在地付款由綠界科技（ECPay）處理，我們不會看到或儲存您的卡片資料。',
+        '價格以每人計算，並於付款前清楚顯示。付款由 Stripe（信用卡）與 PayPal 處理，我們不會看到或儲存您的卡片資料。',
         '免費行程不收費用，小費隨喜，絕不強制。',
       ],
     },
@@ -113,7 +113,7 @@ export const TERMS: Record<Lang, TermsSection[]> = {
     {
       title: '价格与付款',
       points: [
-        '价格以每人计算，并于付款前清楚显示。信用卡付款由 Stripe 处理，台湾在地付款由绿界科技（ECPay）处理，我们不会看到或储存您的卡片资料。',
+        '价格以每人计算，并于付款前清楚显示。付款由 Stripe（信用卡）与 PayPal 处理，我们不会看到或储存您的卡片资料。',
         '免费行程不收费用，小费随喜，绝不强制。',
       ],
     },
@@ -158,7 +158,7 @@ export const TERMS: Record<Lang, TermsSection[]> = {
     {
       title: '料金とお支払い',
       points: [
-        '料金は1名様あたりで、お支払い前に表示されます。カード決済はStripe、台湾でのお支払いはECPayが処理し、当社がカード情報を確認・保存することはありません。',
+        '料金は1名様あたりで、お支払い前に表示されます。お支払いはStripe（カード）とPayPalが処理し、当社がカード情報を確認・保存することはありません。',
         '無料ツアーは参加無料です。ガイドへのチップは歓迎しますが、必須ではありません。',
       ],
     },
@@ -203,7 +203,7 @@ export const TERMS: Record<Lang, TermsSection[]> = {
     {
       title: '가격 및 결제',
       points: [
-        '요금은 1인 기준이며 결제 전에 표시됩니다. 카드 결제는 Stripe, 대만 결제는 ECPay가 처리하며 저희는 카드 정보를 보거나 저장하지 않습니다.',
+        '요금은 1인 기준이며 결제 전에 표시됩니다. 결제는 Stripe(카드)와 PayPal이 처리하며 저희는 카드 정보를 보거나 저장하지 않습니다.',
         '무료 투어는 무료로 참여할 수 있습니다. 가이드 팁은 환영하지만 필수는 아닙니다.',
       ],
     },

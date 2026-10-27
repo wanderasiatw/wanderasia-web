@@ -4,7 +4,7 @@ import { PAYMENT_METHODS, type PaymentMethod } from '@/lib/booking/types'
 
 type Ctx = { params: Promise<{ ref: string }> }
 
-/** Demo mode only: stands in for the Stripe or ECPay webhook and marks the booking paid */
+/** Demo mode only: stands in for the Stripe or PayPal webhook and marks the booking paid */
 export async function POST(req: Request, { params }: Ctx) {
   if (!isBookingDemo()) return Response.json({ error: 'Not found' }, { status: 404 })
   const { ref } = await params
