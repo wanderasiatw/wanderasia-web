@@ -336,6 +336,13 @@ export async function getServices(): Promise<Service[]> {
   return services.length > 0 ? services : SERVICES
 }
 
+/** Text of a fixed page from CMS Page text (e.g. 'services'), or null until it is published there */
+export async function getPage(slug: string): Promise<{ title: Text; intro?: Text; image?: string } | null> {
+  const doc = (await cmsFetch<{ page: Raw }>(`/api/v1/pages/${encodeURIComponent(slug)}`))?.page
+  if (!doc || !str(doc.title)) return null
+  return { title: text(doc, 'title'), intro: optionalText(doc, 'intro'), image: str(doc.image) }
+}
+
 /** Published reviews from the CMS Reviews list, newest first as the CMS sends them */
 export async function getReviews(): Promise<Review[]> {
   const docs = (await cmsFetch<{ reviews: Raw[] }>('/api/v1/reviews'))?.reviews ?? []

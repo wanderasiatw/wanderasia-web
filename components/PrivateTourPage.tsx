@@ -37,12 +37,15 @@ export default function PrivateTourPage({
   reviews,
   guides,
   form,
+  initialPackage,
 }: {
   service: Service
   tours: Tour[]
   reviews: Review[]
   guides: Guide[]
   form: PublicForm | null
+  /** Package to start with, e.g. from a "Ways to book" tile on the Services page (?package=1) */
+  initialPackage?: number
 }) {
   const { lang, t } = useSite()
   const currency = currencyOf(service)
@@ -65,7 +68,8 @@ export default function PrivateTourPage({
 
   // Trip builder: the package with a badge starts selected (e.g. "Most popular"), else the second one (usually a full day)
   const badged = packages.findIndex((p) => p.badge)
-  const [pkgIndex, setPkgIndex] = useState(badged >= 0 ? badged : Math.min(1, packages.length - 1))
+  const preset = initialPackage != null && initialPackage >= 0 && initialPackage < packages.length ? initialPackage : null
+  const [pkgIndex, setPkgIndex] = useState(preset ?? (badged >= 0 ? badged : Math.min(1, packages.length - 1)))
   const [picks, setPicks] = useState<string[]>([])
   const [likes, setLikes] = useState<string[]>([])
   const [guests, setGuests] = useState(2)

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { getAllTours, getForm, getGuides, getReviews, getServiceBySlug } from '@/lib/cms'
+import { getAllTours, getForm, getGuides, getReviews, getServiceBySlug, getServices } from '@/lib/cms'
 import { currencyOf, fromPrice } from '@/lib/tours'
 import { HTML_LANG, langFromParam, translate } from '@/lib/i18n'
 import { absoluteUrl, breadcrumbJsonLd, pageMetadata, providerJsonLd } from '@/lib/seo'
@@ -12,7 +12,7 @@ import JsonLd from '@/components/JsonLd'
 // Pages are rendered on each request so CMS changes show up without a rebuild
 export const dynamic = 'force-dynamic'
 
-type Props = { params: Promise<{ lang: string; slug: string }> }
+type Props = { params: Promise<{ lang: string; slug: string }>; searchParams: Promise<{ package?: string | string[] }> }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { lang: param, slug } = await params
@@ -25,8 +25,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return pageMetadata(lang, `/services/${service.slug}`, { title, description, image: service.image })
 }
 
-export default async function ServicePage({ params }: Props) {
-  const { lang: param, slug } = await params
+export default async function ServicePage({ params, searchParams }: Props) {
+  const [{ lang: param, slug }, query] = await Promise.all([params, searchParams])
   const lang = langFromParam(param) ?? 'EN'
   const service = await getServiceBySlug(slug)
   if (!service) notFound()
@@ -62,15 +62,26 @@ export default async function ServicePage({ params }: Props) {
     return (
       <>
         <JsonLd data={[data, crumbs, faqData]} />
-        <PrivateTourPage service={service} tours={tours} reviews={reviews} guides={guides} form={form} />
+        <PrivateTourPage service={service} tours={tours} reviews={reviews} guides={guides} form={form} initialPackage={typeof query.package === 'string' && /^\d+$/.test(query.package) ? Number(query.package) : undefined} />
       </>
     )
   }
 
+  const [form, services] = await Promise.all([getForm('inquiry'), getServices()])
+  const privateTour = services.find((s) => s.kind === 'private-tour' && s.slug !== service.slug) ?? null
+  const ld: object[] = [data, crumbs]
+  if (service.faqs.length > 0) {
+    ld.push({
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      inLanguage: HTML_LANG[lang],
+      mainEntity: service.faqs.map((f) => ({ '@type': 'Question', name: f.question[lang], acceptedAnswer: { '@type': 'Answer', text: f.answer[lang] } })),
+    })
+  }
   return (
     <>
-      <JsonLd data={[data, crumbs]} />
-      <ServiceDetail service={service} />
+      <JsonLd data={ld} />
+      <ServiceDetail service={service} form={form} privateTour={privateTour} />
     </>
   )
 }
