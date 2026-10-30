@@ -4,7 +4,11 @@ import {
   SERVICES,
   TOURS,
   type Category,
+  type Faq,
+  type Guide,
+  type Itinerary,
   type PriceOption,
+  type Review,
   type Service,
   type Text,
   type TextList,
@@ -184,6 +188,24 @@ function toTour(doc: Raw): Tour {
   }
 }
 
+const num = (v: unknown) => (typeof v === 'number' && Number.isFinite(v) ? v : undefined)
+const rows = (v: unknown): Raw[] => (Array.isArray(v) ? v.filter((r): r is Raw => !!r && typeof r === 'object') : [])
+const lines = (v: unknown) => (str(v) ? (v as string).split('\n').map((l) => l.trim()).filter(Boolean) : [])
+
+/** Price rows (service price options and add-ons); the package extras are optional */
+function priceOptions(v: unknown): PriceOption[] {
+  return rows(v)
+    .filter((o) => str(o.label))
+    .map((o) => ({
+      label: text(o, 'label'),
+      price: typeof o.price === 'number' ? o.price : null,
+      unit: o.unit ?? '',
+      duration: optionalText(o, 'duration'),
+      detail: optionalText(o, 'detail'),
+      badge: optionalText(o, 'badge'),
+    }))
+}
+
 function toService(doc: Raw): Service {
   return {
     id: doc.id,
@@ -196,9 +218,27 @@ function toService(doc: Raw): Service {
     included: textList(doc, 'included'),
     capacity: optionalText(doc, 'capacity'),
     duration: optionalText(doc, 'duration'),
-    priceOptions: (Array.isArray(doc.priceOptions) ? doc.priceOptions : []).map(
-      (o: Raw): PriceOption => ({ label: text(o, 'label'), price: typeof o.price === 'number' ? o.price : null, unit: o.unit ?? '' }),
-    ),
+    priceOptions: priceOptions(doc.priceOptions),
+    groupIncluded: num(doc.groupIncluded),
+    extraGuestPrice: num(doc.extraGuestPrice),
+    maxGuests: num(doc.maxGuests),
+    trustPoints: textList(doc, 'trustPoints'),
+    perfectFor: textList(doc, 'perfectFor'),
+    interests: textList(doc, 'interests'),
+    notIncluded: textList(doc, 'notIncluded'),
+    addOns: priceOptions(doc.addOns),
+    itineraries: rows(doc.itineraries)
+      .filter((r) => str(r.title))
+      .map((r): Itinerary => ({
+        title: text(r, 'title'),
+        region: optionalText(r, 'region'),
+        duration: optionalText(r, 'duration'),
+        stops: textList(r, 'stops', lines),
+        image: str(r.image),
+      })),
+    faqs: rows(doc.faqs)
+      .filter((r) => str(r.question) && str(r.answer))
+      .map((r): Faq => ({ question: text(r, 'question'), answer: text(r, 'answer') })),
     image: str(doc.mainImage),
     whatsappText: str(doc.whatsappText) ?? `Hi Wander Asia! I'd like to ask about ${str(doc.title) ?? 'your services'}.`,
     featured: Boolean(doc.featured),
@@ -294,6 +334,32 @@ export async function getServices(): Promise<Service[]> {
   const docs = (await cmsFetch<{ services: Raw[] }>('/api/v1/services'))?.services
   const services = (docs ?? []).map(toService)
   return services.length > 0 ? services : SERVICES
+}
+
+/** Published reviews from the CMS Reviews list, newest first as the CMS sends them */
+export async function getReviews(): Promise<Review[]> {
+  const docs = (await cmsFetch<{ reviews: Raw[] }>('/api/v1/reviews'))?.reviews ?? []
+  return docs
+    .filter((d) => str(d.name) && str(d.text))
+    .map((d) => ({
+      name: d.name,
+      country: str(d.country),
+      rating: num(d.rating),
+      source: str(d.source),
+      text: text(d, 'text'),
+      link: str(d.link),
+      tourSlug: str(d.tourSlug),
+      photo: str(d.photo),
+      featured: Boolean(d.featured),
+    }))
+}
+
+/** Guides and team members from the CMS */
+export async function getGuides(): Promise<Guide[]> {
+  const docs = (await cmsFetch<{ guides: Raw[] }>('/api/v1/guides'))?.guides ?? []
+  return docs
+    .filter((d) => str(d.name))
+    .map((d) => ({ name: d.name, role: optionalText(d, 'role'), languages: list(d.languages), bio: optionalText(d, 'bio'), photo: str(d.photo) }))
 }
 
 export async function getServiceBySlug(slug: string): Promise<Service | null> {

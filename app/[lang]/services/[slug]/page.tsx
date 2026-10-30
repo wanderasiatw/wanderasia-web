@@ -1,10 +1,12 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { getServiceBySlug } from '@/lib/cms'
+import { getAllTours, getForm, getGuides, getReviews, getServiceBySlug } from '@/lib/cms'
 import { currencyOf, fromPrice } from '@/lib/tours'
 import { HTML_LANG, langFromParam, translate } from '@/lib/i18n'
 import { absoluteUrl, breadcrumbJsonLd, pageMetadata, providerJsonLd } from '@/lib/seo'
 import ServiceDetail from '@/components/ServiceDetail'
+import PrivateTourPage from '@/components/PrivateTourPage'
+import { DEFAULT_FAQS } from '@/lib/private-tour'
 import JsonLd from '@/components/JsonLd'
 
 // Pages are rendered on each request so CMS changes show up without a rebuild
@@ -47,6 +49,23 @@ export default async function ServicePage({ params }: Props) {
     { name: translate(lang, 'home'), path: '/' },
     { name: service.title[lang], path },
   ])
+
+  if (service.kind === 'private-tour') {
+    const [tours, reviews, guides, form] = await Promise.all([getAllTours(), getReviews(), getGuides(), getForm('inquiry')])
+    const faqs = service.faqs.length > 0 ? service.faqs : DEFAULT_FAQS
+    const faqData = {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      inLanguage: HTML_LANG[lang],
+      mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.question[lang], acceptedAnswer: { '@type': 'Answer', text: f.answer[lang] } })),
+    }
+    return (
+      <>
+        <JsonLd data={[data, crumbs, faqData]} />
+        <PrivateTourPage service={service} tours={tours} reviews={reviews} guides={guides} form={form} />
+      </>
+    )
+  }
 
   return (
     <>

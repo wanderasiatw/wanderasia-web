@@ -14,7 +14,20 @@ type Values = Record<string, string>
  * The inquiry form. Its fields come from the CMS, so adding or changing a field there needs no change here.
  * Submissions go to /api/inquire on this site, which passes them to the CMS inbox.
  */
-export default function InquiryForm({ form, item, title, embedded }: { form: PublicForm | null; item?: string; title: string; embedded?: boolean }) {
+export default function InquiryForm({
+  form,
+  item,
+  title,
+  embedded,
+  prefill,
+}: {
+  form: PublicForm | null
+  item?: string
+  title: string
+  embedded?: boolean
+  /** Values to write into fields that exist on the form (e.g. a private tour plan); applied again whenever `key` changes */
+  prefill?: { key: number; values: Record<string, string> }
+}) {
   const { lang, t } = useSite()
   // The label in the page's language: CMS labels carry en/zh/zhHans/ja/ko; Simplified Chinese was
   // filled in from the Traditional text in getForm(), and anything missing falls back to English
@@ -46,6 +59,20 @@ export default function InquiryForm({ form, item, title, embedded }: { form: Pub
 
   useEffect(() => setShownAt(Date.now()), [])
 
+  useEffect(() => {
+    if (!prefill || !form) return
+    // Only fields the form has; for a choice, only a value that is one of its options (e.g. the private tour
+    // service is listed only once it is published in the CMS), so a missing option never blocks sending
+    const fits = (name: string, v: string) => {
+      const field = form.fields.find((f) => f.name === name)
+      if (!field || v === '') return false
+      return field.type !== 'choice' || (field.options ?? []).some((o) => o.value === v)
+    }
+    const updates = Object.fromEntries(Object.entries(prefill.values).filter(([name, v]) => fits(name, v)))
+    setValues((v) => ({ ...v, ...updates }))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [prefill?.key])
+
   const errorText = (name: string, code: string) => {
     if (code === 'required') return t('formRequired')
     if (code === 'too-long') return t('formTooLong')
@@ -73,7 +100,7 @@ export default function InquiryForm({ form, item, title, embedded }: { form: Pub
       })
       if (res.ok) {
         setStatus('sent')
-        window.scrollTo({ top: 0, behavior: 'smooth' })
+        if (!embedded) window.scrollTo({ top: 0, behavior: "smooth" })
         return
       }
       const body = (await res.json().catch(() => ({}))) as { fields?: Record<string, string> }

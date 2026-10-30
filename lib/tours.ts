@@ -147,6 +147,47 @@ export interface PriceOption {
   price: number | null
   /** person, group, vehicle, hour, day or trip */
   unit: string
+  /** Private tour packages: length, one-line detail and a short badge, e.g. "Most popular" */
+  duration?: Text
+  detail?: Text
+  badge?: Text
+}
+
+/** A sample private-tour day, from the CMS */
+export interface Itinerary {
+  title: Text
+  region?: Text
+  duration?: Text
+  /** One stop per line */
+  stops: TextList
+  image?: string
+}
+
+export interface Faq {
+  question: Text
+  answer: Text
+}
+
+/** A published review from the CMS Reviews list (real reviews only) */
+export interface Review {
+  name: string
+  country?: string
+  rating?: number
+  source?: string
+  text: Text
+  link?: string
+  tourSlug?: string
+  photo?: string
+  featured: boolean
+}
+
+/** A guide or team member from the CMS */
+export interface Guide {
+  name: string
+  role?: Text
+  languages: string[]
+  bio?: Text
+  photo?: string
 }
 
 export interface Service {
@@ -163,6 +204,18 @@ export interface Service {
   capacity?: Text
   duration?: Text
   priceOptions: PriceOption[]
+  // Private tour page (all optional; the page uses built-in text for any that are empty)
+  /** Guests a group price covers, for the estimate */
+  groupIncluded?: number
+  extraGuestPrice?: number
+  maxGuests?: number
+  trustPoints: TextList
+  perfectFor: TextList
+  interests: TextList
+  notIncluded: TextList
+  addOns: PriceOption[]
+  itineraries: Itinerary[]
+  faqs: Faq[]
   image?: string
   /** Pre-filled WhatsApp message for enquiries */
   whatsappText: string
@@ -244,6 +297,13 @@ export const PRIVATE_TOUR_SERVICE: Service = {
   body: enList([]),
   included: enList([]),
   priceOptions: [],
+  trustPoints: enList([]),
+  perfectFor: enList([]),
+  interests: enList([]),
+  notIncluded: enList([]),
+  addOns: [],
+  itineraries: [],
+  faqs: [],
   whatsappText: "Hi Wander Asia! I'd like to ask about a private tour.",
   featured: true,
 }
