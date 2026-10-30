@@ -59,6 +59,8 @@ export interface Booking {
   /** The ways this booking can be paid, as set up in the CMS */
   paymentMethods: PaymentMethod[]
   paidWith?: PaymentMethod
+  /** The cancellation policy that applied when they booked (kept even if the policy changes later) */
+  cancellationPolicy?: string
   createdAt: string
 }
 

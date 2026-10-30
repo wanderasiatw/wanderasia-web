@@ -240,6 +240,12 @@ export default function BookingView({ initial, tour, demo, returned }: { initial
                     <li><span>{t('guests')}</span><span>{guestsText(t, booking.adults, booking.children)}</span></li>
                     <li><span>{t('total')}</span><span>{money(booking.total)}{booking.paidWith ? ` · ${t(`paidWith_${booking.paidWith}`)}` : ''}</span></li>
                   </ul>
+                  {booking.cancellationPolicy && (
+                    <div className="book-hint" style={{ fontSize: 13, margin: '14px 0' }}>
+                      <strong style={{ display: 'block', color: 'var(--stone-800)', marginBottom: 4 }}>{t('cancellationTitle')}</strong>
+                      <span style={{ whiteSpace: 'pre-line' }}>{booking.cancellationPolicy}</span>
+                    </div>
+                  )}
                   <div className="booked-actions">
                     <a href={whatsappLink(bookingMessage)} target="_blank" rel="noreferrer" className="btn btn-whatsapp">
                       <WhatsAppIcon />

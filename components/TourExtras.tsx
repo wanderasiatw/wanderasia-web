@@ -238,7 +238,12 @@ export function PoliciesBlock({ tour }: { tour: Tour }) {
           <span>{tour.cancelHours ? fill(t('freeCancelUntil'), { hours: tour.cancelHours }) : t('freeCancellation')}</span>
         </p>
       )}
-      {tour.cancellationPolicy && <p style={{ fontSize: 14, color: 'var(--stone-600)' }}>{tour.cancellationPolicy[lang]}</p>}
+      {tour.cancellationPolicy && <p style={{ fontSize: 14, color: 'var(--stone-600)', whiteSpace: 'pre-line' }}>{tour.cancellationPolicy[lang]}</p>}
+      <p style={{ fontSize: 13, marginTop: 10 }}>
+        <Link href={href('/terms')} style={{ color: 'var(--primary)', fontWeight: 700 }}>
+          {t('fullTerms')}
+        </Link>
+      </p>
       <p style={{ fontSize: 13, color: 'var(--stone-600)', marginTop: 14 }}>
         {t('operatedBy')}{' '}
         <Link href={href('/about')} style={{ color: 'var(--primary)', fontWeight: 700 }}>
