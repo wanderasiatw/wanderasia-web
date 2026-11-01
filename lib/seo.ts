@@ -48,6 +48,8 @@ export function pageMetadata(
 
 /** The business itself, as schema.org data for search engines */
 export function organizationJsonLd(lang: Lang) {
+  // Links that tell Google the website and the Google Business Profile are the same business
+  const sameAs = [CONTACT.googleMapsUrl, ...CONTACT.socialProfiles].filter(Boolean)
   return {
     '@context': 'https://schema.org',
     '@type': 'TravelAgency',
@@ -59,7 +61,10 @@ export function organizationJsonLd(lang: Lang) {
     image: `${siteUrl()}/logo.svg`,
     description: translate(lang, 'metaDesc'),
     email: CONTACT.email,
+    telephone: CONTACT.whatsapp.replace(/\s+/g, ''),
     areaServed: { '@type': 'Country', name: 'Taiwan' },
+    ...(CONTACT.googleMapsUrl ? { hasMap: CONTACT.googleMapsUrl } : {}),
+    ...(sameAs.length ? { sameAs } : {}),
   }
 }
 

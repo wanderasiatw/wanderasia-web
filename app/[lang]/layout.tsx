@@ -24,6 +24,8 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
     metadataBase: new URL(siteUrl()),
     title: translate(lang, 'metaTitle'),
     description: translate(lang, 'metaDesc'),
+    // Google Search Console ownership tag: set GOOGLE_SITE_VERIFICATION in wrangler.jsonc vars
+    ...(process.env.GOOGLE_SITE_VERIFICATION ? { verification: { google: process.env.GOOGLE_SITE_VERIFICATION } } : {}),
   }
 }
 
