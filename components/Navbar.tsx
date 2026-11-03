@@ -21,8 +21,9 @@ export default function Navbar() {
     setLangOpen(false)
   }, [path])
 
-  // Menu order set by Wander Asia: Tours, Services, Blog, Contact, About Us
+  // Menu order set by Wander Asia: Tours, Services, Blog, Contact, About Us (Home added first so visitors don't need the logo to go back)
   const links = [
+    { to: '/', label: t('home'), current: path === '/' },
     { to: '/tours', label: t('navTours'), current: path === '/tours' || path.startsWith('/tours/') },
     { to: '/services', label: t('navServices'), current: path === '/services' || path.startsWith('/services/') },
     { to: '/blog', label: t('navBlog'), current: path === '/blog' || path.startsWith('/blog/') },
