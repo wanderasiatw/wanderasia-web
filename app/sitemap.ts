@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next'
-import { getAllTours, getServices } from '@/lib/cms'
+import { getAllTours, getPublishedPageSlugs, getServices } from '@/lib/cms'
 import { getPosts } from '@/lib/blog'
 import { HTML_LANG, LANGS } from '@/lib/i18n'
 import { absoluteUrl } from '@/lib/seo'
@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic'
 
 /** Every page in all five languages, each pointing to its other-language versions (English is x-default) */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [tours, services, posts] = await Promise.all([getAllTours(), getServices(), getPosts()])
+  const [tours, services, posts, pages] = await Promise.all([getAllTours(), getServices(), getPosts(), getPublishedPageSlugs()])
   const paths = [
     '/',
     '/tours',
@@ -23,7 +23,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     '/inquire',
     '/contact',
     '/about',
+    '/help',
     '/terms',
+    // No built-in privacy text: listed once it is published in CMS Page text
+    ...(pages.includes('privacy') ? ['/privacy'] : []),
   ]
   return paths.flatMap((path) => {
     const languages = { ...Object.fromEntries(LANGS.map((l) => [HTML_LANG[l], absoluteUrl(l, path)])), 'x-default': absoluteUrl('EN', path) }

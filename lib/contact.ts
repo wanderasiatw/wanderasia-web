@@ -4,7 +4,7 @@ export const CONTACT = {
   whatsappUrl: 'https://wa.me/14407855187',
   email: 'tourwithus@wanderasia.tw',
   /** Google Maps link to the Google Business Profile — paste the "Share" link once the profile is verified */
-  googleMapsUrl: '',
+  googleMapsUrl: 'https://share.google/4RhOWNzY5NzxWeEJk',
   /** Other official profiles (Instagram, Facebook, TripAdvisor…) — full URLs */
   socialProfiles: [] as string[],
 }

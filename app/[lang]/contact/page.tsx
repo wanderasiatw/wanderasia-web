@@ -1,25 +1,27 @@
 import type { Metadata } from 'next'
-import { getForm } from '@/lib/cms'
+import { getForm, getPage } from '@/lib/cms'
 import { CONTACT, whatsappLink } from '@/lib/contact'
 import { langFromParam, translate } from '@/lib/i18n'
-import { breadcrumbJsonLd, pageMetadata } from '@/lib/seo'
+import { breadcrumbJsonLd, cmsPageMetadata } from '@/lib/seo'
 import InquiryForm from '@/components/InquiryForm'
 import JsonLd from '@/components/JsonLd'
 import { WhatsAppIcon } from '@/components/Icons'
+import CmsBody from '@/components/CmsBody'
 
-// The form's fields come from the CMS on each request
+// The form's fields and the page text (CMS Page text "Contact") come from the CMS on each request
 export const dynamic = 'force-dynamic'
 
 type Props = { params: Promise<{ lang: string }> }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const lang = langFromParam((await params).lang) ?? 'EN'
-  return pageMetadata(lang, '/contact', { title: translate(lang, 'metaContactTitle'), description: translate(lang, 'contactBlurb') })
+  return cmsPageMetadata(lang, '/contact', await getPage('contact'), { title: translate(lang, 'metaContactTitle'), description: translate(lang, 'contactBlurb') })
 }
 
 export default async function ContactPage({ params }: Props) {
   const lang = langFromParam((await params).lang) ?? 'EN'
-  const form = await getForm('inquiry')
+  const [form, page] = await Promise.all([getForm('inquiry'), getPage('contact')])
+  const body = page?.body[lang] ?? []
   const crumbs = breadcrumbJsonLd(lang, [
     { name: translate(lang, 'home'), path: '/' },
     { name: translate(lang, 'navContact'), path: '/contact' },
@@ -30,14 +32,15 @@ export default async function ContactPage({ params }: Props) {
       <JsonLd data={crumbs} />
       <div className="page-banner">
         <div className="wa-container">
-          <h1>{translate(lang, 'navContact')}</h1>
-          <p>{translate(lang, 'contactBlurb')}</p>
+          <h1>{page ? page.title[lang] : translate(lang, 'navContact')}</h1>
+          <p>{page?.intro?.[lang] ?? translate(lang, 'contactBlurb')}</p>
         </div>
       </div>
 
       {/* WhatsApp and email only: the client asked for no office address and no phone number here */}
       <section className="section" style={{ paddingBottom: 0 }}>
         <div className="wa-container" style={{ maxWidth: 720 }}>
+          {body.length > 0 && <CmsBody paragraphs={body} className="panel cms-body" />}
           <div className="detail-grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
             <div className="panel flex flex-col gap-3">
               <h2 className="section-title" style={{ fontSize: 18 }}>{translate(lang, 'footerWhatsApp')}</h2>

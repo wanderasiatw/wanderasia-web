@@ -1386,6 +1386,14 @@ section[id], .tour-row[id] { scroll-margin-top: 90px; }
 .terms-body h2:first-child { margin-top: 0; }
 .terms-body p, .terms-body li { font-size: 14px; color: var(--stone-600); }
 .terms-body ul { padding-left: 20px; display: flex; flex-direction: column; gap: 6px; }
+.terms-body ul { list-style: disc; margin: 6px 0 12px; }
+.terms-body p { margin-bottom: 10px; line-height: 1.65; }
+/* Body text from CMS Page text (about, contact, help) */
+.cms-body { display: flex; flex-direction: column; gap: 12px; }
+.cms-body p, .cms-body li { font-size: 15px; line-height: 1.7; color: var(--stone-700, var(--stone-600)); }
+.cms-body h2 { font-family: var(--font-display); font-size: 19px; margin-top: 8px; }
+.cms-body ul { list-style: disc; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; }
+.wa-container > .panel.cms-body { margin-bottom: 20px; }
 
 .tour-book-meta { font-size: 12px; color: var(--stone-600); margin: -8px 0 14px; }
 .tour-book-meta strong { color: var(--primary); }

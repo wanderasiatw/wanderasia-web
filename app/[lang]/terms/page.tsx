@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import { langFromParam, translate } from '@/lib/i18n'
-import { pageMetadata } from '@/lib/seo'
+import { cmsPageMetadata } from '@/lib/seo'
+import { getPage } from '@/lib/cms'
+import CmsBody from '@/components/CmsBody'
 import { TERMS } from '@/lib/terms'
 import { isBookingDemo } from '@/lib/booking/server'
 
@@ -10,22 +12,29 @@ type Props = { params: Promise<{ lang: string }> }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const lang = langFromParam((await params).lang) ?? 'EN'
-  return pageMetadata(lang, '/terms', { title: translate(lang, 'metaTermsTitle') })
+  return cmsPageMetadata(lang, '/terms', await getPage('terms'), { title: translate(lang, 'metaTermsTitle') })
 }
 
 export default async function TermsPage({ params }: Props) {
   const lang = langFromParam((await params).lang) ?? 'EN'
+  // CMS Page text "Terms & conditions", once published with body text, replaces the built-in terms
+  const page = await getPage('terms')
+  const body = page?.body[lang] ?? []
   return (
     <main>
       <div className="hero" style={{ padding: '50px 0' }}>
         <div className="hero-bg" />
         <div className="wa-container hero-content">
-          <h1 style={{ fontSize: 30 }}>{translate(lang, 'termsTitle')}</h1>
+          <h1 style={{ fontSize: 30 }}>{page ? page.title[lang] : translate(lang, 'termsTitle')}</h1>
+          {page?.intro && <p>{page.intro[lang]}</p>}
         </div>
       </div>
       <section className="section">
         <div className="wa-container" style={{ maxWidth: 760 }}>
           {isBookingDemo() && <p className="demo-notice">{translate(lang, 'termsDraft')}</p>}
+          {body.length > 0 ? (
+            <CmsBody paragraphs={body} className="panel terms-body" />
+          ) : (
           <div className="panel terms-body">
             {TERMS[lang].map((s) => (
               <div key={s.title}>
@@ -36,6 +45,7 @@ export default async function TermsPage({ params }: Props) {
               </div>
             ))}
           </div>
+          )}
         </div>
       </section>
     </main>

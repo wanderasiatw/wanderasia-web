@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { getPage, getReviews, getServices } from '@/lib/cms'
 import { langFromParam, translate } from '@/lib/i18n'
-import { breadcrumbJsonLd, pageMetadata } from '@/lib/seo'
+import { breadcrumbJsonLd, cmsPageMetadata } from '@/lib/seo'
 import ServicesHub from '@/components/ServicesHub'
 import JsonLd from '@/components/JsonLd'
 
@@ -12,7 +12,7 @@ type Props = { params: Promise<{ lang: string }> }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const lang = langFromParam((await params).lang) ?? 'EN'
-  return pageMetadata(lang, '/services', { title: translate(lang, 'metaServicesTitle'), description: translate(lang, 'servicesBlurb') })
+  return cmsPageMetadata(lang, '/services', await getPage('services'), { title: translate(lang, 'metaServicesTitle'), description: translate(lang, 'servicesBlurb') })
 }
 
 export default async function ServicesPage({ params }: Props) {

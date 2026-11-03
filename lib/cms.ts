@@ -336,11 +336,53 @@ export async function getServices(): Promise<Service[]> {
   return services.length > 0 ? services : SERVICES
 }
 
-/** Text of a fixed page from CMS Page text (e.g. 'services'), or null until it is published there */
-export async function getPage(slug: string): Promise<{ title: Text; intro?: Text; image?: string } | null> {
+/** A fixed page from CMS Page text: heading, intro, body paragraphs (per language), photo and the English SEO fields */
+export interface CmsPage {
+  title: Text
+  intro?: Text
+  /** Body paragraphs (a blank line between them in the CMS); a language with no body shows the English one */
+  body: TextList
+  image?: string
+  /** English page only: the other languages use their own heading and intro */
+  seoTitle?: string
+  seoDescription?: string
+}
+
+function toPage(doc: Raw): CmsPage {
+  return {
+    title: text(doc, 'title'),
+    intro: optionalText(doc, 'intro'),
+    body: textList(doc, 'body', paragraphs),
+    image: str(doc.image),
+    seoTitle: str(doc.seoTitle),
+    seoDescription: str(doc.seoDescription),
+  }
+}
+
+/** Text of a fixed page from CMS Page text (e.g. 'about', 'services'), or null until it is published there */
+export async function getPage(slug: string): Promise<CmsPage | null> {
   const doc = (await cmsFetch<{ page: Raw }>(`/api/v1/pages/${encodeURIComponent(slug)}`))?.page
   if (!doc || !str(doc.title)) return null
-  return { title: text(doc, 'title'), intro: optionalText(doc, 'intro'), image: str(doc.image) }
+  return toPage(doc)
+}
+
+/** Slugs of the fixed pages published in CMS Page text (e.g. ['about', 'privacy']) */
+export async function getPublishedPageSlugs(): Promise<string[]> {
+  const docs = (await cmsFetch<{ pages: Raw[] }>('/api/v1/pages'))?.pages ?? []
+  return docs.filter((d) => str(d.slug) && str(d.title)).map((d) => d.slug as string)
+}
+
+/** A question from the CMS FAQ list, with its group (booking, tours, hiking, other) */
+export interface GroupedFaq extends Faq {
+  group: string
+}
+
+/** Published questions from the CMS FAQ list, in the CMS's order */
+export async function getFaqs(): Promise<GroupedFaq[]> {
+  const docs = (await cmsFetch<{ faq: Raw[] }>('/api/v1/faq'))?.faq ?? []
+  return docs
+    .filter((d) => str(d.question) && str(d.answer))
+    .map((d) => ({ group: str(d.faqGroup) ?? 'other', question: text(d, 'question'), answer: text(d, 'answer') }))
 }
 
 /** Published reviews from the CMS Reviews list, newest first as the CMS sends them */

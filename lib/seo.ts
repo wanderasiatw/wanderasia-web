@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { CONTACT } from './contact'
 import { HTML_LANG, LANGS, OG_LOCALE, localePath, translate, type Lang } from './i18n'
 import type { Tour } from './tours'
+import type { CmsPage } from './cms'
 
 /** The site's public address. Read on each request: on Cloudflare, environment variables are only available while handling one. */
 export function siteUrl() {
@@ -44,6 +45,24 @@ export function pageMetadata(
     },
     ...(noindex ? { robots: { index: false, follow: true } } : {}),
   }
+}
+
+/**
+ * Metadata for a fixed page that can be edited in CMS Page text. The English page uses the CMS SEO title and
+ * description when they are filled in; every language otherwise uses the page's own heading and intro in that
+ * language. Until the page is published in the CMS, the built-in title and description are used.
+ */
+export function cmsPageMetadata(
+  lang: Lang,
+  path: string,
+  page: CmsPage | null,
+  fallback: { title: string; description?: string; noindex?: boolean },
+): Metadata {
+  if (!page) return pageMetadata(lang, path, fallback)
+  const heading = `${page.title[lang]} | ${translate(lang, 'siteName')}`
+  const title = lang === 'EN' ? (page.seoTitle ?? heading) : heading
+  const description = (lang === 'EN' ? page.seoDescription : undefined) ?? page.intro?.[lang] ?? fallback.description
+  return pageMetadata(lang, path, { title, description, image: page.image, noindex: fallback.noindex })
 }
 
 /** The business itself, as schema.org data for search engines */

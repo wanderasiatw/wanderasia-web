@@ -7,7 +7,7 @@ import AnnouncementBar from '@/components/AnnouncementBar'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import FloatingWhatsApp from '@/components/FloatingWhatsApp'
-import { getAllTours, getCategories, getServices } from '@/lib/cms'
+import { getAllTours, getCategories, getPublishedPageSlugs, getServices } from '@/lib/cms'
 import WhatsAppQrModal from '@/components/WhatsAppQrModal'
 import { HTML_LANG, langFromParam, translate } from '@/lib/i18n'
 import { siteUrl } from '@/lib/seo'
@@ -33,7 +33,7 @@ export default async function RootLayout({ children, params }: Props) {
   // English pages have no prefix in the address; middleware.ts serves them from /en internally
   const lang = langFromParam((await params).lang)
   if (!lang) notFound()
-  const [rawCategories, services, tours] = await Promise.all([getCategories(), getServices(), getAllTours()])
+  const [rawCategories, services, tours, pages] = await Promise.all([getCategories(), getServices(), getAllTours(), getPublishedPageSlugs()])
   // Footer links go only to categories that have a tour ready to book, whatever the category's own "coming soon" flag says
   const ready = tours.filter((t) => !t.comingSoon)
   const categories = rawCategories.map((c) => ({
@@ -46,7 +46,7 @@ export default async function RootLayout({ children, params }: Props) {
   return (
     <html lang={HTML_LANG[lang]} className={`${montserrat.variable} ${playfair.variable}`}>
       <body>
-        <SiteProvider lang={lang} categories={categories} services={services}>
+        <SiteProvider lang={lang} categories={categories} services={services} pages={pages}>
           <AnnouncementBar />
           <Navbar />
           {children}

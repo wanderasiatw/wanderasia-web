@@ -5,7 +5,7 @@ import { useSite } from './SiteProvider'
 import { CONTACT } from '@/lib/contact'
 
 export default function Footer() {
-  const { toggleQr, lang, t, href, categories, services } = useSite()
+  const { toggleQr, lang, t, href, categories, services, pages } = useSite()
   const open = categories.filter((c) => c.hasTours)
   return (
     <footer id="contact">
@@ -30,8 +30,11 @@ export default function Footer() {
               <li><Link href={href('/blog')}>{t('navBlog')}</Link></li>
               <li><Link href={href('/contact')}>{t('navContact')}</Link></li>
               <li><Link href={href('/about')}>{t('navAbout')}</Link></li>
+              <li><Link href={href('/help')}>{t('navHelp')}</Link></li>
               <li><Link href={href('/inquire')}>{t('sendInquiry')}</Link></li>
               <li><Link href={href('/terms')}>{t('bookingTerms')}</Link></li>
+              {/* The privacy policy has no built-in text: linked once it is published in CMS Page text */}
+              {pages.includes('privacy') && <li><Link href={href('/privacy')}>{t('navPrivacy')}</Link></li>}
             </ul>
           </div>
 

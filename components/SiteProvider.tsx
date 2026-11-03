@@ -18,11 +18,13 @@ interface SiteState {
   categories: Category[]
   /** Published services, from the CMS */
   services: Service[]
+  /** Slugs of the fixed pages published in CMS Page text, e.g. 'privacy' */
+  pages: string[]
 }
 
 const SiteContext = createContext<SiteState | null>(null)
 
-export function SiteProvider({ children, lang, categories, services }: { children: ReactNode; lang: Lang; categories: Category[]; services: Service[] }) {
+export function SiteProvider({ children, lang, categories, services, pages = [] }: { children: ReactNode; lang: Lang; categories: Category[]; services: Service[]; pages?: string[] }) {
   const [qrOpen, setQrOpen] = useState(false)
 
   const t = useCallback((key: DictKey) => DICT[lang][key] as string, [lang])
@@ -30,7 +32,7 @@ export function SiteProvider({ children, lang, categories, services }: { childre
   const toggleQr = useCallback(() => setQrOpen((o) => !o), [])
 
   return (
-    <SiteContext.Provider value={{ lang, t, href, qrOpen, toggleQr, categories, services }}>
+    <SiteContext.Provider value={{ lang, t, href, qrOpen, toggleQr, categories, services, pages }}>
       {children}
     </SiteContext.Provider>
   )
