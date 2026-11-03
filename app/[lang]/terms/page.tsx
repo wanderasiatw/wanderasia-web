@@ -12,7 +12,7 @@ type Props = { params: Promise<{ lang: string }> }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const lang = langFromParam((await params).lang) ?? 'EN'
-  return cmsPageMetadata(lang, '/terms', await getPage('terms'), { title: translate(lang, 'metaTermsTitle') })
+  return cmsPageMetadata(lang, '/terms', await getPage('terms'), { title: translate(lang, 'metaTermsTitle'), description: translate(lang, 'metaTermsDesc') })
 }
 
 export default async function TermsPage({ params }: Props) {

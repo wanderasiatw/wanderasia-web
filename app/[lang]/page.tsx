@@ -12,7 +12,7 @@ import { getPosts } from '@/lib/blog'
 import { getAllTours, getFeaturedTours, getHeroSlides } from '@/lib/cms'
 import { splitComingSoon } from '@/lib/tours'
 import { langFromParam, translate } from '@/lib/i18n'
-import { organizationJsonLd, pageMetadata } from '@/lib/seo'
+import { organizationJsonLd, pageMetadata, websiteJsonLd } from '@/lib/seo'
 
 // Rendered on each request so CMS changes show up without a rebuild
 export const dynamic = 'force-dynamic'
@@ -47,7 +47,7 @@ export default async function HomePage({ params }: Props) {
 
   return (
     <main>
-      <JsonLd data={organizationJsonLd(lang)} />
+      <JsonLd data={[websiteJsonLd(lang), organizationJsonLd(lang)]} />
       <Hero slides={heroSlides} tours={heroTours} upcoming={upcoming} />
       <TrustBar lang={lang} proof={proof} />
       <TourRows tours={ready} upcoming={upcoming} />

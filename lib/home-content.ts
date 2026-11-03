@@ -63,11 +63,11 @@ export const WHY_FEATURES: { icon: 'pin' | 'dollar' | 'pen' | 'chat'; title: Tex
     icon: 'pin',
     title: { EN: 'Local Taiwan Expertise', ZH: '在地台灣專業', ZH_HANS: '在地台湾专业', JA: '台湾現地の専門知識', KO: '대만 현지 전문성' },
     text: {
-      EN: 'Headquartered in Taipei with guides who know hidden gems, night markets, and authentic culture.',
-      ZH: '總部位於台北，導遊熟悉私房景點、夜市與道地文化。',
-      ZH_HANS: '总部位于台北，导游熟悉私房景点、夜市与道地文化。',
-      JA: '台北に拠点を置き、穴場スポット、夜市、本物の文化を知るガイドがご案内します。',
-      KO: '타이베이에 본사를 두고 숨은 명소, 야시장, 진짜 문화를 아는 가이드가 안내합니다.',
+      EN: 'Tours across Taiwan, from night markets and old streets to mountain trails, with guides who know the hidden gems.',
+      ZH: '行程遍及全台，從夜市、老街到山徑，導遊熟悉各地私房景點。',
+      ZH_HANS: '行程遍及全台，从夜市、老街到山径，导游熟悉各地私房景点。',
+      JA: '夜市や老街から山道まで台湾全土をめぐり、穴場を知るガイドがご案内します。',
+      KO: '야시장과 옛 거리부터 산길까지 대만 전역을 다니며, 숨은 명소를 아는 가이드가 안내합니다.',
     },
   },
   {
@@ -94,13 +94,13 @@ export const WHY_FEATURES: { icon: 'pin' | 'dollar' | 'pen' | 'chat'; title: Tex
   },
   {
     icon: 'chat',
-    title: { EN: '24/7 Dedicated Support', ZH: '24/7 專屬客服', ZH_HANS: '24/7 专属客服', JA: '24時間専属サポート', KO: '24시간 전담 지원' },
+    title: { EN: 'Personal WhatsApp Support', ZH: 'WhatsApp 專人服務', ZH_HANS: 'WhatsApp 专人服务', JA: 'WhatsAppで個別サポート', KO: 'WhatsApp 1:1 지원' },
     text: {
-      EN: 'Real-time WhatsApp messaging support throughout your entire journey in Taiwan.',
-      ZH: '旅途中隨時可透過 WhatsApp 即時聯繫我們。',
-      ZH_HANS: '旅途中随时可通过 WhatsApp 即时联系我们。',
-      JA: '台湾での旅の間ずっと、WhatsAppでリアルタイムにサポートします。',
-      KO: '대만 여행 내내 WhatsApp으로 실시간 지원해 드립니다.',
+      EN: 'Message us on WhatsApp before and during your tour, and a real person replies.',
+      ZH: '行程前與行程中都可以用 WhatsApp 聯繫我們，由真人親自回覆。',
+      ZH_HANS: '行程前与行程中都可以用 WhatsApp 联系我们，由真人亲自回复。',
+      JA: 'ツアーの前も当日も、WhatsAppでご連絡いただければスタッフが直接お返事します。',
+      KO: '투어 전과 투어 중에 WhatsApp으로 연락 주시면 직원이 직접 답변해 드립니다.',
     },
   },
 ]

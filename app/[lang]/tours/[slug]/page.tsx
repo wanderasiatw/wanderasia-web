@@ -16,6 +16,13 @@ type Props = {
   searchParams: Promise<Record<string, string | string[] | undefined>>
 }
 
+/** Cuts text to about 155 characters at a word boundary, the length Google shows in results */
+function shorten(text: string, max = 155) {
+  if (text.length <= max) return text
+  const cut = text.slice(0, max)
+  return `${cut.slice(0, Math.max(cut.lastIndexOf(' '), max - 20)).trim()}…`
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { lang: param, slug } = await params
   const lang = langFromParam(param) ?? 'EN'
@@ -23,7 +30,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!tour) return {}
   // The CMS SEO fields are in English, so the other languages use their own title and summary
   const title = lang === 'EN' ? (tour.seoTitle ?? `${tour.title.EN} | Wander Asia`) : `${tour.title[lang]} | ${translate(lang, 'siteName')}`
-  const description = lang === 'EN' ? (tour.seoDescription ?? tour.desc.EN) : tour.desc[lang]
+  // No summary in the CMS yet: fall back to the start of the tour's first description paragraph
+  const summary = tour.desc[lang] || tour.desc.EN || shorten(tour.body[lang]?.[0] || tour.body.EN?.[0] || '')
+  const description = (lang === 'EN' ? tour.seoDescription : undefined) || summary || undefined
   // Tours whose details aren't out yet stay out of search results until they are
   return pageMetadata(lang, `/tours/${tour.slug}`, { title, description, image: tour.image, noindex: tour.comingSoon })
 }

@@ -22,6 +22,9 @@ export function languageAlternates(path: string): Record<string, string> {
   return languages
 }
 
+/** Social preview picture for pages without one of their own (1920×1280) */
+const DEFAULT_SHARE_IMAGE = '/images/hero-jiufen.jpg'
+
 /** Title, description, canonical address, other-language address and social preview for one page */
 export function pageMetadata(
   lang: Lang,
@@ -29,6 +32,8 @@ export function pageMetadata(
   { title, description, image, noindex }: { title: string; description?: string; image?: string; noindex?: boolean },
 ): Metadata {
   const other = LANGS.filter((l) => l !== lang)
+  // Pages without their own picture share the Jiufen hero photo, so links shared on WhatsApp, Facebook or LINE always show an image
+  const shareImage = image || DEFAULT_SHARE_IMAGE
   return {
     title,
     description,
@@ -41,7 +46,7 @@ export function pageMetadata(
       siteName: translate(lang, 'siteName'),
       locale: OG_LOCALE[lang],
       alternateLocale: other.map((l) => OG_LOCALE[l]),
-      images: image ? [image] : undefined,
+      images: [shareImage],
     },
     ...(noindex ? { robots: { index: false, follow: true } } : {}),
   }
@@ -65,6 +70,20 @@ export function cmsPageMetadata(
   return pageMetadata(lang, path, { title, description, image: page.image, noindex: fallback.noindex })
 }
 
+/** The website itself: tells Google to show "Wander Asia" as the site name in results instead of the bare domain */
+export function websiteJsonLd(lang: Lang) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    '@id': `${siteUrl()}/#website`,
+    name: 'Wander Asia',
+    alternateName: ['漫遊亞洲', 'wanderasia.tw'],
+    url: `${siteUrl()}/`,
+    inLanguage: HTML_LANG[lang],
+    publisher: { '@id': `${siteUrl()}/#organization` },
+  }
+}
+
 /** The business itself, as schema.org data for search engines */
 export function organizationJsonLd(lang: Lang) {
   // Links that tell Google the website and the Google Business Profile are the same business
@@ -76,8 +95,9 @@ export function organizationJsonLd(lang: Lang) {
     name: 'Wander Asia',
     alternateName: '漫遊亞洲',
     url: absoluteUrl(lang, '/'),
-    logo: `${siteUrl()}/logo.svg`,
-    image: `${siteUrl()}/logo.svg`,
+    // Google needs a raster logo (PNG/JPG, at least 112×112); the SVG isn't accepted for this
+    logo: `${siteUrl()}/icon.png`,
+    image: `${siteUrl()}${DEFAULT_SHARE_IMAGE}`,
     description: translate(lang, 'metaDesc'),
     email: CONTACT.email,
     telephone: CONTACT.whatsapp.replace(/\s+/g, ''),

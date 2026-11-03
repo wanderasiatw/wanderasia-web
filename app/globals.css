@@ -1810,3 +1810,45 @@ a.rating-chip:hover { border-color: var(--brand-gold); }
   .sh-final .pt-hero-ctas { flex-direction: column; }
   .sh-card-foot { flex-wrap: wrap; }
 }
+
+/* About page: photo hero with text on the left, story beside quick points, closing call to action */
+.about-hero { text-align: left; padding: 120px 0 130px; min-height: 520px; display: flex; align-items: center; }
+.about-hero .hero-bg { background-position: center 35%; }
+.about-hero.hero-photo::before { background: linear-gradient(90deg, rgba(19,38,31,0.85) 0%, rgba(19,38,31,0.55) 45%, rgba(19,38,31,0.15) 100%); }
+.about-hero-content { max-width: 1200px; width: 100%; }
+.about-hero-content > * { max-width: 620px; }
+.about-hero h1 { font-size: 46px; margin-bottom: 18px; }
+.about-hero p { margin-left: 0; margin-right: 0; font-size: 17px; }
+.about-eyebrow { display: block; color: var(--gold-light); margin-bottom: 16px; }
+.about-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.about-actions-center { justify-content: center; }
+.about-btn { padding: 14px 24px; font-size: 14px; }
+.about-story { display: grid; grid-template-columns: 1.15fr 1fr; gap: 64px; align-items: start; }
+.about-title { font-size: 34px; margin: 6px 0 22px; line-height: 1.2; }
+.about-story-text p { font-size: 16px; }
+.about-points { background: var(--white); border: 1px solid var(--stone-200); border-radius: var(--radius-lg); padding: 30px; box-shadow: var(--shadow-md); }
+.about-points h3 { font-family: var(--font-display); font-size: 20px; color: var(--brand-green); margin-bottom: 18px; }
+.about-points ol { list-style: none; display: flex; flex-direction: column; gap: 20px; }
+.about-points li { display: flex; gap: 16px; }
+.about-point-num { font-family: var(--font-display); font-size: 26px; font-weight: 700; color: var(--brand-gold); line-height: 1; min-width: 38px; }
+.about-points h4 { font-size: 15px; font-weight: 700; color: var(--dark); margin-bottom: 4px; }
+.about-points p { font-size: 14px; line-height: 1.6; color: var(--stone-600); }
+.about-team { background: var(--stone-50); }
+.about-cta { background: linear-gradient(135deg, var(--dark) 0%, var(--brand-green) 100%); color: var(--white); padding: 90px 0; }
+.about-cta .section-sub { color: var(--gold-light); }
+.about-cta h2 { font-family: var(--font-display); font-size: 36px; margin: 10px 0 14px; }
+.about-cta p { color: #e3ddd1; max-width: 560px; margin: 0 auto 28px; font-size: 16px; line-height: 1.6; }
+@media (max-width: 900px) {
+  .about-story { grid-template-columns: 1fr; gap: 36px; }
+}
+@media (max-width: 640px) {
+  .about-hero { padding: 80px 0 90px; min-height: 0; }
+  .about-hero.hero-photo::before { background: linear-gradient(180deg, rgba(19,38,31,0.55) 0%, rgba(19,38,31,0.75) 100%); }
+  .about-hero h1 { font-size: 32px; }
+  .about-hero p { font-size: 15px; }
+  .about-title { font-size: 27px; }
+  .about-btn { flex: 1 1 auto; }
+  .about-points { padding: 22px; }
+  .about-cta { padding: 64px 0 90px; }
+  .about-cta h2 { font-size: 27px; }
+}
