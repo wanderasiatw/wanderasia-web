@@ -60,11 +60,11 @@ export default async function ContactPage({ params }: Props) {
             </div>
           </div>
           {/* Google Business Profile: reviews from past guests, and a place to leave one */}
-          {CONTACT.googleMapsUrl && (
+          {CONTACT.googleReviewUrl && (
             <div className="panel flex flex-col gap-3" style={{ marginTop: 20 }}>
               <h2 className="section-title" style={{ fontSize: 18 }}>{translate(lang, 'googleFind')}</h2>
               <p style={{ fontSize: 14, color: 'var(--stone-600)' }}>{translate(lang, 'googleBoxText')}</p>
-              <a href={CONTACT.googleMapsUrl} target="_blank" rel="noopener" className="btn btn-outline" style={{ padding: 12 }}>
+              <a href={CONTACT.googleReviewUrl} target="_blank" rel="noopener" className="btn btn-outline" style={{ padding: 12 }}>
                 <Star size={16} aria-hidden="true" />
                 <span>{translate(lang, 'googleOpen')}</span>
               </a>

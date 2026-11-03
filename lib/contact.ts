@@ -5,6 +5,9 @@ export const CONTACT = {
   email: 'tourwithus@wanderasia.tw',
   /** Google Maps link to the Google Business Profile — paste the "Share" link once the profile is verified */
   googleMapsUrl: 'https://share.google/4RhOWNzY5NzxWeEJk',
+  /** Google review link (Business Profile → Ask for reviews): opens the profile on Google Maps with the review box.
+   *  Used for the visible links; the share link above opens a Google search full of other "Wander Asia" results */
+  googleReviewUrl: 'https://g.page/r/Cdftun0CK7AGEBM/review',
   /** Other official profiles (Instagram, Facebook, TripAdvisor…) — full URLs */
   socialProfiles: [] as string[],
 }
