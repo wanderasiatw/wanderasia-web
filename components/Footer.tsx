@@ -41,6 +41,11 @@ export default function Footer() {
           <div className="footer-col">
             <h4>{t('navContact')}</h4>
             <p>Email: <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a></p>
+            {CONTACT.googleMapsUrl && (
+              <p style={{ marginTop: 8 }}>
+                <a href={CONTACT.googleMapsUrl} target="_blank" rel="noopener">{t('googleFind')} →</a>
+              </p>
+            )}
           </div>
 
           <div className="footer-col">
